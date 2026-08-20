@@ -1,3 +1,78 @@
+# NERI
+
+## AI-Powered Industrial Maintenance Troubleshooting Assistant
+
+NERI is an AI-powered maintenance troubleshooting assistant designed to help manufacturing technicians quickly find reliable information when machines fail.
+
+Manufacturing companies maintain large collections of equipment manuals, maintenance logs, and safety procedures. However, this information is often scattered across documents, making it difficult for technicians to quickly find the correct troubleshooting procedure during a machine failure.
+
+NERI uses Retrieval-Augmented Generation (RAG) to retrieve relevant information from approved company documents and provide technicians with source-grounded troubleshooting guidance.
+
+---
+
+## Problem
+
+When a machine fails, technicians often need to search through multiple documents to find information about:
+
+- Possible causes of the failure
+- Troubleshooting procedures
+- Safety precautions
+- Previous maintenance incidents
+- Equipment-specific instructions
+
+Manually searching through large document collections can increase machine downtime and may lead to technicians relying on incomplete or incorrect information.
+
+---
+
+## Solution
+
+NERI provides a single interface where technicians can describe a machine problem using natural language.
+
+The system retrieves relevant information from company-approved documentation and uses it to generate a clear troubleshooting response.
+
+The response can include:
+
+- Possible causes
+- Troubleshooting steps
+- Safety warnings
+- Supporting document references
+- Relevant sections or pages
+- Previous troubleshooting information
+
+This allows technicians to spend less time searching through documents and more time resolving machine problems safely.
+
+---
+
+## How NERI Works
+
+```text
+Technician
+    │
+    ▼
+Select Machine
+    │
+    ▼
+Describe Machine Problem
+    │
+    ▼
+NERI
+    │
+    ▼
+Retrieve Relevant Documents
+    │
+    ▼
+Generate Grounded Response
+    │
+    ├── Possible Causes
+    │
+    ├── Safety Warnings
+    │
+    ├── Troubleshooting Steps
+    │
+    └── Source References
+
+```
+
 ## Key Features
 
 ### Natural-Language Troubleshooting
