@@ -1,0 +1,32 @@
+# Python virtual environment
+.venv/
+
+# Environment variables / secrets
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Local data
+data/*
+
+# Keep the data directory structure
+!data/.gitkeep
+
+# Generated outputs
+outputs/*
+
+# Keep the outputs directory structure
+!outputs/.gitkeep
+
+# Node dependencies
+node_modules/
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
