@@ -1,0 +1,27 @@
+NERI - LLM API Successful Call
+================================
+
+REQUEST
+-------
+System:
+You are a concise assistant.
+
+User:
+Explain what machine maintenance means in one sentence.
+
+
+RESPONSE
+--------
+Machine maintenance involves the systematic inspection, repair, and servicing of equipment to ensure it operates efficiently and prevents unexpected breakdowns.
+
+
+USAGE
+-----
+Prompt Tokens: 17
+Completion Tokens: 23
+Total Tokens: 40
+
+STATUS
+------
+HTTP 200 OK
+Successful completion received from Gemini through the OpenAI-compatible API.
