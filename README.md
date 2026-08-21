@@ -276,8 +276,3 @@ Instead of spending valuable time searching through thousands of documents, tech
 
 ---
 
-## Token Counting Assignment
-
-The tokenization and cost estimation assignment is implemented in [src/token_cost_estimator.py](src/token_cost_estimator.py).
-
-It counts tokens for sample project text, compares short and long samples, and prints a simple input/output cost estimate.
