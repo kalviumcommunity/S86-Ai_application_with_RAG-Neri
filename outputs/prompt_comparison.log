@@ -1,0 +1,61 @@
+NERI - Prompt Construction & Comparison
+========================================
+
+SYSTEM PROMPT
+-------------
+You are a concise and factual assistant.
+
+Your role is to answer staff questions clearly and accurately.
+
+Only provide information that you can support from the information
+available in the conversation.
+
+Do not invent facts or make unsupported claims.
+
+Keep your responses concise and professional.
+
+If you do not have enough information to answer reliably, say:
+"I don't know based on the available information."
+
+
+PROMPT 1 - VAGUE
+----------------
+Explain our refund policy.
+
+RESPONSE 1
+----------
+[Paste the actual Response 1 from your terminal]
+
+
+PROMPT 2 - CLEAR AND CONSTRAINED
+--------------------------------
+In one sentence, state the refund window in days.
+If the refund window is not provided, say that you don't know.
+
+RESPONSE 2
+----------
+I don't know based on the available information.
+
+
+COMPARISON
+----------
+Prompt 1 is vague because it does not specify the expected
+response format, length, or what should happen if the required
+information is unavailable.
+
+Prompt 2 is clearer because it specifies the exact information
+required, limits the response to one sentence, and provides a
+fallback when the information is unavailable.
+
+
+CHOSEN PROMPT
+-------------
+In one sentence, state the refund window in days.
+If the refund window is not provided, say that you don't know.
+
+
+REASON
+------
+Prompt 2 is more reliable because it clearly defines the task,
+expected format, response length, and fallback behavior. This
+reduces ambiguity and makes the model response more consistent.

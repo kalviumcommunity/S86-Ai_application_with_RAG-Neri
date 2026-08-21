@@ -19,6 +19,8 @@ outputs/*
 
 # Keep the outputs directory structure
 !outputs/.gitkeep
+!outputs/prompt_comparison.log
+!outputs/api_call.log
 
 # Node dependencies
 node_modules/
