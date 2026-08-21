@@ -273,3 +273,11 @@ NERI aims to transform how manufacturing teams access maintenance knowledge.
 Instead of spending valuable time searching through thousands of documents, technicians can describe a machine problem and receive a clear, safety-conscious, source-referenced troubleshooting response.
 
 > **NERI — Find the information. Fix the problem. Work safely.**
+
+---
+
+## Token Counting Assignment
+
+The tokenization and cost estimation assignment is implemented in [src/token_cost_estimator.py](src/token_cost_estimator.py).
+
+It counts tokens for sample project text, compares short and long samples, and prints a simple input/output cost estimate.

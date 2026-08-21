@@ -1,0 +1,59 @@
+NERI Token Counting & Cost Estimation
+============================================
+Tokenizer: cl100k_base
+Input rate:  $0.0005 per 1K tokens
+Output rate: $0.0015 per 1K tokens
+
+SAMPLE TOKEN COUNTS
+--------------------------------------------
+Short prompt
+  kind: input
+  chars: 26
+  tokens: 6
+  length/token ratio: 4.33 chars/token
+  preview: Explain our refund policy.
+
+README paragraph
+  kind: input
+  chars: 292
+  tokens: 44
+  length/token ratio: 6.64 chars/token
+  preview: Manufacturing companies maintain large collections of equipment manuals, maintenance logs, and safety procedur
+
+LLM request block
+  kind: input
+  chars: 216
+  tokens: 52
+  length/token ratio: 4.15 chars/token
+  preview: messages = [     {         "role": "system",         "content": "You are a concise assistant."     },     {   
+
+Saved response
+  kind: output
+  chars: 70
+  tokens: 16
+  length/token ratio: 4.38 chars/token
+  preview: RESPONSE 2 ---------- I don't know based on the available information.
+
+System prompt block
+  kind: input
+  chars: 438
+  tokens: 79
+  length/token ratio: 5.54 chars/token
+  preview: system_prompt = """ You are a concise and factual assistant.  Your role is to answer staff questions clearly a
+
+COST ESTIMATE
+--------------------------------------------
+input tokens:  181
+output tokens: 16
+estimated cost: $0.000115
+
+LENGTH VS TOKEN RELATIONSHIP
+--------------------------------------------
+Short prompt         chars=26   tokens=6    chars/token=4.33 chars/token
+Saved response       chars=70   tokens=16   chars/token=4.38 chars/token
+LLM request block    chars=216  tokens=52   chars/token=4.15 chars/token
+README paragraph     chars=292  tokens=44   chars/token=6.64 chars/token
+System prompt block  chars=438  tokens=79   chars/token=5.54 chars/token
+
+Interpretation: longer text generally uses more tokens, but the ratio changes across prose, code,
+and quoted responses because tokenization splits text into word pieces rather than characters.
