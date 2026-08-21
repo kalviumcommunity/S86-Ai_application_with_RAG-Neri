@@ -21,6 +21,7 @@ outputs/*
 !outputs/.gitkeep
 !outputs/prompt_comparison.log
 !outputs/api_call.log
+!outputs/history_management.log
 
 # Node dependencies
 node_modules/
