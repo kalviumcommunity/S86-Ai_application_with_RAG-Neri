@@ -1,0 +1,116 @@
+2026-08-24 13:23:58,261 - INFO - REQUEST PARAMETERS: {'model': 'gemini-3.1-flash-lite', 'messages': [{'role': 'system', 'content': 'You are a concise assistant. Answer clearly and accurately.'}, {'role': 'user', 'content': 'Explain why regular maintenance is important for manufacturing equipment.'}], 'temperature': 0.0}
+2026-08-24 13:24:02,420 - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/openai/chat/completions "HTTP/1.1 200 OK"
+2026-08-24 13:24:02,437 - INFO - TEMPERATURE = 0.0 RESPONSE: Regular maintenance is critical for manufacturing equipment for the following reasons:
+
+*   **Prevents Unplanned Downtime:** Routine inspections identify potential failures before they cause a breakdown, ensuring production schedules remain on track.
+*   **Extends Equipment Lifespan:** Proper lubrication, cleaning, and part replacement reduce wear and tear, allowing machinery to operate effectively for longer.
+*   **Ensures Safety:** Regular checks identify hazards (such as frayed wires or faulty guards), reducing the risk of workplace accidents and ensuring compliance with safety regulations.
+*   **Optimizes Efficiency:** Well-maintained machines operate at peak performance, consuming less energy and producing higher-quality output with fewer defects.
+*   **Reduces Long-Term Costs:** Proactive maintenance is significantly cheaper than emergency repairs or the premature replacement of expensive capital equipment.
+2026-08-24 13:24:02,438 - INFO - TEMPERATURE = 0.0 USAGE: CompletionUsage(completion_tokens=166, prompt_tokens=23, total_tokens=189, completion_tokens_details=None, prompt_tokens_details=None)
+2026-08-24 13:24:02,438 - INFO - REQUEST PARAMETERS: {'model': 'gemini-3.1-flash-lite', 'messages': [{'role': 'system', 'content': 'You are a concise assistant. Answer clearly and accurately.'}, {'role': 'user', 'content': 'Explain why regular maintenance is important for manufacturing equipment.'}], 'temperature': 1.0}
+2026-08-24 13:24:03,904 - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/openai/chat/completions "HTTP/1.1 200 OK"
+2026-08-24 13:24:03,912 - INFO - TEMPERATURE = 1.0 RESPONSE: Regular maintenance is critical for manufacturing for four primary reasons:
+
+*   **Minimized Downtime:** Scheduled maintenance prevents unexpected mechanical failures, ensuring production lines remain operational and meeting delivery deadlines.
+*   **Extended Asset Life:** Proper lubrication, calibration, and part replacement reduce wear and tear, significantly extending the operational lifespan of expensive machinery.
+*   **Cost Efficiency:** Routine upkeep is significantly cheaper than emergency repairs. It also improves energy efficiency, reducing long-term utility costs.
+*   **Safety and Compliance:** Regular inspections identify potential hazards, reducing the risk of workplace accidents and ensuring the facility meets legal health and safety standards.
+2026-08-24 13:24:03,912 - INFO - TEMPERATURE = 1.0 USAGE: CompletionUsage(completion_tokens=126, prompt_tokens=23, total_tokens=149, completion_tokens_details=None, prompt_tokens_details=None)
+2026-08-24 13:24:03,913 - INFO - REQUEST PARAMETERS: {'model': 'gemini-3.1-flash-lite', 'messages': [{'role': 'system', 'content': 'You are a detailed assistant. Provide a comprehensive explanation.'}, {'role': 'user', 'content': 'Explain manufacturing equipment maintenance in detail. Discuss preventive maintenance, inspections, lubrication, condition monitoring, maintenance records, safety procedures, common causes of equipment failure, and the importance of reducing unexpected downtime.'}], 'temperature': 0.1, 'max_tokens': 50}
+2026-08-24 13:24:04,969 - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/openai/chat/completions "HTTP/1.1 200 OK"
+2026-08-24 13:24:04,974 - INFO - MAX TOKENS = 50 RESPONSE: Manufacturing equipment maintenance is the systematic process of ensuring that machinery operates at peak efficiency, remains safe for operators, and achieves its intended lifespan. In a modern industrial environment, maintenance is no longer just "fixing things when they break"; it
+2026-08-24 13:24:04,974 - INFO - MAX TOKENS = 50 USAGE: CompletionUsage(completion_tokens=46, prompt_tokens=51, total_tokens=97, completion_tokens_details=None, prompt_tokens_details=None)
+2026-08-24 13:24:04,975 - INFO - REQUEST PARAMETERS: {'model': 'gemini-3.1-flash-lite', 'messages': [{'role': 'system', 'content': 'You are a concise maintenance assistant.'}, {'role': 'user', 'content': 'Write three short maintenance tips. After the third tip, write END.'}], 'temperature': 0.1, 'max_tokens': 100, 'stop': ['END']}
+2026-08-24 13:24:06,300 - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/openai/chat/completions "HTTP/1.1 200 OK"
+2026-08-24 13:24:06,304 - INFO - STOP SEQUENCE = END RESPONSE: 1. Inspect and replace HVAC filters every three months to ensure efficient airflow.
+2. Tighten loose cabinet handles and door hinges to prevent structural wear.
+3. Clear debris from gutters twice a year to prevent water damage to your roof.
+
+
+2026-08-24 13:24:06,304 - INFO - STOP SEQUENCE = END USAGE: CompletionUsage(completion_tokens=50, prompt_tokens=23, total_tokens=73, completion_tokens_details=None, prompt_tokens_details=None)
+
+
+######################################################################
+TASK 1 - TEMPERATURE EXPERIMENT
+######################################################################
+
+Same prompt:
+Explain why regular maintenance is important for manufacturing equipment.
+
+======================================================================
+TEMPERATURE = 0.0
+======================================================================
+Response:
+Regular maintenance is critical for manufacturing equipment for the following reasons:
+
+*   **Prevents Unplanned Downtime:** Routine inspections identify potential failures before they cause a breakdown, ensuring production schedules remain on track.
+*   **Extends Equipment Lifespan:** Proper lubrication, cleaning, and part replacement reduce wear and tear, allowing machinery to operate effectively for longer.
+*   **Ensures Safety:** Regular checks identify hazards (such as frayed wires or faulty guards), reducing the risk of workplace accidents and ensuring compliance with safety regulations.
+*   **Optimizes Efficiency:** Well-maintained machines operate at peak performance, consuming less energy and producing higher-quality output with fewer defects.
+*   **Reduces Long-Term Costs:** Proactive maintenance is significantly cheaper than emergency repairs or the premature replacement of expensive capital equipment.
+
+======================================================================
+TEMPERATURE = 1.0
+======================================================================
+Response:
+Regular maintenance is critical for manufacturing for four primary reasons:
+
+*   **Minimized Downtime:** Scheduled maintenance prevents unexpected mechanical failures, ensuring production lines remain operational and meeting delivery deadlines.
+*   **Extended Asset Life:** Proper lubrication, calibration, and part replacement reduce wear and tear, significantly extending the operational lifespan of expensive machinery.
+*   **Cost Efficiency:** Routine upkeep is significantly cheaper than emergency repairs. It also improves energy efficiency, reducing long-term utility costs.
+*   **Safety and Compliance:** Regular inspections identify potential hazards, reducing the risk of workplace accidents and ensuring the facility meets legal health and safety standards.
+
+
+######################################################################
+TASK 2 - MAX TOKENS EXPERIMENT
+######################################################################
+
+======================================================================
+MAX TOKENS = 50
+======================================================================
+Response:
+Manufacturing equipment maintenance is the systematic process of ensuring that machinery operates at peak efficiency, remains safe for operators, and achieves its intended lifespan. In a modern industrial environment, maintenance is no longer just "fixing things when they break"; it
+
+
+######################################################################
+TASK 3 - STOP PARAMETER EXPERIMENT
+######################################################################
+
+======================================================================
+STOP SEQUENCE = END
+======================================================================
+Response:
+1. Inspect and replace HVAC filters every three months to ensure efficient airflow.
+2. Tighten loose cabinet handles and door hinges to prevent structural wear.
+3. Clear debris from gutters twice a year to prevent water damage to your roof.
+
+
+
+
+######################################################################
+TASK 4 - RECOMMENDED SETTINGS
+######################################################################
+
+Recommended settings for a grounded, factual task:
+
+temperature = 0.1
+
+A low temperature keeps responses focused, consistent,
+and less likely to introduce unnecessary variation.
+
+max_tokens = 300
+
+A reasonable output limit prevents unnecessarily long
+responses and helps control output token usage and cost.
+
+stop = optional
+
+A stop sequence can be useful when the response should
+end at a specific boundary.
+
+top_p = default
+
+Temperature and top_p are alternative sampling controls,
+so they generally should not both be tuned at the same time.
+
