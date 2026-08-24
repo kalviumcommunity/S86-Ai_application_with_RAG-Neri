@@ -1,5 +1,7 @@
 import os
 import logging
+import sys
+from pathlib import Path
 
 from dotenv import load_dotenv
 from openai import (
@@ -8,6 +10,13 @@ from openai import (
     RateLimitError,
     APIStatusError
 )
+
+
+ROOT_DIR = Path(__file__).resolve().parents[1]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
+from prompts.answer import SYSTEM_TEMPLATE, ANSWER_TEMPLATE_V1, render
 
 
 # --------------------------------------------------
@@ -63,16 +72,21 @@ client = OpenAI(
 messages = [
     {
         "role": "system",
-        "content": (
-            "You are a concise assistant. "
-            "Answer clearly and accurately."
-        )
+        "content": SYSTEM_TEMPLATE
     },
     {
         "role": "user",
-        "content": (
-            "Explain why regular maintenance is important "
-            "for manufacturing equipment."
+        "content": render(
+            ANSWER_TEMPLATE_V1,
+            context=(
+                "Maintenance handbook excerpt: regular preventive "
+                "maintenance reduces downtime, improves reliability, "
+                "and helps detect early wear."
+            ),
+            question=(
+                "Explain why regular maintenance is important "
+                "for manufacturing equipment."
+            )
         )
     }
 ]
@@ -203,19 +217,24 @@ print("#" * 70)
 long_messages = [
     {
         "role": "system",
-        "content": (
-            "You are a detailed assistant. "
-            "Provide a comprehensive explanation."
-        )
+        "content": SYSTEM_TEMPLATE
     },
     {
         "role": "user",
-        "content": (
-            "Explain manufacturing equipment maintenance in detail. "
-            "Discuss preventive maintenance, inspections, lubrication, "
-            "condition monitoring, maintenance records, safety procedures, "
-            "common causes of equipment failure, and the importance of "
-            "reducing unexpected downtime."
+        "content": render(
+            ANSWER_TEMPLATE_V1,
+            context=(
+                "Operations playbook excerpt: preventive maintenance, "
+                "inspections, lubrication, condition monitoring, and safety "
+                "checklists help avoid failure and improve uptime."
+            ),
+            question=(
+                "Explain manufacturing equipment maintenance in detail. "
+                "Discuss preventive maintenance, inspections, lubrication, "
+                "condition monitoring, maintenance records, safety procedures, "
+                "common causes of equipment failure, and the importance of "
+                "reducing unexpected downtime."
+            )
         )
     }
 ]
@@ -249,15 +268,21 @@ print("#" * 70)
 stop_messages = [
     {
         "role": "system",
-        "content": (
-            "You are a concise maintenance assistant."
-        )
+        "content": SYSTEM_TEMPLATE
     },
     {
         "role": "user",
-        "content": (
-            "Write three short maintenance tips. "
-            "After the third tip, write END."
+        "content": render(
+            ANSWER_TEMPLATE_V1,
+            context=(
+                "Safety bulletin excerpt: lockout-tagout must be verified, "
+                "lubrication intervals must be followed, and anomalies must "
+                "be documented."
+            ),
+            question=(
+                "Write three short maintenance tips. "
+                "After the third tip, write END."
+            )
         )
     }
 ]

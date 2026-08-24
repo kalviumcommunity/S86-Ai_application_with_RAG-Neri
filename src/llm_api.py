@@ -1,6 +1,8 @@
 import os
 import logging
 import json
+import sys
+from pathlib import Path
 
 from dotenv import load_dotenv
 from openai import (
@@ -9,6 +11,13 @@ from openai import (
     RateLimitError,
     APIStatusError
 )
+
+
+ROOT_DIR = Path(__file__).resolve().parents[1]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
+from prompts.answer import SYSTEM_TEMPLATE, ANSWER_TEMPLATE_V2, render
 
 
 # Load environment variables from .env
@@ -47,18 +56,25 @@ client = OpenAI(
 
 
 # Messages sent to the language model
+context_text = (
+    "Policy excerpt: Customers can request a refund within 30 days of "
+    "purchase with proof of payment."
+)
+
+question_text = "What is the refund window?"
+
 messages = [
     {
         "role": "system",
-        "content": (
-            "Reply with ONLY a JSON object: "
-            '{"answer": string, "source": string}. '
-            "No extra text."
-        )
+        "content": SYSTEM_TEMPLATE
     },
     {
         "role": "user",
-        "content": "What is the refund window?"
+        "content": render(
+            ANSWER_TEMPLATE_V2,
+            context=context_text,
+            question=question_text
+        )
     }
 ]
 
