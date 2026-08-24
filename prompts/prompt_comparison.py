@@ -9,6 +9,8 @@ from openai import (
     APIStatusError
 )
 
+from answer import SYSTEM_TEMPLATE, ANSWER_TEMPLATE_V1, render
+
 
 # --------------------------------------------------
 # Load environment variables
@@ -61,38 +63,29 @@ client = OpenAI(
 
 
 # --------------------------------------------------
-# Task 2:
-# System message with role, scope, constraints,
-# and fallback
-# --------------------------------------------------
-
-system_prompt = """
-You are a concise and factual assistant.
-
-Your role is to answer staff questions clearly and accurately.
-
-Only provide information that you can support from the information
-available in the conversation.
-
-Do not invent facts or make unsupported claims.
-
-Keep your responses concise and professional.
-
-If you do not have enough information to answer reliably, say:
-"I don't know based on the available information."
-"""
-
-
-# --------------------------------------------------
 # Task 3:
 # Two prompt variations for the same task
 # --------------------------------------------------
 
-prompt_1 = "Explain our refund policy."
+context_text = (
+    "Policy context:\n"
+    "- Refund requests are accepted within 30 days of purchase.\n"
+    "- Proof of payment is required.\n"
+    "- Shipping charges are non-refundable."
+)
 
-prompt_2 = (
-    "In one sentence, state the refund window in days. "
-    "If the refund window is not provided, say that you don't know."
+prompt_1 = render(
+    ANSWER_TEMPLATE_V1,
+    context=context_text,
+    question="Explain our refund policy."
+)
+
+prompt_2 = render(
+    ANSWER_TEMPLATE_V1,
+    context=context_text,
+    question=(
+        "In one sentence, state the refund window in days."
+    )
 )
 
 
@@ -104,7 +97,7 @@ def get_response(user_prompt):
     messages = [
         {
             "role": "system",
-            "content": system_prompt
+            "content": SYSTEM_TEMPLATE
         },
         {
             "role": "user",
@@ -146,7 +139,7 @@ try:
 
     print("\nPROMPT 1 - VAGUE")
     print("-" * 60)
-    print(prompt_1)
+    print("Question: Explain our refund policy.")
 
     response_1 = get_response(prompt_1)
 
@@ -161,7 +154,7 @@ try:
 
     print("\nPROMPT 2 - CLEAR AND CONSTRAINED")
     print("-" * 60)
-    print(prompt_2)
+    print("Question: In one sentence, state the refund window in days.")
 
     response_2 = get_response(prompt_2)
 
