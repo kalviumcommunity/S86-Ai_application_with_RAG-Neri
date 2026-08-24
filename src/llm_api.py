@@ -1,5 +1,6 @@
 import os
 import logging
+import json
 
 from dotenv import load_dotenv
 from openai import (
@@ -49,38 +50,117 @@ client = OpenAI(
 messages = [
     {
         "role": "system",
-        "content": "You are a concise assistant."
+        "content": (
+            "Reply with ONLY a JSON object: "
+            '{"answer": string, "source": string}. '
+            "No extra text."
+        )
     },
     {
         "role": "user",
-        "content": "Explain what machine maintenance means in one sentence."
+        "content": "What is the refund window?"
     }
 ]
 
 
-try:
-    # Log the outgoing request
-    logging.info("REQUEST: %s", messages)
+def parse_json_response(raw, required=("answer", "source")):
+    if raw is None:
+        return None, "empty response"
 
-    # Send chat completion request
-    response = client.chat.completions.create(
-        model=model,
-        messages=messages
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError:
+        return None, "malformed JSON"
+
+    if not isinstance(data, dict):
+        return None, "response is not a JSON object"
+
+    missing = [key for key in required if key not in data]
+    if missing:
+        return None, f"missing fields: {missing}"
+
+    invalid = [
+        key for key in required
+        if not isinstance(data[key], str) or not data[key].strip()
+    ]
+    if invalid:
+        return None, f"invalid field values: {invalid}"
+
+    return data, None
+
+
+def request_structured_output(base_messages):
+    last_error = "unknown error"
+    last_raw = ""
+
+    for attempt in range(2):
+        request_messages = list(base_messages)
+
+        if attempt == 1:
+            request_messages.append({
+                "role": "user",
+                "content": (
+                    "Your previous reply was invalid. "
+                    "Return valid JSON only with keys answer and source."
+                )
+            })
+
+        request_parameters = {
+            "model": model,
+            "messages": request_messages,
+            "temperature": 0,
+            "response_format": {"type": "json_object"}
+        }
+
+        logging.info(
+            "REQUEST (attempt %s): %s",
+            attempt + 1,
+            request_messages
+        )
+
+        response = client.chat.completions.create(
+            **request_parameters
+        )
+
+        raw = response.choices[0].message.content
+        last_raw = raw or ""
+
+        parsed, parse_error = parse_json_response(last_raw)
+        if parsed:
+            return parsed, response, last_raw, None
+
+        last_error = parse_error
+        logging.warning(
+            "PARSE ERROR (attempt %s): %s | RAW: %s",
+            attempt + 1,
+            parse_error,
+            last_raw
+        )
+
+    return None, None, last_raw, last_error
+
+
+try:
+    structured_data, response, raw, parse_error = request_structured_output(
+        messages
     )
 
-    # Extract generated response
-    answer = response.choices[0].message.content
+    if structured_data is None:
+        print("\nNERI Structured Response:")
+        print(f"recover: {parse_error}")
+        print("Raw model output:")
+        print(raw)
+    else:
+        # Log the validated JSON payload.
+        logging.info("RESPONSE JSON: %s", structured_data)
 
-    # Log the response
-    logging.info("RESPONSE: %s", answer)
+        # Log token usage if available.
+        if response and response.usage:
+            logging.info("USAGE: %s", response.usage)
 
-    # Log token usage if available
-    if response.usage:
-        logging.info("USAGE: %s", response.usage)
-
-    # Print the generated answer
-    print("\nNERI Response:")
-    print(answer)
+        print("\nNERI Structured Response:")
+        print(f"Answer: {structured_data['answer']}")
+        print(f"Source: {structured_data['source']}")
 
 
 except AuthenticationError:
