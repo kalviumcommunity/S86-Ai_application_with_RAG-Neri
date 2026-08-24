@@ -22,6 +22,7 @@ outputs/*
 !outputs/prompt_comparison.log
 !outputs/api_call.log
 !outputs/history_management.log
+!outputs/parameter_experiments.log
 
 # Node dependencies
 node_modules/
