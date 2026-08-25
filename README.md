@@ -149,7 +149,7 @@ Source References
 
 ## Document Chunking
 
-The chunking comparison is implemented in [src/chunking.py](src/chunking.py). It cleans the corpus first, then compares:
+The chunking comparison and metadata tagging are implemented in [src/chunking.py](src/chunking.py). It cleans the corpus first, then compares:
 
 - **Fixed-size with overlap:** 500-character windows with 50 characters of overlap. This gives predictable embedding sizes and preserves text near window boundaries.
 - **Paragraph:** one non-empty paragraph per chunk. This respects the meaning and structure of the manuals, logs, and safety procedure, although chunk sizes vary.
@@ -160,7 +160,7 @@ Run the comparison with:
 python src/chunking.py
 ```
 
-The command reports the chunk count and average character size for each strategy and writes sample chunks with source paths to [outputs/chunking_comparison.md](outputs/chunking_comparison.md). Paragraph chunking is the chosen strategy for this corpus because the source documents use short, structured sections where keeping a complete procedure or safety instruction together is more valuable than uniform chunk sizes. Fixed-size chunks remain a useful baseline for dense text and can be tuned later with retrieval tests.
+Every chunk keeps its text beside the same metadata fields: `source`, `source_path`, `strategy`, `chunk_index`, `char_start`, `char_end`, and `section`. The report includes sample text plus metadata and demonstrates tracing a retrieved chunk back to its source file and exact character range. Paragraph chunking is the chosen strategy for this corpus because the source documents use short, structured sections where keeping a complete procedure or safety instruction together is more valuable than uniform chunk sizes. Fixed-size chunks remain a useful baseline for dense text and can be tuned later with retrieval tests.
 
 Chunk sizes must also fit the model's context budget: retrieved chunks, the prompt, and the expected answer all share the context window. Increasing chunk size or top-k can improve context but can also exceed that budget and increase embedding and generation cost.
 
