@@ -1,0 +1,33 @@
+ACME MANUFACTURING - EQUIPMENT MANUAL
+Page 1 of 3
+
+Machine     Maintenance     Manual
+
+
+The motor should be inspected every 30 days.
+
+Technicians must check the motor housing for visible damage.
+
+The recommended operating temperature is 80°C.
+
+
+
+Page 2 of 3
+
+ACME MANUFACTURING - EQUIPMENT MANUAL
+
+Before performing maintenance, disconnect the machine from
+the main power supply.
+
+Inspect the lubrication system and check for leaks.
+
+
+
+Page 3 of 3
+
+ACME MANUFACTURING - EQUIPMENT MANUAL
+
+Record all maintenance activities in the maintenance log.
+
+If unusual vibration is detected, stop the machine and
+follow the approved inspection procedure.

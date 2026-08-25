@@ -12,17 +12,11 @@ __pycache__/
 data/*
 
 # Keep the data directory structure
+data/*
 !data/.gitkeep
-
-# Generated outputs
-outputs/*
-
-# Keep the outputs directory structure
-!outputs/.gitkeep
-!outputs/prompt_comparison.log
-!outputs/api_call.log
-!outputs/history_management.log
-!outputs/parameter_experiments.log
+!data/machine_manual.txt
+!data/maintenance_log.txt
+!data/safety_procedure.md
 
 # Node dependencies
 node_modules/
