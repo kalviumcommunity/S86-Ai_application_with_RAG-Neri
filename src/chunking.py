@@ -1,6 +1,8 @@
 """Compare chunking strategies for the cleaned NERI document corpus."""
 
 import argparse
+import json
+import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -24,6 +26,35 @@ class Chunk:
     strategy: str
     index: int
     text: str
+    char_start: int
+    char_end: int
+    section: str
+
+    @property
+    def metadata(self) -> dict[str, str | int]:
+        return {
+            "source": self.source,
+            "source_path": self.source_path,
+            "strategy": self.strategy,
+            "chunk_index": self.index,
+            "char_start": self.char_start,
+            "char_end": self.char_end,
+            "section": self.section,
+        }
+
+
+def section_at(text: str, position: int) -> str:
+    """Return the nearest Markdown heading, or a stable fallback section."""
+    section = "Document body"
+    offset = 0
+    for line in text.splitlines(keepends=True):
+        if offset > position:
+            break
+        heading = re.match(r"^#{1,6}\s+(.+?)\s*$", line)
+        if heading:
+            section = heading.group(1)
+        offset += len(line)
+    return section
 
 
 def fixed_size_chunks(
@@ -40,19 +71,46 @@ def fixed_size_chunks(
     step = size - overlap
     chunks = []
     for index, start in enumerate(range(0, len(document.text), step)):
-        text = document.text[start:start + size].strip()
+        raw_text = document.text[start:start + size]
+        text = raw_text.strip()
         if text:
-            chunks.append(Chunk(document.source, document.path, "fixed", index, text))
+            leading_whitespace = len(raw_text) - len(raw_text.lstrip())
+            char_start = start + leading_whitespace
+            chunks.append(Chunk(
+                document.source,
+                document.path,
+                "fixed",
+                index,
+                text,
+                char_start,
+                char_start + len(text),
+                section_at(document.text, char_start),
+            ))
     return chunks
 
 
 def paragraph_chunks(document: DocumentRecord) -> list[Chunk]:
     """Keep each non-empty paragraph as one meaning-preserving chunk."""
-    paragraphs = [paragraph.strip() for paragraph in document.text.split("\n\n") if paragraph.strip()]
-    return [
-        Chunk(document.source, document.path, "paragraph", index, text)
-        for index, text in enumerate(paragraphs)
-    ]
+    chunks = []
+    search_from = 0
+    for index, paragraph in enumerate(document.text.split("\n\n")):
+        text = paragraph.strip()
+        if not text:
+            search_from += len(paragraph) + 2
+            continue
+        char_start = document.text.index(text, search_from)
+        chunks.append(Chunk(
+            document.source,
+            document.path,
+            "paragraph",
+            len(chunks),
+            text,
+            char_start,
+            char_start + len(text),
+            section_at(document.text, char_start),
+        ))
+        search_from = char_start + len(text)
+    return chunks
 
 
 def chunks_for_document(
@@ -68,6 +126,19 @@ def chunks_for_document(
 
 def average_size(chunks: list[Chunk]) -> float:
     return sum(len(chunk.text) for chunk in chunks) / len(chunks) if chunks else 0.0
+
+
+def trace_chunk(
+    chunks: list[Chunk],
+    source: str,
+    strategy: str,
+    index: int,
+) -> Chunk:
+    """Find a retrieved chunk using its source metadata."""
+    for chunk in chunks:
+        if chunk.source == source and chunk.strategy == strategy and chunk.index == index:
+            return chunk
+    raise LookupError(f"Chunk not found: {source}, {strategy}, {index}")
 
 
 def build_report(
@@ -112,13 +183,25 @@ def build_report(
         for chunk in all_chunks[strategy][:samples_per_strategy]:
             lines.extend([
                 f"#### {chunk.source} - chunk {chunk.index}",
-                f"Source path: `{chunk.source_path}`",
+                f"Metadata: `{json.dumps(chunk.metadata, sort_keys=True)}`",
                 "",
                 "```text",
                 chunk.text,
                 "```",
                 "",
             ])
+
+    example = trace_chunk(all_chunks["paragraph"], documents[0].source, "paragraph", 0)
+    lines.extend([
+        "## Traceability Example",
+        "",
+        "A retrieved result can use its metadata to identify the exact source and character range:",
+        "",
+        f"- Metadata: `{json.dumps(example.metadata, sort_keys=True)}`",
+        f"- Trace result: `{example.source_path}` -> characters "
+        f"`{example.char_start}:{example.char_end}` in section **{example.section}**",
+        "",
+    ])
     return "\n".join(lines)
 
 

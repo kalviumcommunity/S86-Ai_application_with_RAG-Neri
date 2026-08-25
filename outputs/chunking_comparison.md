@@ -25,7 +25,7 @@ Parameters: fixed-size chunks use 500 characters with 50 characters of overlap.
 ### Fixed strategy
 
 #### machine_manual.txt - chunk 0
-Source path: `machine_manual.txt`
+Metadata: `{"char_end": 500, "char_start": 0, "chunk_index": 0, "section": "Document body", "source": "machine_manual.txt", "source_path": "machine_manual.txt", "strategy": "fixed"}`
 
 ```text
 ACME MANUFACTURING - EQUIPMENT MANUAL
@@ -52,11 +52,35 @@ Record all maintenance activities in the maintenance log.
 If u
 ```
 
+#### machine_manual.txt - chunk 1
+Metadata: `{"char_end": 592, "char_start": 450, "chunk_index": 1, "section": "Document body", "source": "machine_manual.txt", "source_path": "machine_manual.txt", "strategy": "fixed"}`
+
+```text
+intenance activities in the maintenance log.
+
+If unusual vibration is detected, stop the machine and
+follow the approved inspection procedure.
+```
+
 ### Paragraph strategy
 
 #### machine_manual.txt - chunk 0
-Source path: `machine_manual.txt`
+Metadata: `{"char_end": 37, "char_start": 0, "chunk_index": 0, "section": "Document body", "source": "machine_manual.txt", "source_path": "machine_manual.txt", "strategy": "paragraph"}`
 
 ```text
 ACME MANUFACTURING - EQUIPMENT MANUAL
 ```
+
+#### machine_manual.txt - chunk 1
+Metadata: `{"char_end": 65, "char_start": 39, "chunk_index": 1, "section": "Document body", "source": "machine_manual.txt", "source_path": "machine_manual.txt", "strategy": "paragraph"}`
+
+```text
+Machine Maintenance Manual
+```
+
+## Traceability Example
+
+A retrieved result can use its metadata to identify the exact source and character range:
+
+- Metadata: `{"char_end": 37, "char_start": 0, "chunk_index": 0, "section": "Document body", "source": "machine_manual.txt", "source_path": "machine_manual.txt", "strategy": "paragraph"}`
+- Trace result: `machine_manual.txt` -> characters `0:37` in section **Document body**
