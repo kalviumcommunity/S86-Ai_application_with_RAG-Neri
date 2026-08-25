@@ -7,6 +7,8 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
+import tiktoken
+
 ROOT_DIR = Path(__file__).resolve().parents[1]
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
@@ -17,6 +19,9 @@ try:
 except ImportError:
     from document_intake import DocumentRecord, ingest_documents
     from text_cleaning import clean_documents
+
+
+TOKENIZER = tiktoken.get_encoding("cl100k_base")
 
 
 @dataclass(frozen=True)
@@ -113,6 +118,67 @@ def paragraph_chunks(document: DocumentRecord) -> list[Chunk]:
     return chunks
 
 
+def token_chunks(
+    document: DocumentRecord,
+    size: int = 64,
+    overlap: int = 16,
+) -> list[Chunk]:
+    """Split a document by tokenizer tokens, repeating overlap tokens."""
+    if size <= 0:
+        raise ValueError("size must be greater than zero")
+    if overlap < 0 or overlap >= size:
+        raise ValueError("overlap must be non-negative and smaller than size")
+
+    tokens = TOKENIZER.encode(document.text)
+    step = size - overlap
+    chunks = []
+    for index, start in enumerate(range(0, len(tokens), step)):
+        end = min(start + size, len(tokens))
+        text = TOKENIZER.decode(tokens[start:end]).strip()
+        if not text:
+            continue
+        approximate_start = document.text.find(text, 0 if not chunks else chunks[-1].char_start)
+        char_start = approximate_start if approximate_start >= 0 else 0
+        chunks.append(Chunk(
+            document.source,
+            document.path,
+            "token",
+            index,
+            text,
+            char_start,
+            char_start + len(text),
+            section_at(document.text, char_start),
+        ))
+        if end == len(tokens):
+            break
+    return chunks
+
+
+def token_count(text: str) -> int:
+    return len(TOKENIZER.encode(text))
+
+
+def boundary_overlap_demo() -> dict[str, str | int]:
+    """Create a deterministic example where overlap preserves one complete idea."""
+    prefix = "Maintenance note: "
+    idea = "the motor must be isolated before inspection begins"
+    suffix = ". Record the result in the maintenance log."
+    text = prefix + idea + suffix
+    tokens = TOKENIZER.encode(text)
+    idea_start = len(TOKENIZER.encode(prefix))
+    idea_tokens = len(TOKENIZER.encode(idea))
+    boundary = idea_start + 3
+    overlap = idea_tokens - 3
+    without_overlap = TOKENIZER.decode(tokens[boundary:boundary + idea_tokens])
+    with_overlap = TOKENIZER.decode(tokens[boundary - overlap:boundary + idea_tokens])
+    return {
+        "idea": idea,
+        "without_overlap": without_overlap,
+        "with_overlap": with_overlap,
+        "overlap_tokens": overlap,
+    }
+
+
 def chunks_for_document(
     document: DocumentRecord,
     size: int = 500,
@@ -146,12 +212,15 @@ def build_report(
     size: int,
     overlap: int,
     samples_per_strategy: int,
+    token_size: int = 64,
+    token_overlap: int = 16,
 ) -> str:
-    all_chunks = {strategy: [] for strategy in ("fixed", "paragraph")}
+    all_chunks = {strategy: [] for strategy in ("fixed", "paragraph", "token")}
     per_document: dict[str, dict[str, list[Chunk]]] = {}
 
     for document in documents:
         document_chunks = chunks_for_document(document, size, overlap)
+        document_chunks["token"] = token_chunks(document, token_size, token_overlap)
         per_document[document.source] = document_chunks
         for strategy, chunks in document_chunks.items():
             all_chunks[strategy].extend(chunks)
@@ -170,6 +239,13 @@ def build_report(
     for strategy in ("fixed", "paragraph"):
         chunks = all_chunks[strategy]
         lines.append(f"| {strategy} | {len(chunks)} | {average_size(chunks):.1f} |")
+    token_results = all_chunks["token"]
+    lines.append(f"| token ({token_size}/{token_overlap}) | {len(token_results)} | {average_size(token_results):.1f} |")
+
+    lines.extend(["", "## Token Budget", "", f"Token strategy: `{token_size}` tokens per chunk with `{token_overlap}` repeated tokens of overlap, using `cl100k_base`.", "", "| Source | Chunks | Average tokens |", "| --- | ---: | ---: |"])
+    for source, strategies in per_document.items():
+        chunks = strategies["token"]
+        lines.append(f"| {source} | {len(chunks)} | {sum(token_count(chunk.text) for chunk in chunks) / len(chunks):.1f} |")
 
     lines.extend(["", "## Per-Document Statistics", "", "| Source | Strategy | Chunks | Average characters |", "| --- | --- | ---: | ---: |"])
     for source, strategies in per_document.items():
@@ -178,7 +254,7 @@ def build_report(
             lines.append(f"| {source} | {strategy} | {len(chunks)} | {average_size(chunks):.1f} |")
 
     lines.extend(["", "## Sample Chunks", ""])
-    for strategy in ("fixed", "paragraph"):
+    for strategy in ("fixed", "paragraph", "token"):
         lines.extend([f"### {strategy.title()} strategy", ""])
         for chunk in all_chunks[strategy][:samples_per_strategy]:
             lines.extend([
@@ -202,6 +278,21 @@ def build_report(
         f"`{example.char_start}:{example.char_end}` in section **{example.section}**",
         "",
     ])
+
+    demo = boundary_overlap_demo()
+    lines.extend([
+        "## Boundary Overlap Demonstration",
+        "",
+        f"Target idea: **{demo['idea']}**",
+        "",
+        "Without overlap, the boundary splits the idea:",
+        f"```text\n{demo['without_overlap']}\n```",
+        f"With `{demo['overlap_tokens']}` overlap tokens, the next chunk contains the complete idea:",
+        f"```text\n{demo['with_overlap']}\n```",
+        "",
+        "The overlap preserves retrieval context when an important instruction falls across two token windows.",
+        "",
+    ])
     return "\n".join(lines)
 
 
@@ -212,6 +303,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--size", type=int, default=500)
     parser.add_argument("--overlap", type=int, default=50)
     parser.add_argument("--samples", type=int, default=2)
+    parser.add_argument("--token-size", type=int, default=64)
+    parser.add_argument("--token-overlap", type=int, default=16)
     return parser.parse_args()
 
 
@@ -224,7 +317,14 @@ def main() -> None:
     if args.samples < 0:
         raise SystemExit("--samples must be non-negative")
 
-    report = build_report(cleaned, args.size, args.overlap, args.samples)
+    report = build_report(
+        cleaned,
+        args.size,
+        args.overlap,
+        args.samples,
+        args.token_size,
+        args.token_overlap,
+    )
     output = Path(args.output).resolve()
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(report, encoding="utf-8")

@@ -164,6 +164,12 @@ Every chunk keeps its text beside the same metadata fields: `source`, `source_pa
 
 Chunk sizes must also fit the model's context budget: retrieved chunks, the prompt, and the expected answer all share the context window. Increasing chunk size or top-k can improve context but can also exceed that budget and increase embedding and generation cost.
 
+## Token-Aware Chunk Sizing
+
+The same module also provides `token_chunks`, which uses the `cl100k_base` tokenizer rather than character length. The default is 64 tokens per chunk with 16 repeated tokens of overlap. This conservative size leaves room for the system prompt, the user question, and multiple retrieved chunks in a typical 4K+ token context window, while the 25% overlap preserves instructions that cross a boundary. The generated report includes a controlled boundary example comparing the result with and without overlap.
+
+Run `python src/chunking.py` to regenerate the token counts and boundary demonstration. The size and overlap can be tested with `--token-size` and `--token-overlap`; smaller chunks improve precision and cost, while larger chunks provide more context but consume more of the model budget.
+
 ---
 
 ## Safety First
