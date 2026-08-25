@@ -4,7 +4,10 @@ import unicodedata
 from dataclasses import replace
 from pathlib import Path
 
-from document_intake import DocumentRecord, ingest_documents
+try:
+    from .document_intake import DocumentRecord, ingest_documents
+except ImportError:
+    from document_intake import DocumentRecord, ingest_documents
 
 
 # --------------------------------------------------
