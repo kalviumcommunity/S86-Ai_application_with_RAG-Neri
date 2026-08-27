@@ -15,6 +15,15 @@ NERI uses Retrieval-Augmented Generation (RAG) to retrieve relevant information 
 When a machine fails, technicians often need to search through multiple documents to find information about:
 
 - Possible causes of the failure
+## Full Ingestion Validation
+
+Run the complete load, clean, token-chunk, and metadata-tagging pipeline with:
+
+```text
+python src/ingestion.py
+```
+
+The command reports discovered files, successfully ingested documents, chunks, and per-file failures. It also asserts that every file is accounted for by either a successful document or a recorded failure, then prints one chunk with its metadata. Adjust token sizing with `--token-size` and `--token-overlap`.
 - Troubleshooting procedures
 - Safety precautions
 - Previous maintenance incidents
