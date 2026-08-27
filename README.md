@@ -182,13 +182,13 @@ The command reports discovered files, successfully ingested documents, chunks, a
 
 ## Embeddings
 
-Generate vectors for sample texts and compare their meaning with:
+Generate vectors for the prepared ingestion chunks with:
 
 ```text
 python src/embeddings.py
 ```
 
-Set `OPENAI_BASE_URL`, `OPENAI_API_KEY`, and `EMBED_MODEL` in `.env` first. The script reports the embedding dimension, the first eight values, and cosine similarity for a related password/login pair versus an unrelated cafeteria pair.
+Set `OPENAI_BASE_URL`, `OPENAI_API_KEY`, and `EMBEDDING_MODEL` in `.env` first. `EMBED_MODEL` is also supported for compatibility with the existing project configuration. The script batches requests, preserves each chunk's text and metadata beside its vector, and reports the model, record count, vector length, and sample values. Use `--batch-size` to control request size.
 
 ---
 
