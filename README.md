@@ -15,15 +15,6 @@ NERI uses Retrieval-Augmented Generation (RAG) to retrieve relevant information 
 When a machine fails, technicians often need to search through multiple documents to find information about:
 
 - Possible causes of the failure
-## Full Ingestion Validation
-
-Run the complete load, clean, token-chunk, and metadata-tagging pipeline with:
-
-```text
-python src/ingestion.py
-```
-
-The command reports discovered files, successfully ingested documents, chunks, and per-file failures. It also asserts that every file is accounted for by either a successful document or a recorded failure, then prints one chunk with its metadata. Adjust token sizing with `--token-size` and `--token-overlap`.
 - Troubleshooting procedures
 - Safety precautions
 - Previous maintenance incidents
@@ -178,6 +169,26 @@ Chunk sizes must also fit the model's context budget: retrieved chunks, the prom
 The same module also provides `token_chunks`, which uses the `cl100k_base` tokenizer rather than character length. The default is 64 tokens per chunk with 16 repeated tokens of overlap. This conservative size leaves room for the system prompt, the user question, and multiple retrieved chunks in a typical 4K+ token context window, while the 25% overlap preserves instructions that cross a boundary. The generated report includes a controlled boundary example comparing the result with and without overlap.
 
 Run `python src/chunking.py` to regenerate the token counts and boundary demonstration. The size and overlap can be tested with `--token-size` and `--token-overlap`; smaller chunks improve precision and cost, while larger chunks provide more context but consume more of the model budget.
+
+## Full Ingestion Validation
+
+Run the complete load, clean, token-chunk, and metadata-tagging pipeline with:
+
+```text
+python src/ingestion.py
+```
+
+The command reports discovered files, successfully ingested documents, chunks, and per-file failures. It also asserts that every file is accounted for by either a successful document or a recorded failure, then prints one chunk with its metadata. Adjust token sizing with `--token-size` and `--token-overlap`.
+
+## Embeddings
+
+Generate vectors for sample texts and compare their meaning with:
+
+```text
+python src/embeddings.py
+```
+
+Set `OPENAI_BASE_URL`, `OPENAI_API_KEY`, and `EMBED_MODEL` in `.env` first. The script reports the embedding dimension, the first eight values, and cosine similarity for a related password/login pair versus an unrelated cafeteria pair.
 
 ---
 
