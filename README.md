@@ -200,6 +200,16 @@ python src/embeddings.py --query "What should I do before inspecting the machine
 
 The command uses cosine similarity, prints ranked source text and metadata, and writes the results to `outputs/similarity_ranking.md`. A high score means that a chunk is likely relevant in embedding space; it does not prove that the information is correct, current, complete, or safe to use without validation. The reusable `rank_chunks` function sorts from highest similarity to lowest similarity.
 
+### Retrieval Sanity Checks
+
+Run known relevance checks before trusting retrieval results:
+
+```text
+python src/sanity_test.py
+```
+
+The offline checker uses the production `rank_chunks` function with labeled fixture vectors. It verifies that electrical-safety, vibration, and PPE queries rank their known relevant chunks first, then records a deliberately broad routine-maintenance query as a surprise when it favors the PPE section. The report is written to `outputs/sanity_report.md`; the surprise demonstrates why broad queries need top-k review, metadata filters, and additional evaluation cases.
+
 ---
 
 ## Safety First
