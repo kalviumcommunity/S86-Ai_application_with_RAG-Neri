@@ -32,6 +32,23 @@ class EmbeddedChunk:
     embedding: list[float]
 
 
+def rank_chunks(
+    query_embedding: list[float],
+    records: list[EmbeddedChunk],
+    top_k: int | None = None,
+) -> list[tuple[float, EmbeddedChunk]]:
+    """Return chunks ordered from most to least similar to a query vector."""
+    if top_k is not None and top_k <= 0:
+        raise ValueError("top_k must be greater than zero")
+
+    ranked = sorted(
+        ((cosine(query_embedding, record.embedding), record) for record in records),
+        key=lambda result: result[0],
+        reverse=True,
+    )
+    return ranked[:top_k] if top_k is not None else ranked
+
+
 def embed(
     texts: list[str],
     client=None,
@@ -100,6 +117,17 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--data-dir", default="data")
     parser.add_argument("--batch-size", type=int, default=100)
     parser.add_argument("--samples", type=int, default=1)
+    parser.add_argument(
+        "--query",
+        default="What should I do before inspecting the machine?",
+        help="Question to compare against the embedded chunks",
+    )
+    parser.add_argument("--top-k", type=int, default=5)
+    parser.add_argument(
+        "--output",
+        default="outputs/similarity_ranking.md",
+        help="Markdown file for the ranked sample results",
+    )
     return parser.parse_args()
 
 
@@ -116,10 +144,60 @@ def main() -> None:
     if not records:
         raise SystemExit("No chunks were available for embedding.")
 
+    query_embedding = embed([args.query], model=model)[0]
+    ranked = rank_chunks(query_embedding, records, args.top_k)
+
     print(f"model: {model}")
     print(f"records: {len(records)}")
     print(f"vector length: {len(records[0].embedding)}")
     print(f"sample values: {records[0].embedding[:5]}")
+    print(f"query: {args.query}")
+    print("rank | score | source | chunk | text")
+    for rank, (score, record) in enumerate(ranked, start=1):
+        print(
+            f"{rank} | {score:.6f} | {record.metadata['source']} | "
+            f"{record.metadata['chunk_index']} | {record.text.replace(chr(10), ' ')}"
+        )
+    if ranked:
+        print(f"most similar: {ranked[0][1].text}")
+        print(f"least similar: {ranked[-1][1].text}")
+
+    report_lines = [
+        "# Embedding Similarity Ranking",
+        "",
+        "## Metric justification",
+        "",
+        "This demo uses cosine similarity. It compares the direction of embedding vectors, "
+        "which is useful for semantic text matching when vector magnitude should not dominate. "
+        "Higher scores indicate greater similarity; distance metrics reverse that interpretation, "
+        "where lower scores are better.",
+        "",
+        f"## Query: {args.query}",
+        "",
+        "| Rank | Cosine score | Source | Chunk | Section | Text |",
+        "| ---: | ---: | --- | ---: | --- | --- |",
+    ]
+    for rank, (score, record) in enumerate(ranked, start=1):
+        text = record.text.replace("\n", " ").replace("|", "\\|")
+        report_lines.append(
+            f"| {rank} | {score:.6f} | {record.metadata['source']} | "
+            f"{record.metadata['chunk_index']} | {record.metadata['section']} | {text} |"
+        )
+    if ranked:
+        report_lines.extend([
+            "",
+            f"**Most similar:** {ranked[0][1].text}",
+            "",
+            f"**Least similar:** {ranked[-1][1].text}",
+            "",
+            "A high similarity score identifies likely relevant context. It does not guarantee "
+            "that the chunk is factually correct, current, complete, or safe to use without "
+            "metadata, citations, freshness checks, and answer validation.",
+        ])
+    output = Path(args.output).resolve()
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text("\n".join(report_lines) + "\n", encoding="utf-8")
+    print(f"ranking report: {output}")
     for name, error in failures:
         print(f"FAILED: {name}: {error}")
 

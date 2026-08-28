@@ -190,6 +190,16 @@ python src/embeddings.py
 
 Set `OPENAI_BASE_URL`, `OPENAI_API_KEY`, and `EMBEDDING_MODEL` in `.env` first. `EMBED_MODEL` is also supported for compatibility with the existing project configuration. The script batches requests, preserves each chunk's text and metadata beside its vector, and reports the model, record count, vector length, and sample values. Use `--batch-size` to control request size.
 
+### Similarity Ranking
+
+Compare a question with every embedded chunk and write a ranked sample report:
+
+```text
+python src/embeddings.py --query "What should I do before inspecting the machine?" --top-k 5
+```
+
+The command uses cosine similarity, prints ranked source text and metadata, and writes the results to `outputs/similarity_ranking.md`. A high score means that a chunk is likely relevant in embedding space; it does not prove that the information is correct, current, complete, or safe to use without validation. The reusable `rank_chunks` function sorts from highest similarity to lowest similarity.
+
 ---
 
 ## Safety First
