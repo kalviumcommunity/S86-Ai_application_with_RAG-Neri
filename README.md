@@ -188,7 +188,7 @@ Generate vectors for the prepared ingestion chunks with:
 python src/embeddings.py
 ```
 
-Set `OPENAI_BASE_URL`, `OPENAI_API_KEY`, and `EMBEDDING_MODEL` in `.env` first. `EMBED_MODEL` is also supported for compatibility with the existing project configuration. The script batches requests, preserves each chunk's text and metadata beside its vector, and reports the model, record count, vector length, and sample values. Use `--batch-size` to control request size.
+Set `OPENAI_BASE_URL`, `OPENAI_API_KEY`, and `EMBEDDING_MODEL` in `.env` first. `EMBED_MODEL` is also supported for compatibility with the existing project configuration. The script batches requests, preserves each chunk's text and metadata beside its vector, retries transient failures with exponential backoff, and caches successful embeddings in `outputs/embedding_cache.json`. It reports total chunks, generated embeddings, skipped chunks, retries, failures, input tokens, and an approximate cost. Use `--batch-size`, `--max-retries`, `--backoff-seconds`, and `--cache` to configure the run. Set `EMBEDDING_COST_PER_1K` to override the default approximate rate of `$0.00002` per 1K input tokens.
 
 ### Similarity Ranking
 
