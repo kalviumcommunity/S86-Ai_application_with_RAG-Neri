@@ -352,15 +352,7 @@ Factors affecting performance:
 - Query embedding latency (first query slower)
 - System resources
 
-## Next Steps
-
-1. **Test retrieval**: `python src/retrieval_test.py`
-2. **Index corpus**: `python src/index_corpus.py --data-dir data --clear`
-3. **Run demos**: `python src/retrieval_demo.py --mode basic`
-4. **Compare k values**: `python src/retrieval_demo.py --mode k-compare`
-5. **Build LLM integration**: Use retrieved context in prompts
-6. **Tune parameters**: Find best k for your use case
-
+hjk
 ## Reference Documentation
 
 - `RETRIEVAL_GUIDE.md` - Complete retrieval documentation
