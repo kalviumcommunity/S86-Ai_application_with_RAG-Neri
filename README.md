@@ -336,6 +336,6 @@ NERI aims to transform how manufacturing teams access maintenance knowledge.
 Instead of spending valuable time searching through thousands of documents, technicians can describe a machine problem and receive a clear, safety-conscious, source-referenced troubleshooting response.
 
 > **NERI — Find the information. Fix the problem. Work safely.**
-..
+
 ---
 
