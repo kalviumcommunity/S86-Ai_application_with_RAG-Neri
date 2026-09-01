@@ -1,0 +1,7 @@
+Vibration Inspection Procedure
+
+If unusual vibration is detected during machine operation, stop the equipment immediately.
+
+Inspect the machine for loose components, damaged bearings, worn belts, and other mechanical problems.
+
+Do not restart the equipment until the inspection has been completed and the machine is considered safe.

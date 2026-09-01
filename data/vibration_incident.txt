@@ -1,0 +1,7 @@
+Maintenance Incident Report
+
+A technician reported abnormal vibration during machine operation.
+
+The machine was stopped and isolated before inspection. The maintenance team inspected the drive system and identified wear in a mechanical component.
+
+The incident was recorded in the maintenance log.

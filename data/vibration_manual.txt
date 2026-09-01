@@ -1,0 +1,5 @@
+Machine Vibration Manual
+
+Abnormal vibration can indicate a problem with machine components. Inspect the machine for unusual movement, noise, loose components, and visible damage.
+
+If abnormal vibration is detected, stop the machine and begin the approved inspection procedure.

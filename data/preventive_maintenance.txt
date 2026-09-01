@@ -1,0 +1,7 @@
+Preventive Maintenance
+
+Perform scheduled preventive maintenance according to the equipment maintenance schedule.
+
+Inspect important machine components regularly and record completed maintenance activities.
+
+Preventive maintenance helps identify potential equipment problems before failure occurs.
