@@ -1,5 +1,6 @@
 """Similarity search and top-k retrieval from indexed corpus."""
 
+import re
 from dataclasses import dataclass
 from typing import Optional
 
@@ -18,9 +19,15 @@ class RetrievalResult:
     rank: int
     score: float  # Distance score (lower is better for cosine)
     similarity: float  # Similarity score (higher is better, 0-1)
-    text: str
-    metadata: dict
-    chunk_id: str
+    keyword_score: float = 0.0
+    hybrid_score: float = 0.0
+    text: str = ""
+    metadata: dict = None
+    chunk_id: str = ""
+
+    def __post_init__(self):
+        if self.metadata is None:
+            self.metadata = {}
 
 
 @dataclass
@@ -34,11 +41,31 @@ class RetrievalResponse:
     query_embedding: list[float]
 
 
+def _keyword_matches(text: str, terms: list[str]) -> float:
+    """Return a normalized keyword score in [0, 1]."""
+    if not terms:
+        return 0.0
+
+    normalized = re.sub(r"[^a-z0-9]+", " ", text.lower()).strip()
+    tokens = set(normalized.split()) if normalized else set()
+    hits = 0
+    for term in terms:
+        clean_term = re.sub(r"[^a-z0-9]+", " ", term.lower()).strip()
+        if not clean_term:
+            continue
+        if clean_term in tokens or clean_term in normalized:
+            hits += 1
+    return hits / len(terms)
+
+
 def retrieve(
     query: str,
     vector_store: Optional[VectorStore] = None,
     top_k: int = 3,
     where: Optional[dict] = None,
+    keyword_terms: Optional[list[str]] = None,
+    hybrid_weight: float = 0.0,
+    query_embedding: Optional[list[float]] = None,
 ) -> RetrievalResponse:
     """Retrieve top-k chunks most similar to query.
 
@@ -47,6 +74,8 @@ def retrieve(
         vector_store: Initialized VectorStore (creates default if None)
         top_k: Number of results to return
         where: Optional metadata filter dict
+        keyword_terms: Exact terms to boost in hybrid mode
+        hybrid_weight: Weight to assign to keyword matching in [0, 1]
 
     Returns:
         RetrievalResponse with ranked results
@@ -56,28 +85,55 @@ def retrieve(
 
     if top_k <= 0:
         raise ValueError("top_k must be greater than zero")
+    if not 0.0 <= hybrid_weight <= 1.0:
+        raise ValueError("hybrid_weight must be between 0 and 1")
 
-    # Embed query with same model as documents
-    query_embedding = embed([query])[0]
-
-    # Search vector database
+    if query_embedding is None:
+        query_embedding = embed([query])[0]
     search_results = vector_store.search(
         query_embedding=query_embedding,
-        top_k=top_k,
+        top_k=max(top_k, 10),
         where=where,
     )
 
-    # Format results
+    normalized_terms = [term for term in (keyword_terms or []) if term and str(term).strip()]
+    scored_results = []
+
+    for result in search_results:
+        keyword_score = 0.0
+        if normalized_terms:
+            text_blob = " ".join([result["text"], *[str(v) for v in result["metadata"].values()]])
+            keyword_score = _keyword_matches(text_blob, normalized_terms)
+
+        if normalized_terms and hybrid_weight > 0:
+            hybrid_score = (1.0 - hybrid_weight) * float(result["similarity"]) + hybrid_weight * keyword_score
+        else:
+            hybrid_score = float(result["similarity"])
+
+        scored_results.append({
+            "result": result,
+            "keyword_score": keyword_score,
+            "hybrid_score": hybrid_score,
+        })
+
+    if normalized_terms and hybrid_weight > 0:
+        scored_results.sort(key=lambda item: item["hybrid_score"], reverse=True)
+        scored_results = scored_results[:top_k]
+    else:
+        scored_results = scored_results[:top_k]
+
     formatted_results = [
         RetrievalResult(
             rank=rank,
-            score=result["distance"],
-            similarity=result["similarity"],
-            text=result["text"],
-            metadata=result["metadata"],
-            chunk_id=result["id"],
+            score=result["result"]["distance"],
+            similarity=result["result"]["similarity"],
+            keyword_score=result["keyword_score"],
+            hybrid_score=result["hybrid_score"],
+            text=result["result"]["text"],
+            metadata=result["result"]["metadata"],
+            chunk_id=result["result"]["id"],
         )
-        for rank, result in enumerate(search_results, 1)
+        for rank, result in enumerate(scored_results, 1)
     ]
 
     return RetrievalResponse(
@@ -149,6 +205,42 @@ def compare_k_values(
     return results
 
 
+def compare_filtered_retrieval(
+    query: str,
+    vector_store: Optional[VectorStore] = None,
+    where: Optional[dict] = None,
+    top_k: int = 3,
+    keyword_terms: Optional[list[str]] = None,
+    hybrid_weight: float = 0.5,
+) -> dict:
+    """Compare filtered and unfiltered retrieval for the same query."""
+    if vector_store is None:
+        vector_store = VectorStore()
+
+    unfiltered = retrieve(
+        query,
+        vector_store=vector_store,
+        top_k=top_k,
+        keyword_terms=keyword_terms,
+        hybrid_weight=hybrid_weight,
+    )
+    filtered = retrieve(
+        query,
+        vector_store=vector_store,
+        top_k=top_k,
+        where=where,
+        keyword_terms=keyword_terms,
+        hybrid_weight=hybrid_weight,
+    )
+    return {
+        "query": query,
+        "filter": where,
+        "top_k": top_k,
+        "unfiltered": unfiltered,
+        "filtered": filtered,
+    }
+
+
 def print_retrieval_results(response: RetrievalResponse) -> None:
     """Pretty-print retrieval results.
 
@@ -168,6 +260,8 @@ def print_retrieval_results(response: RetrievalResponse) -> None:
 
     for result in response.results:
         print(f"[{result.rank}] Similarity: {result.similarity:.4f} | Distance: {result.score:.4f}")
+        if result.keyword_score > 0 or result.hybrid_score != result.similarity:
+            print(f"    Keyword: {result.keyword_score:.3f} | Hybrid: {result.hybrid_score:.4f}")
         print(f"    ID: {result.chunk_id}")
         print(f"    Source: {result.metadata.get('source', 'unknown')}")
         if result.metadata.get("section"):
