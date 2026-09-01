@@ -1,0 +1,7 @@
+Temperature Monitoring
+
+Monitor the operating temperature of the machine during operation.
+
+If the temperature exceeds the recommended range, stop the equipment and investigate the cause.
+
+Record abnormal temperature readings in the maintenance log.

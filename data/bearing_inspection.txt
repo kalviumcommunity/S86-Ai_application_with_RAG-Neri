@@ -1,0 +1,7 @@
+Bearing Inspection
+
+Inspect machine bearings for wear, damage, unusual noise, and abnormal movement.
+
+Damaged bearings should be replaced according to the approved maintenance procedure.
+
+Record bearing inspection results after maintenance.

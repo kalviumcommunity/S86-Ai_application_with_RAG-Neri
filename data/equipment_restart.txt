@@ -1,0 +1,7 @@
+Equipment Restart Procedure
+
+After maintenance is completed, verify that all tools have been removed from the machine.
+
+Confirm that safety checks have been completed before restarting the equipment.
+
+Only restart the machine when the equipment is safe to operate.

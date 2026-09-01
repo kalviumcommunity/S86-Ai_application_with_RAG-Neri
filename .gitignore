@@ -17,6 +17,14 @@ data/*
 !data/machine_manual.txt
 !data/maintenance_log.txt
 !data/safety_procedure.md
+# Local data
+data/*
+!data/.gitkeep
+!data/*.txt
+!data/*.md
+!data/*.pdf
+!data/*.html
+!data/*.htm
 
 # Node dependencies
 node_modules/
