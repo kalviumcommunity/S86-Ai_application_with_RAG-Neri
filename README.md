@@ -160,6 +160,12 @@ Run the comparison with:
 python src/chunking.py
 ```
 
+## Retrieval Evaluation
+
+Retrieval quality can be measured with labelled chunk IDs using the evaluator
+documented in [RETRIEVAL_EVALUATION.md](RETRIEVAL_EVALUATION.md). It reports
+recall and precision at top-k and retains failed queries for inspection.
+
 Every chunk keeps its text beside the same metadata fields: `source`, `source_path`, `strategy`, `chunk_index`, `char_start`, `char_end`, and `section`. The report includes sample text plus metadata and demonstrates tracing a retrieved chunk back to its source file and exact character range. Paragraph chunking is the chosen strategy for this corpus because the source documents use short, structured sections where keeping a complete procedure or safety instruction together is more valuable than uniform chunk sizes. Fixed-size chunks remain a useful baseline for dense text and can be tuned later with retrieval tests.
 
 Chunk sizes must also fit the model's context budget: retrieved chunks, the prompt, and the expected answer all share the context window. Increasing chunk size or top-k can improve context but can also exceed that budget and increase embedding and generation cost.

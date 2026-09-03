@@ -12,8 +12,10 @@ for entry in [str(ROOT), str(SRC)]:
 
 try:
     from src.retrieval import retrieve
+    from src.retrieval_evaluation import evaluate, evaluate_query
 except ImportError:
     from retrieval import retrieve
+    from retrieval_evaluation import evaluate, evaluate_query
 
 
 class DemoStore:
@@ -140,7 +142,54 @@ def test_filtered_hybrid_retrieval():
     assert any("vibration" in result.text.lower() for result in hybrid.results)
 
 
+def test_evaluation_reports_recall_precision_and_failures():
+    """Measure labelled IDs and retain failed-query details."""
+    store = create_test_corpus()
+    query_embedding = [0.95] + [0.05] * 1535
+    labelled_queries = [{
+        "query": "reset password",
+        "relevant_chunk_ids": {"account-1", "account-2"},
+    }]
+
+    report = evaluate(
+        labelled_queries,
+        store,
+        k=1,
+        retrieval_options={"query_embedding": query_embedding},
+    )
+
+    row = report["rows"][0]
+    assert row["retrieved_ids"] == ["account-1"]
+    assert row["hits"] == ["account-1"]
+    assert row["recall"] == 0.5
+    assert row["precision"] == 1.0
+    assert report["summary"]["queries"] == 1
+    assert report["summary"]["failures"] == [row]
+
+
+def test_evaluation_rejects_missing_labels_and_empty_sets():
+    """Labels must be trustworthy and an empty suite has zero metrics."""
+    store = create_test_corpus()
+    with _expect_value_error():
+        evaluate_query({"query": "reset password", "relevant_chunk_ids": set()}, store)
+
+    report = evaluate([], store)
+    assert report["summary"]["recall_at_k"] == 0.0
+    assert report["summary"]["precision_at_k"] == 0.0
+
+
+class _expect_value_error:
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exception_type, exception, traceback):
+        assert exception_type is ValueError
+        return True
+
+
 if __name__ == "__main__":
     test_filtered_hybrid_retrieval()
     test_retrieval_with_dummy_embeddings()
+    test_evaluation_reports_recall_precision_and_failures()
+    test_evaluation_rejects_missing_labels_and_empty_sets()
     print("retrieval tests passed")
