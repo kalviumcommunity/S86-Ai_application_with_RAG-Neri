@@ -162,6 +162,54 @@ python src/chunking.py
 
 ## Retrieval Evaluation
 
+## Query-Time RAG Pipeline
+
+The query-time flow is implemented as separate, testable stages in
+[src/rag_pipeline.py](src/rag_pipeline.py):
+
+```text
+User query
+        -> embed_query(query)
+        -> retrieve_context(query_vector, vector_store, k)
+        -> assemble_context(chunks)
+        -> generate_answer(query, context)
+        -> answer + sources
+```
+
+`answer_query` orchestrates these stages and returns a dictionary containing
+the grounded answer and the metadata for every retrieved source. The embedder
+and generator are injectable, so retrieval and prompt assembly can be tested
+without network access. If retrieval returns no chunks, generation is skipped
+and the pipeline returns `I could not find relevant context for that question.`
+
+Run the focused offline tests with:
+
+```text
+python -m unittest src.rag_pipeline_test
+```
+
+An end-to-end run using the configured embedding and chat APIs can be driven
+after indexing with a small script:
+
+```python
+from src.rag_pipeline import answer_query
+from src.vector_store import VectorStore
+
+result = answer_query(
+        "What should I do before inspecting the motor?",
+        VectorStore(persist_dir="outputs/chroma_db"),
+)
+print(result["answer"])
+print(result["sources"])
+```
+
+Example output from the offline stage test:
+
+```text
+Power must be isolated before inspection.
+[{"source": "electrical_safety.txt", "section": "Isolation"}]
+```
+
 Retrieval quality can be measured with labelled chunk IDs using the evaluator
 documented in [RETRIEVAL_EVALUATION.md](RETRIEVAL_EVALUATION.md). It reports
 recall and precision at top-k and retains failed queries for inspection.
