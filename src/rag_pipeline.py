@@ -1,16 +1,118 @@
-"""Complete RAG pipeline: ingest → embed → store → retrieve."""
+"""Complete RAG pipeline: ingest, retrieve, assemble, and generate."""
 
 import argparse
+import os
 from pathlib import Path
+from typing import Callable
+
+from dotenv import load_dotenv
 
 try:
-    from .embeddings import batch_embed_chunks
+    from .embeddings import embed, batch_embed_chunks
     from .ingestion import ingest, validate_ingestion
     from .vector_store import VectorStore
 except ImportError:
-    from embeddings import batch_embed_chunks
+    from embeddings import embed, batch_embed_chunks
     from ingestion import ingest, validate_ingestion
     from vector_store import VectorStore
+
+
+NO_CONTEXT_ANSWER = "I could not find relevant context for that question."
+
+
+def embed_query(query: str, embedder: Callable[[list[str]], list[list[float]]] = embed) -> list[float]:
+    """Embed one user query using the same model used for document chunks."""
+    if not query.strip():
+        raise ValueError("query must not be empty")
+    vectors = embedder([query])
+    if not vectors:
+        raise ValueError("the embedder returned no vector")
+    return vectors[0]
+
+
+def retrieve_context(
+    query_vector: list[float],
+    vector_store: VectorStore,
+    k: int = 4,
+) -> list[dict]:
+    """Retrieve the top-k evidence chunks for a query vector."""
+    if k <= 0:
+        raise ValueError("k must be greater than zero")
+    return vector_store.search(query_vector, top_k=k)
+
+
+def assemble_context(chunks: list[dict]) -> str:
+    """Format retrieved chunks with stable citation numbers for the prompt."""
+    parts = []
+    for index, chunk in enumerate(chunks, start=1):
+        metadata = chunk.get("metadata", {})
+        source = metadata.get("source", "unknown")
+        section = metadata.get("section")
+        label = f"{source} ({section})" if section else source
+        parts.append(f"[{index}] Source: {label}\n{chunk.get('text', '')}")
+    return "\n\n".join(parts)
+
+
+def generate_answer(
+    query: str,
+    context: str,
+    client=None,
+    model: str | None = None,
+) -> str:
+    """Generate an answer grounded only in the assembled context."""
+    if client is None:
+        from openai import OpenAI
+
+        load_dotenv()
+        base_url = os.getenv("OPENAI_BASE_URL")
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not base_url or not api_key:
+            raise ValueError("OPENAI_BASE_URL and OPENAI_API_KEY are required")
+        client = OpenAI(base_url=base_url, api_key=api_key)
+
+    chat_model = model or os.getenv("CHAT_MODEL")
+    if not chat_model:
+        raise ValueError("CHAT_MODEL is missing from .env")
+
+    response = client.chat.completions.create(
+        model=chat_model,
+        temperature=0,
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "Answer only from the provided context. "
+                    "If it is insufficient, say what is missing and cite sources."
+                ),
+            },
+            {
+                "role": "user",
+                "content": f"Context:\n{context}\n\nQuestion: {query}",
+            },
+        ],
+    )
+    return response.choices[0].message.content or ""
+
+
+def answer_query(
+    query: str,
+    vector_store: VectorStore,
+    k: int = 4,
+    embedder: Callable[[list[str]], list[list[float]]] = embed,
+    generator: Callable[[str, str], str] = generate_answer,
+) -> dict:
+    """Run query embedding, retrieval, context assembly, and generation."""
+    query_vector = embed_query(query, embedder)
+    chunks = retrieve_context(query_vector, vector_store, k=k)
+    if not chunks:
+        return {"answer": NO_CONTEXT_ANSWER, "sources": []}
+
+    context = assemble_context(chunks)
+    answer = generator(query, context)
+    return {
+        "answer": answer,
+        "sources": [chunk.get("metadata", {}) for chunk in chunks],
+    }
 
 
 def build_rag_index(
