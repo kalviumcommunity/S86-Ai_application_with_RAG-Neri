@@ -3,9 +3,14 @@
 import unittest
 
 try:
-    from .rag_pipeline import NO_CONTEXT_ANSWER, answer_query, assemble_context
+    from .rag_pipeline import (
+        NO_CONTEXT_ANSWER,
+        answer_query,
+        assemble_context,
+        build_augmented_prompt,
+    )
 except ImportError:
-    from rag_pipeline import NO_CONTEXT_ANSWER, answer_query, assemble_context
+    from rag_pipeline import NO_CONTEXT_ANSWER, answer_query, assemble_context, build_augmented_prompt
 
 
 class FakeStore:
@@ -71,6 +76,23 @@ class RagPipelineTests(unittest.TestCase):
             {"text": "Second", "metadata": {"source": "two.txt"}},
         ])
         self.assertEqual(context, "[1] Source: one.txt\nFirst\n\n[2] Source: two.txt\nSecond")
+
+    def test_augmented_prompt_stays_within_budget_and_reserves_answer_space(self):
+        chunks = [
+            {"text": "Power must be isolated before inspection.", "metadata": {"source": "safety.txt"}},
+            {"text": "A very long chunk " * 100, "metadata": {"source": "manual.txt"}},
+        ]
+        result = build_augmented_prompt(
+            "What should I do first?",
+            chunks,
+            model_token_budget=80,
+            answer_token_reserve=20,
+        )
+
+        self.assertIn("Answer only from the provided context", result["prompt"])
+        self.assertIn("[1] Source: safety.txt", result["prompt"])
+        self.assertNotIn("[2] Source: manual.txt", result["prompt"])
+        self.assertLessEqual(result["total_reserved_tokens"], 80)
 
 
 if __name__ == "__main__":

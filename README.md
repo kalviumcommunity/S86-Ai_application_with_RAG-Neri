@@ -182,6 +182,29 @@ and generator are injectable, so retrieval and prompt assembly can be tested
 without network access. If retrieval returns no chunks, generation is skipped
 and the pipeline returns `I could not find relevant context for that question.`
 
+`build_augmented_prompt` uses the `cl100k_base` tokenizer to keep the complete
+prompt within `model_token_budget`. It reserves `answer_token_reserve` tokens
+for generation, then adds retrieved chunks in rank order until the remaining
+context budget is full. Every chunk is marked as `[n] Source: filename` and the
+prompt instructs the model to answer only from that evidence.
+
+Sample augmented prompt and budget report:
+
+```text
+Answer only from the provided context. Cite evidence with its [number]. If the context is insufficient, say what information is missing.
+
+Context:
+[1] Source: electrical_safety.txt (Isolation)
+Isolate electrical power before opening the motor housing.
+
+[2] Source: motor_inspection.txt (Inspection)
+Record the inspection result in the maintenance log.
+
+Question: What should I do before inspecting the motor?
+
+Budget: model=120, prompt=86, answer reserve=20, total reserved=106, chunks=2
+```
+
 Run the focused offline tests with:
 
 ```text

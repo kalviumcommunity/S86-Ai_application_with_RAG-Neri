@@ -8,16 +8,22 @@ from typing import Callable
 from dotenv import load_dotenv
 
 try:
+    from .chunking import token_count
     from .embeddings import embed, batch_embed_chunks
     from .ingestion import ingest, validate_ingestion
     from .vector_store import VectorStore
 except ImportError:
+    from chunking import token_count
     from embeddings import embed, batch_embed_chunks
     from ingestion import ingest, validate_ingestion
     from vector_store import VectorStore
 
 
 NO_CONTEXT_ANSWER = "I could not find relevant context for that question."
+GROUNDING_INSTRUCTIONS = (
+    "Answer only from the provided context. Cite evidence with its [number]. "
+    "If the context is insufficient, say what information is missing."
+)
 
 
 def embed_query(query: str, embedder: Callable[[list[str]], list[list[float]]] = embed) -> list[float]:
@@ -41,16 +47,60 @@ def retrieve_context(
     return vector_store.search(query_vector, top_k=k)
 
 
-def assemble_context(chunks: list[dict]) -> str:
+def _format_chunk(index: int, chunk: dict) -> str:
+    metadata = chunk.get("metadata", {})
+    source = metadata.get("source", "unknown")
+    section = metadata.get("section")
+    label = f"{source} ({section})" if section else source
+    return f"[{index}] Source: {label}\n{chunk.get('text', '')}"
+
+
+def assemble_context(chunks: list[dict], max_tokens: int | None = None) -> str:
     """Format retrieved chunks with stable citation numbers for the prompt."""
     parts = []
     for index, chunk in enumerate(chunks, start=1):
-        metadata = chunk.get("metadata", {})
-        source = metadata.get("source", "unknown")
-        section = metadata.get("section")
-        label = f"{source} ({section})" if section else source
-        parts.append(f"[{index}] Source: {label}\n{chunk.get('text', '')}")
+        candidate = _format_chunk(index, chunk)
+        proposed = "\n\n".join(parts + [candidate])
+        if max_tokens is not None and token_count(proposed) > max_tokens:
+            break
+        parts.append(candidate)
     return "\n\n".join(parts)
+
+
+def build_augmented_prompt(
+    query: str,
+    chunks: list[dict],
+    model_token_budget: int = 2048,
+    answer_token_reserve: int = 256,
+) -> dict:
+    """Build a grounded prompt while reserving tokens for the answer."""
+    if model_token_budget <= 0 or answer_token_reserve < 0:
+        raise ValueError("token budget must be positive and answer reserve non-negative")
+
+    question_header = f"Question: {query}"
+    fixed_prompt = f"{GROUNDING_INSTRUCTIONS}\n\nContext:\n\nQuestion:"
+    available_context_tokens = (
+        model_token_budget
+        - answer_token_reserve
+        - token_count(fixed_prompt)
+        - token_count(question_header.removeprefix("Question: "))
+    )
+    if available_context_tokens < 0:
+        raise ValueError("token budget is too small for instructions and question")
+
+    context = assemble_context(chunks, max_tokens=available_context_tokens)
+    prompt = f"{GROUNDING_INSTRUCTIONS}\n\nContext:\n{context}\n\n{question_header}"
+    return {
+        "prompt": prompt,
+        "context": context,
+        "included_chunks": sum(
+            1 for line in context.splitlines() if line.startswith("[") and "] Source:" in line
+        ),
+        "prompt_tokens": token_count(prompt),
+        "answer_token_reserve": answer_token_reserve,
+        "model_token_budget": model_token_budget,
+        "total_reserved_tokens": token_count(prompt) + answer_token_reserve,
+    }
 
 
 def generate_answer(
@@ -81,8 +131,7 @@ def generate_answer(
             {
                 "role": "system",
                 "content": (
-                    "Answer only from the provided context. "
-                    "If it is insufficient, say what is missing and cite sources."
+                    GROUNDING_INSTRUCTIONS
                 ),
             },
             {
@@ -107,8 +156,8 @@ def answer_query(
     if not chunks:
         return {"answer": NO_CONTEXT_ANSWER, "sources": []}
 
-    context = assemble_context(chunks)
-    answer = generator(query, context)
+    prompt = build_augmented_prompt(query, chunks)
+    answer = generator(query, prompt["context"])
     return {
         "answer": answer,
         "sources": [chunk.get("metadata", {}) for chunk in chunks],
