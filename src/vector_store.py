@@ -1,6 +1,5 @@
 """Vector database setup for RAG semantic retrieval."""
 
-import os
 from pathlib import Path
 from typing import Optional
 
@@ -9,16 +8,19 @@ try:
 except ImportError:
     raise ImportError("chromadb is required. Install with: pip install chromadb")
 
-from dotenv import load_dotenv
-
 try:
     from .embeddings import EmbeddedChunk
 except ImportError:
     from embeddings import EmbeddedChunk
 
 
-# Configuration
-VECTOR_DIMENSION = 1536  # OpenAI embedding dimension
+# ============================================================
+# CONFIGURATION
+# ============================================================
+
+# Current embedding model returns 3072-dimensional vectors.
+VECTOR_DIMENSION = 3072
+
 COLLECTION_NAME = "rag_chunks"
 SIMILARITY_METRIC = "cosine"
 
@@ -32,67 +34,96 @@ class VectorStore:
         collection_name: str = COLLECTION_NAME,
         vector_dimension: int = VECTOR_DIMENSION,
     ):
-        """Initialize vector store with persistent storage.
+        """
+        Initialize persistent Chroma vector store.
 
         Args:
-            persist_dir: Directory for persistent Chroma database
-            collection_name: Name of the collection
-            vector_dimension: Embedding dimension (must match embedding model)
+            persist_dir: Directory containing Chroma database.
+            collection_name: Chroma collection name.
+            vector_dimension: Expected embedding dimension.
         """
+
         self.persist_dir = Path(persist_dir)
         self.collection_name = collection_name
         self.vector_dimension = vector_dimension
 
-        # Create persistent storage directory
         self.persist_dir.mkdir(parents=True, exist_ok=True)
 
-        # Initialize Chroma client with persistent storage (new API)
-        self.client = chromadb.PersistentClient(path=str(self.persist_dir))
-
-        # Get or create collection
-        self.collection = self.client.get_or_create_collection(
-            name=collection_name,
-            metadata={"hnsw:space": SIMILARITY_METRIC},
+        self.client = chromadb.PersistentClient(
+            path=str(self.persist_dir)
         )
 
+        self.collection = self.client.get_or_create_collection(
+            name=collection_name,
+            metadata={
+                "hnsw:space": SIMILARITY_METRIC,
+            },
+        )
+
+    # ========================================================
+    # UPSERT
+    # ========================================================
+
     def upsert(self, embedded_chunks: list[EmbeddedChunk]) -> dict:
-        """Insert or update multiple chunks in the vector store.
+        """Insert or update chunks in Chroma."""
 
-        Args:
-            embedded_chunks: List of EmbeddedChunk objects with text, metadata, and embeddings
-
-        Returns:
-            Summary dict with counts and status
-        """
         if not embedded_chunks:
-            return {"inserted": 0, "updated": 0, "failed": 0}
+            return {
+                "inserted": 0,
+                "updated": 0,
+                "failed": 0,
+            }
 
         ids = []
         embeddings = []
         documents = []
         metadatas = []
 
-        for i, chunk in enumerate(embedded_chunks):
-            # Create stable ID from source + chunk position
-            source = chunk.metadata.get("source", "unknown")
-            chunk_idx = chunk.metadata.get("chunk_index", i)
-            chunk_id = f"{source}:{chunk_idx}"
+        for index, chunk in enumerate(embedded_chunks):
+
+            source = chunk.metadata.get(
+                "source",
+                "unknown"
+            )
+
+            chunk_index = chunk.metadata.get(
+                "chunk_index",
+                index
+            )
+
+            chunk_id = f"{source}:{chunk_index}"
+
+            # Validate embedding dimension BEFORE sending to Chroma
+            if len(chunk.embedding) != self.vector_dimension:
+                raise ValueError(
+                    f"Embedding dimension mismatch for {chunk_id}: "
+                    f"expected {self.vector_dimension}, "
+                    f"got {len(chunk.embedding)}"
+                )
 
             ids.append(chunk_id)
             embeddings.append(chunk.embedding)
             documents.append(chunk.text)
             metadatas.append(chunk.metadata)
 
-        try:
-            self.collection.upsert(
-                ids=ids,
-                embeddings=embeddings,
-                documents=documents,
-                metadatas=metadatas,
-            )
-            return {"inserted": len(embedded_chunks), "updated": 0, "failed": 0}
-        except Exception as e:
-            return {"inserted": 0, "updated": 0, "failed": len(embedded_chunks), "error": str(e)}
+        # Let errors propagate.
+        # This makes debugging much easier than silently returning failed=19.
+        self.collection.upsert(
+            ids=ids,
+            embeddings=embeddings,
+            documents=documents,
+            metadatas=metadatas,
+        )
+
+        return {
+            "inserted": len(embedded_chunks),
+            "updated": 0,
+            "failed": 0,
+        }
+
+    # ========================================================
+    # SEARCH
+    # ========================================================
 
     def search(
         self,
@@ -100,144 +131,220 @@ class VectorStore:
         top_k: int = 5,
         where: Optional[dict] = None,
     ) -> list[dict]:
-        """Search for semantically similar chunks.
+        """Search for semantically similar chunks."""
 
-        Args:
-            query_embedding: Query vector (must be VECTOR_DIMENSION size)
-            top_k: Number of top results to return
-            where: Optional Chroma metadata filter
-
-        Returns:
-            List of result dicts with id, distance, text, metadata, embedding
-        """
         if len(query_embedding) != self.vector_dimension:
             raise ValueError(
-                f"Query embedding dimension {len(query_embedding)} "
-                f"does not match collection dimension {self.vector_dimension}"
+                f"Query embedding dimension "
+                f"{len(query_embedding)} does not match "
+                f"expected dimension {self.vector_dimension}"
             )
+
+        if self.collection.count() == 0:
+            return []
+
+        # Never request more results than exist.
+        top_k = min(top_k, self.collection.count())
 
         results = self.collection.query(
             query_embeddings=[query_embedding],
             n_results=top_k,
             where=where,
-            include=["embeddings", "documents", "metadatas", "distances"],
+            include=[
+                "embeddings",
+                "documents",
+                "metadatas",
+                "distances",
+            ],
         )
 
-        # Format results for easier consumption
         formatted = []
+
         if results.get("ids") and results["ids"][0]:
+
             for i, chunk_id in enumerate(results["ids"][0]):
-                embedding = results["embeddings"][0][i] if results.get("embeddings") is not None and len(results.get("embeddings", [[]])[0]) > i else []
-                formatted.append({
-                    "id": chunk_id,
-                    "distance": results["distances"][0][i],
-                    "similarity": 1 - results["distances"][0][i],  # Convert distance to similarity
-                    "text": results["documents"][0][i] if results.get("documents") is not None and len(results.get("documents", [[]])[0]) > i else "",
-                    "metadata": results["metadatas"][0][i] if results.get("metadatas") is not None and len(results.get("metadatas", [[]])[0]) > i else {},
-                    "embedding": embedding,
-                })
+
+                embedding = []
+
+                if (
+                    results.get("embeddings") is not None
+                    and len(results["embeddings"][0]) > i
+                ):
+                    embedding = results["embeddings"][0][i]
+
+                text = ""
+
+                if (
+                    results.get("documents") is not None
+                    and len(results["documents"][0]) > i
+                ):
+                    text = results["documents"][0][i]
+
+                metadata = {}
+
+                if (
+                    results.get("metadatas") is not None
+                    and len(results["metadatas"][0]) > i
+                ):
+                    metadata = results["metadatas"][0][i]
+
+                distance = results["distances"][0][i]
+
+                formatted.append(
+                    {
+                        "id": chunk_id,
+                        "distance": distance,
+                        "similarity": 1 - distance,
+                        "text": text,
+                        "metadata": metadata,
+                        "embedding": embedding,
+                    }
+                )
+
         return formatted
 
+    # ========================================================
+    # GET
+    # ========================================================
+
     def get(self, chunk_id: str) -> Optional[dict]:
-        """Retrieve a specific chunk by ID.
+        """Retrieve a specific chunk."""
 
-        Args:
-            chunk_id: ID of the chunk to retrieve
-
-        Returns:
-            Dict with id, text, metadata, embedding or None if not found
-        """
         results = self.collection.get(
             ids=[chunk_id],
-            include=["embeddings", "documents", "metadatas"],
+            include=[
+                "embeddings",
+                "documents",
+                "metadatas",
+            ],
         )
 
-        if not results["ids"] or len(results["ids"]) == 0:
+        if not results.get("ids"):
             return None
 
-        embedding = results["embeddings"][0] if results.get("embeddings") is not None and len(results.get("embeddings", [])) > 0 else []
+        embedding = []
+
+        if (
+            results.get("embeddings") is not None
+            and results["embeddings"]
+        ):
+            embedding = results["embeddings"][0]
+
+        text = ""
+
+        if (
+            results.get("documents") is not None
+            and results["documents"]
+        ):
+            text = results["documents"][0]
+
+        metadata = {}
+
+        if (
+            results.get("metadatas") is not None
+            and results["metadatas"]
+        ):
+            metadata = results["metadatas"][0]
+
         return {
             "id": results["ids"][0],
-            "text": results["documents"][0] if results.get("documents") is not None and len(results.get("documents", [])) > 0 else "",
-            "metadata": results["metadatas"][0] if results.get("metadatas") is not None and len(results.get("metadatas", [])) > 0 else {},
+            "text": text,
+            "metadata": metadata,
             "embedding": embedding,
         }
 
+    # ========================================================
+    # DELETE
+    # ========================================================
+
     def delete(self, chunk_ids: list[str]) -> dict:
-        """Delete chunks by ID.
+        """Delete chunks by ID."""
 
-        Args:
-            chunk_ids: List of IDs to delete
-
-        Returns:
-            Summary dict
-        """
         try:
             self.collection.delete(ids=chunk_ids)
-            return {"deleted": len(chunk_ids), "failed": 0}
-        except Exception as e:
-            return {"deleted": 0, "failed": len(chunk_ids), "error": str(e)}
+
+            return {
+                "deleted": len(chunk_ids),
+                "failed": 0,
+            }
+
+        except Exception as error:
+
+            return {
+                "deleted": 0,
+                "failed": len(chunk_ids),
+                "error": str(error),
+            }
+
+    # ========================================================
+    # COUNT
+    # ========================================================
 
     def count(self) -> int:
-        """Return total number of chunks in the collection."""
+        """Return number of indexed chunks."""
+
         return self.collection.count()
+
+    # ========================================================
+    # CLEAR
+    # ========================================================
 
     def clear(self) -> None:
         """Delete all chunks from the collection."""
-        # Get all IDs and delete them
-        results = self.collection.get(include=[])
-        if results["ids"]:
-            self.collection.delete(ids=results["ids"])
 
+        results = self.collection.get(
+            include=[]
+        )
+
+        ids = results.get("ids", [])
+
+        if ids:
+            self.collection.delete(ids=ids)
+
+    # ========================================================
+    # RECREATE COLLECTION
+    # ========================================================
+
+    def recreate_collection(self) -> None:
+        """
+        Completely delete and recreate the Chroma collection.
+
+        Useful when the embedding dimension has changed.
+        """
+
+        try:
+            self.client.delete_collection(
+                name=self.collection_name
+            )
+        except Exception:
+            pass
+
+        self.collection = self.client.create_collection(
+            name=self.collection_name,
+            metadata={
+                "hnsw:space": SIMILARITY_METRIC,
+            },
+        )
+
+
+# ============================================================
+# TEST
+# ============================================================
 
 def test_vector_store() -> None:
-    """Verify vector store setup with insert and read-back test."""
-    print("Testing Vector Store Setup...")
-    print("-" * 50)
+    """Basic vector store test."""
 
-    # Initialize store
+    print("=" * 60)
+    print("VECTOR STORE TEST")
+    print("=" * 60)
+
     store = VectorStore()
-    print(f"✓ Connected to vector database")
-    print(f"  Collection: {store.collection_name}")
-    print(f"  Dimension: {store.vector_dimension}")
-    print(f"  Metric: {SIMILARITY_METRIC}")
 
-    # Create test record
-    test_embedding = [0.1] * VECTOR_DIMENSION  # Dummy embedding
-    test_chunk = EmbeddedChunk(
-        text="Password reset instructions for learner accounts.",
-        metadata={
-            "source": "account-guide.md",
-            "chunk_index": 0,
-            "section": "Account access",
-        },
-        embedding=test_embedding,
-    )
+    print(f"Collection : {store.collection_name}")
+    print(f"Dimension  : {store.vector_dimension}")
+    print(f"Count      : {store.count()}")
 
-    # Insert test record
-    store.upsert([test_chunk])
-    print(f"✓ Inserted test record")
-
-    # Read back
-    chunk_id = f"account-guide.md:0"
-    stored = store.get(chunk_id)
-
-    if stored is None:
-        print(f"✗ Failed to read back record")
-        return
-
-    print(f"✓ Read back verification:")
-    print(f"  ID: {stored['id']}")
-    print(f"  Vector length: {len(stored['embedding'])}")
-    print(f"  Text: {stored['text'][:50]}...")
-    print(f"  Metadata: {stored['metadata']}")
-
-    # Verify collection count
-    count = store.count()
-    print(f"✓ Collection now contains: {count} chunk(s)")
-
-    print("-" * 50)
-    print("Vector store setup complete and verified!")
+    print("=" * 60)
 
 
 if __name__ == "__main__":

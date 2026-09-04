@@ -1,6 +1,8 @@
-import os
-import logging
+"""OpenAI-compatible LLM API utilities for grounded RAG generation."""
+
 import json
+import logging
+import os
 import sys
 from pathlib import Path
 
@@ -9,207 +11,568 @@ from openai import (
     OpenAI,
     AuthenticationError,
     RateLimitError,
-    APIStatusError
+    APIStatusError,
 )
 
+# -------------------------------------------------------------------
+# Project root
+# -------------------------------------------------------------------
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
+
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
-from prompts.answer import SYSTEM_TEMPLATE, ANSWER_TEMPLATE_V2, render
+
+# -------------------------------------------------------------------
+# Prompts
+# -------------------------------------------------------------------
+
+from prompts.answer import (
+    SYSTEM_TEMPLATE,
+    ANSWER_TEMPLATE_V2,
+    render,
+)
 
 
-# Load environment variables from .env
-load_dotenv()
+# -------------------------------------------------------------------
+# Environment
+# -------------------------------------------------------------------
+
+load_dotenv(ROOT_DIR / ".env")
 
 
-# Configure logging
+# -------------------------------------------------------------------
+# Logging
+# -------------------------------------------------------------------
+
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 
 
-# Read configuration from environment variables
-base_url = os.getenv("OPENAI_BASE_URL")
-api_key = os.getenv("OPENAI_API_KEY")
-model = os.getenv("CHAT_MODEL")
+# -------------------------------------------------------------------
+# Configuration
+# -------------------------------------------------------------------
+
+BASE_URL = os.getenv("OPENAI_BASE_URL")
+API_KEY = os.getenv("OPENAI_API_KEY")
+MODEL = os.getenv("CHAT_MODEL")
 
 
-# Validate required configuration
-if not base_url:
-    raise ValueError("OPENAI_BASE_URL is missing from .env")
+def _validate_config():
+    """Validate required environment variables."""
 
-if not api_key:
-    raise ValueError("OPENAI_API_KEY is missing from .env")
-
-if not model:
-    raise ValueError("CHAT_MODEL is missing from .env")
-
-
-# Create OpenAI-compatible client
-client = OpenAI(
-    base_url=base_url,
-    api_key=api_key
-)
-
-
-# Messages sent to the language model
-context_text = (
-    "Policy excerpt: Customers can request a refund within 30 days of "
-    "purchase with proof of payment."
-)
-
-question_text = "What is the refund window?"
-
-messages = [
-    {
-        "role": "system",
-        "content": SYSTEM_TEMPLATE
-    },
-    {
-        "role": "user",
-        "content": render(
-            ANSWER_TEMPLATE_V2,
-            context=context_text,
-            question=question_text
+    if not BASE_URL:
+        raise ValueError(
+            "OPENAI_BASE_URL is missing from .env"
         )
-    }
-]
+
+    if not API_KEY:
+        raise ValueError(
+            "OPENAI_API_KEY is missing from .env"
+        )
+
+    if not MODEL:
+        raise ValueError(
+            "CHAT_MODEL is missing from .env"
+        )
 
 
-def parse_json_response(raw, required=("answer", "source")):
+# -------------------------------------------------------------------
+# OpenAI-compatible client
+# -------------------------------------------------------------------
+
+def get_client():
+    """Create and return an OpenAI-compatible client."""
+
+    _validate_config()
+
+    return OpenAI(
+        base_url=BASE_URL,
+        api_key=API_KEY,
+    )
+
+
+# -------------------------------------------------------------------
+# JSON parsing
+# -------------------------------------------------------------------
+
+def parse_json_response(
+    raw,
+    required=("answer", "source"),
+):
+    """
+    Parse and validate a JSON response.
+
+    Returns:
+        (data, error)
+    """
+
     if raw is None:
         return None, "empty response"
 
+    raw = raw.strip()
+
+    if not raw:
+        return None, "empty response"
+
+    # First attempt: normal JSON
     try:
         data = json.loads(raw)
     except json.JSONDecodeError:
-        return None, "malformed JSON"
+
+        # Sometimes models return JSON inside markdown fences.
+        cleaned = raw
+
+        if cleaned.startswith("```json"):
+            cleaned = cleaned[7:]
+
+        elif cleaned.startswith("```"):
+            cleaned = cleaned[3:]
+
+        if cleaned.endswith("```"):
+            cleaned = cleaned[:-3]
+
+        cleaned = cleaned.strip()
+
+        try:
+            data = json.loads(cleaned)
+        except json.JSONDecodeError:
+            return None, "malformed JSON"
 
     if not isinstance(data, dict):
         return None, "response is not a JSON object"
 
-    missing = [key for key in required if key not in data]
+    missing = [
+        key
+        for key in required
+        if key not in data
+    ]
+
     if missing:
         return None, f"missing fields: {missing}"
 
     invalid = [
-        key for key in required
-        if not isinstance(data[key], str) or not data[key].strip()
+        key
+        for key in required
+        if not isinstance(data[key], str)
+        or not data[key].strip()
     ]
+
     if invalid:
         return None, f"invalid field values: {invalid}"
 
     return data, None
 
 
-def request_structured_output(base_messages):
+# -------------------------------------------------------------------
+# Structured LLM request
+# -------------------------------------------------------------------
+
+def request_structured_output(
+    base_messages,
+    client=None,
+    model=None,
+    max_attempts=2,
+):
+    """
+    Send messages to the LLM and return validated structured JSON.
+
+    Returns:
+        parsed_data, response, raw_response, error
+    """
+
+    if client is None:
+        client = get_client()
+
+    model = model or MODEL
+
     last_error = "unknown error"
     last_raw = ""
 
-    for attempt in range(2):
+    for attempt in range(max_attempts):
+
         request_messages = list(base_messages)
 
-        if attempt == 1:
-            request_messages.append({
-                "role": "user",
-                "content": (
-                    "Your previous reply was invalid. "
-                    "Return valid JSON only with keys answer and source."
-                )
-            })
+        # Retry instruction if first response was invalid.
+        if attempt > 0:
+            request_messages.append(
+                {
+                    "role": "user",
+                    "content": (
+                        "Your previous reply was invalid. "
+                        "Return valid JSON only with exactly "
+                        "these keys: answer and source."
+                    ),
+                }
+            )
 
         request_parameters = {
             "model": model,
             "messages": request_messages,
             "temperature": 0,
-            "response_format": {"type": "json_object"}
+            "response_format": {
+                "type": "json_object"
+            },
         }
 
         logging.info(
-            "REQUEST (attempt %s): %s",
+            "LLM REQUEST (attempt %s)",
             attempt + 1,
-            request_messages
         )
 
-        response = client.chat.completions.create(
-            **request_parameters
-        )
+        try:
 
-        raw = response.choices[0].message.content
-        last_raw = raw or ""
+            response = client.chat.completions.create(
+                **request_parameters
+            )
 
-        parsed, parse_error = parse_json_response(last_raw)
-        if parsed:
-            return parsed, response, last_raw, None
+            if not response.choices:
+                last_error = "LLM returned no choices"
+                continue
 
-        last_error = parse_error
-        logging.warning(
-            "PARSE ERROR (attempt %s): %s | RAW: %s",
-            attempt + 1,
-            parse_error,
-            last_raw
-        )
+            raw = response.choices[0].message.content
 
-    return None, None, last_raw, last_error
+            last_raw = raw or ""
 
+            parsed, parse_error = parse_json_response(
+                last_raw
+            )
 
-try:
-    structured_data, response, raw, parse_error = request_structured_output(
-        messages
+            if parsed is not None:
+
+                logging.info(
+                    "LLM RESPONSE JSON: %s",
+                    parsed,
+                )
+
+                if response.usage:
+                    logging.info(
+                        "LLM USAGE: %s",
+                        response.usage,
+                    )
+
+                return (
+                    parsed,
+                    response,
+                    last_raw,
+                    None,
+                )
+
+            last_error = parse_error
+
+            logging.warning(
+                "JSON PARSE ERROR (attempt %s): %s",
+                attempt + 1,
+                parse_error,
+            )
+
+        except AuthenticationError:
+
+            raise
+
+        except RateLimitError:
+
+            raise
+
+        except APIStatusError:
+
+            raise
+
+        except Exception as error:
+
+            last_error = str(error)
+
+            logging.exception(
+                "Unexpected LLM error"
+            )
+
+    return (
+        None,
+        None,
+        last_raw,
+        last_error,
     )
 
-    if structured_data is None:
-        print("\nNERI Structured Response:")
-        print(f"recover: {parse_error}")
-        print("Raw model output:")
-        print(raw)
-    else:
-        # Log the validated JSON payload.
-        logging.info("RESPONSE JSON: %s", structured_data)
 
-        # Log token usage if available.
-        if response and response.usage:
-            logging.info("USAGE: %s", response.usage)
+# -------------------------------------------------------------------
+# Main RAG generation function
+# -------------------------------------------------------------------
 
-        print("\nNERI Structured Response:")
-        print(f"Answer: {structured_data['answer']}")
-        print(f"Source: {structured_data['source']}")
+def generate_answer(
+    query: str,
+    context: str,
+    client=None,
+    model=None,
+) -> str:
+    """
+    Generate a grounded answer using the supplied context.
+
+    Args:
+        query:
+            User's question.
+
+        context:
+            Retrieved RAG context.
+
+        client:
+            Optional OpenAI-compatible client.
+
+        model:
+            Optional model override.
+
+    Returns:
+        Answer string.
+    """
+
+    if not query or not query.strip():
+        raise ValueError(
+            "query must not be empty"
+        )
+
+    if not context or not context.strip():
+        return "I do not know based on the provided context."
+
+    messages = [
+        {
+            "role": "system",
+            "content": SYSTEM_TEMPLATE,
+        },
+        {
+            "role": "user",
+            "content": render(
+                ANSWER_TEMPLATE_V2,
+                context=context,
+                question=query,
+            ),
+        },
+    ]
+
+    try:
+
+        structured_data, response, raw, error = (
+            request_structured_output(
+                messages,
+                client=client,
+                model=model,
+            )
+        )
+
+        if structured_data is None:
+
+            logging.warning(
+                "Could not parse structured response: %s",
+                error,
+            )
+
+            return (
+                "I do not know based on the provided context."
+            )
+
+        answer = structured_data.get(
+            "answer",
+            "",
+        ).strip()
+
+        source = structured_data.get(
+            "source",
+            "",
+        ).strip()
+
+        if not answer:
+            return (
+                "I do not know based on the provided context."
+            )
+
+        # Return the answer in a format that the RAG
+        # pipeline can consume.
+        if source:
+            return f"{answer} [Source: {source}]"
+
+        return answer
+
+    except AuthenticationError:
+
+        return (
+            "Authentication failed. "
+            "Please check the API configuration."
+        )
+
+    except RateLimitError:
+
+        return (
+            "The LLM API rate limit has been reached. "
+            "Please try again later."
+        )
+
+    except APIStatusError as error:
+
+        if error.status_code == 503:
+            return (
+                "The LLM service is temporarily unavailable. "
+                "Please try again later."
+            )
+
+        return (
+            f"LLM API error ({error.status_code})."
+        )
+
+    except Exception as error:
+
+        logging.exception(
+            "Unexpected error while generating answer"
+        )
+
+        return (
+            "I was unable to generate an answer."
+        )
 
 
-except AuthenticationError:
-    # 401 Unauthorized
+# -------------------------------------------------------------------
+# Optional structured version
+# -------------------------------------------------------------------
+
+def generate_structured_answer(
+    query: str,
+    context: str,
+    client=None,
+    model=None,
+) -> dict:
+    """
+    Generate and return the complete structured response.
+
+    Returns:
+        {
+            "answer": "...",
+            "source": "..."
+        }
+    """
+
+    if not query or not query.strip():
+        raise ValueError(
+            "query must not be empty"
+        )
+
+    if not context or not context.strip():
+
+        return {
+            "answer": (
+                "I do not know based on the provided context."
+            ),
+            "source": "",
+        }
+
+    messages = [
+        {
+            "role": "system",
+            "content": SYSTEM_TEMPLATE,
+        },
+        {
+            "role": "user",
+            "content": render(
+                ANSWER_TEMPLATE_V2,
+                context=context,
+                question=query,
+            ),
+        },
+    ]
+
+    try:
+
+        structured_data, response, raw, error = (
+            request_structured_output(
+                messages,
+                client=client,
+                model=model,
+            )
+        )
+
+        if structured_data is None:
+
+            return {
+                "answer": (
+                    "I do not know based on the provided context."
+                ),
+                "source": "",
+            }
+
+        return structured_data
+
+    except AuthenticationError:
+
+        return {
+            "answer": (
+                "Authentication failed. "
+                "Please check the API configuration."
+            ),
+            "source": "",
+        }
+
+    except RateLimitError:
+
+        return {
+            "answer": (
+                "The LLM API rate limit has been reached."
+            ),
+            "source": "",
+        }
+
+    except APIStatusError as error:
+
+        return {
+            "answer": (
+                f"LLM API error ({error.status_code})."
+            ),
+            "source": "",
+        }
+
+    except Exception:
+
+        logging.exception(
+            "Unexpected structured generation error"
+        )
+
+        return {
+            "answer": (
+                "I was unable to generate an answer."
+            ),
+            "source": "",
+        }
+
+
+# -------------------------------------------------------------------
+# Standalone test
+# -------------------------------------------------------------------
+
+def main():
+    """Run a simple standalone LLM API test."""
+
+    context = (
+        "Policy excerpt: Customers can request a refund "
+        "within 30 days of purchase with proof of payment."
+    )
+
+    question = "What is the refund window?"
+
+    print("=" * 70)
+    print("LLM API TEST")
+    print("=" * 70)
+
+    result = generate_structured_answer(
+        question,
+        context,
+    )
+
+    print("\nNERI Structured Response:")
     print(
-        "Authentication failed (401): "
-        "Check OPENAI_API_KEY in your .env file."
-    )
-
-
-except RateLimitError:
-    # 429 Too Many Requests
-    print(
-        "Rate limit or quota reached (429): "
-        "Please wait and retry."
-    )
-
-
-except APIStatusError as error:
-    # Handle other API status errors such as 503
-    if error.status_code == 503:
-        print(
-            "Service temporarily unavailable (503): "
-            "The model is currently busy. Please try again later."
+        json.dumps(
+            result,
+            indent=2,
         )
-    else:
-        print(
-            f"API error ({error.status_code}): {error}"
-        )
-
-
-except Exception as error:
-    # Handle unexpected errors
-    print(
-        f"An unexpected error occurred: {error}"
     )
+
+
+if __name__ == "__main__":
+    main()
