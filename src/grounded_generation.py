@@ -1,147 +1,265 @@
 """
-Grounded Answer Generation
+Grounded Generation + Hallucination Guardrails + Citations
 
-This module:
-1. Retrieves relevant chunks.
-2. Builds a prompt using only retrieved context.
-3. Generates grounded answers.
-4. Handles missing-context fallback.
-5. Compares answers with and without retrieval.
-6. Provides source information for citation work.
+Pipeline:
+
+Question
+   ↓
+Embedding
+   ↓
+Vector Retrieval
+   ↓
+Retrieval Quality Check
+   ↓
+ ┌───────────────┐
+ │               │
+Weak           Strong
+ │               │
+Refuse        Generate
+                 ↓
+             Citations
+                 ↓
+          Source Verification
+
+Uses Gemini through Google's OpenAI-compatible API.
+Environment variables:
+
+OPENAI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/
+OPENAI_API_KEY=your_key
+CHAT_MODEL=gemini-3.1-flash-lite
+EMBED_MODEL=gemini-embedding-001
 """
 
-import json
-import re
+from __future__ import annotations
+
+import logging
+import os
 from pathlib import Path
 from typing import Any
 
 from dotenv import load_dotenv
 
-from .embeddings import embed
-from .llm_api import generate_answer
-from .reranking import rerank_candidates
-from .vector_store import VectorStore
+# ------------------------------------------------------------------
+# Imports
+# ------------------------------------------------------------------
+
+try:
+    from .embeddings import embed
+    from .vector_store import VectorStore
+    from .citations import (
+        FALLBACK_MESSAGE,
+        build_citation_map,
+        build_cited_prompt,
+        extract_citations,
+        format_citation_sources,
+        missing_context_response,
+        validate_citations,
+        verify_all_citations,
+    )
+except ImportError:
+    from embeddings import embed
+    from vector_store import VectorStore
+    from citations import (
+        FALLBACK_MESSAGE,
+        build_citation_map,
+        build_cited_prompt,
+        extract_citations,
+        format_citation_sources,
+        missing_context_response,
+        validate_citations,
+        verify_all_citations,
+    )
 
 
-# ---------------------------------------------------------
+# ------------------------------------------------------------------
 # Environment
-# ---------------------------------------------------------
+# ------------------------------------------------------------------
 
 load_dotenv()
 
+# ------------------------------------------------------------------
+# Logging
+# ------------------------------------------------------------------
 
-# ---------------------------------------------------------
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+)
+
+logger = logging.getLogger(__name__)
+
+
+# ------------------------------------------------------------------
 # Configuration
-# ---------------------------------------------------------
+# ------------------------------------------------------------------
 
-VECTOR_DIR = Path("outputs/chroma_db")
+DEFAULT_VECTOR_DIR = "outputs/chroma_db"
+DEFAULT_VECTOR_DIMENSION = 3072
+DEFAULT_COLLECTION = "rag_chunks"
 
-OUTPUT_DIR = Path("outputs")
-OUTPUT_DIR.mkdir(exist_ok=True)
-
-OUTPUT_FILE = OUTPUT_DIR / "grounded_answers.md"
+DEFAULT_GENERATION_MODEL = os.getenv(
+    "CHAT_MODEL",
+    "gemini-3.1-flash-lite",
+)
 
 CANDIDATE_K = 10
 FINAL_K = 3
 
-FALLBACK_MESSAGE = (
-    "I don't have enough information in the provided context."
-)
+# Your current corpus produces scores around 0.60+
+# for strongly related questions.
+MIN_TOP_SCORE = 0.50
 
-SUPPORTED_QUERY = (
-    "What should a technician do if abnormal vibration is detected?"
-)
-
-UNSUPPORTED_QUERY = (
-    "Who is the president of India?"
-)
+MIN_SUPPORTING_CHUNKS = 1
 
 
-# ---------------------------------------------------------
+# ==================================================================
 # Vector Store
-# ---------------------------------------------------------
+# ==================================================================
+
+_vector_store: VectorStore | None = None
+
 
 def get_vector_store() -> VectorStore:
     """
-    Return the project's existing vector store.
+    Return the shared vector store instance.
     """
 
-    return VectorStore(
-        persist_dir=VECTOR_DIR,
-        collection_name="rag_chunks",
-        vector_dimension=3072,
+    global _vector_store
+
+    if _vector_store is None:
+        _vector_store = VectorStore(
+            persist_dir=DEFAULT_VECTOR_DIR,
+            collection_name=DEFAULT_COLLECTION,
+            vector_dimension=DEFAULT_VECTOR_DIMENSION,
+        )
+
+    return _vector_store
+
+
+# ==================================================================
+# Retrieval
+# ==================================================================
+
+def retrieve_context(
+    query_vector: list[float],
+    vector_store: VectorStore,
+    k: int = 4,
+) -> list[dict]:
+    """
+    Retrieve chunks from the existing VectorStore.
+
+    Handles VectorStore implementations where the search
+    method expects a different parameter name.
+    """
+
+    # First try the common positional form.
+    try:
+        return vector_store.search(
+            query_vector,
+            k,
+        )
+    except TypeError:
+        pass
+
+    # Try n_results if supported.
+    try:
+        return vector_store.search(
+            query_vector,
+            n_results=k,
+        )
+    except TypeError:
+        pass
+
+    # Try top_k if supported.
+    try:
+        return vector_store.search(
+            query_vector,
+            top_k=k,
+        )
+    except TypeError:
+        pass
+
+    raise TypeError(
+        "VectorStore.search() does not accept "
+        "k, n_results, or top_k."
     )
 
 
-# ---------------------------------------------------------
-# Retrieval
-# ---------------------------------------------------------
-
 def retrieve_chunks(
     question: str,
-    k: int = FINAL_K,
+    k: int = 3,
 ) -> list[dict]:
     """
-    Retrieve relevant chunks from Chroma.
-
-    Important:
-    VectorStore.search() expects top_k, not k.
+    Convert the question to an embedding and retrieve
+    the most relevant chunks.
     """
-
-    if not question or not question.strip():
-        return []
 
     vector_store = get_vector_store()
 
-    # Generate embedding for the query.
     query_vector = embed([question])[0]
 
-    # IMPORTANT:
-    # Your VectorStore.search() uses top_k.
-    chunks = vector_store.search(
+    chunks = retrieve_context(
         query_vector,
-        top_k=k,
+        vector_store,
+        k=k,
     )
 
     return chunks
 
 
-# ---------------------------------------------------------
+# ==================================================================
 # Context Formatting
-# ---------------------------------------------------------
+# ==================================================================
 
 def format_context(
     chunks: list[dict],
 ) -> str:
     """
-    Format retrieved chunks with source information.
+    Format retrieved chunks with stable citation markers.
+
+    Example:
+
+    [1] Source: vibration_manual.txt
+    Chunk: vibration_manual.txt:0
+    Section: Document body
+
+    Content:
+    ...
     """
 
     if not chunks:
         return ""
 
-    context_parts = []
+    parts = []
 
-    for index, chunk in enumerate(chunks, start=1):
-
+    for index, chunk in enumerate(
+        chunks,
+        start=1,
+    ):
         metadata = chunk.get(
             "metadata",
             {},
-        )
+        ) or {}
 
         source = metadata.get(
             "source",
-            "unknown",
+            metadata.get(
+                "source_path",
+                "unknown",
+            ),
         )
 
         chunk_id = metadata.get(
             "chunk_id",
-            chunk.get("id", "unknown"),
+            chunk.get(
+                "id",
+                f"{source}:{metadata.get('chunk_index', index - 1)}",
+            ),
         )
 
         chunk_index = metadata.get(
             "chunk_index",
-            "unknown",
+            index - 1,
         )
 
         section = metadata.get(
@@ -149,137 +267,263 @@ def format_context(
             "unknown",
         )
 
-        page = metadata.get(
-            "page",
-            None,
-        )
-
         text = chunk.get(
             "text",
             "",
         )
 
-        location = (
-            f"chunk_id={chunk_id}, "
-            f"chunk_index={chunk_index}"
-        )
-
-        if page is not None:
-            location += f", page={page}"
-
-        context_parts.append(
-            f"[{index}]\n"
-            f"Source: {source}\n"
-            f"Location: {location}\n"
-            f"Section: {section}\n"
+        parts.append(
+            f"[{index}] Source: {source}\n"
+            f"Chunk ID: {chunk_id}\n"
+            f"Chunk Index: {chunk_index}\n"
+            f"Section: {section}\n\n"
             f"Content:\n{text}"
         )
 
-    return "\n\n".join(context_parts)
+    return "\n\n".join(parts)
 
 
-# ---------------------------------------------------------
-# Prompt Construction
-# ---------------------------------------------------------
+# ==================================================================
+# Prompt Builder
+# ==================================================================
 
 def build_prompt(
     question: str,
     chunks: list[dict],
-) -> dict:
+) -> dict[str, Any]:
     """
-    Build a grounded prompt.
-
-    The model is explicitly instructed to:
-    - use only supplied context
-    - cite claims using [1], [2], etc.
-    - never invent citations
-    - fall back when context is insufficient
+    Build a citation-aware grounded prompt.
     """
 
-    context = format_context(chunks)
+    citation_map = build_citation_map(
+        chunks
+    )
 
-    if not context:
-        return {
-            "prompt": "",
-            "context": "",
-            "sources_used": [],
-        }
+    # Use the citation module's prompt builder.
+    prompt = build_cited_prompt(
+        question,
+        chunks,
+    )
 
-    sources = []
-
-    for chunk in chunks:
-
-        metadata = chunk.get(
-            "metadata",
-            {},
-        )
-
-        source = metadata.get(
-            "source",
-            "unknown",
-        )
-
-        if source not in sources:
-            sources.append(source)
-
-    prompt = f"""
-You are a technical support assistant.
-
-GROUNDING RULES:
-
-1. Answer ONLY using the supplied context.
-2. Do NOT use outside knowledge.
-3. Do NOT guess.
-4. Do NOT invent facts.
-5. Do NOT invent source names.
-6. Every factual claim must be supported by the supplied context.
-7. Cite factual claims using the source markers [1], [2], [3], etc.
-8. Only use citation numbers that actually appear in the supplied context.
-9. If the context does not contain enough information, respond exactly with:
-
-"I don't have enough information in the provided context."
-
-10. Never create a citation for information that is not present in the context.
-
-CONTEXT:
-
-{context}
-
-QUESTION:
-
-{question}
-
-ANSWER:
-"""
+    context = format_context(
+        chunks
+    )
 
     return {
         "prompt": prompt,
+        "citation_map": citation_map,
         "context": context,
-        "sources_used": sources,
     }
 
 
-# ---------------------------------------------------------
-# Grounded Answer Generation
-# ---------------------------------------------------------
+# ==================================================================
+# LLM Client
+# ==================================================================
+
+def get_llm_client():
+    """
+    Create the Gemini client using Google's
+    OpenAI-compatible API.
+
+    IMPORTANT:
+    Uses OPENAI_API_KEY, NOT GEMINI_API_KEY.
+    """
+
+    load_dotenv()
+
+    api_key = os.getenv(
+        "OPENAI_API_KEY"
+    )
+
+    base_url = os.getenv(
+        "OPENAI_BASE_URL",
+        "https://generativelanguage.googleapis.com/v1beta/openai/",
+    )
+
+    if not api_key:
+        raise RuntimeError(
+            "OPENAI_API_KEY is not set in the environment."
+        )
+
+    try:
+        from openai import OpenAI
+
+        return OpenAI(
+            api_key=api_key,
+            base_url=base_url,
+        )
+
+    except ImportError as exc:
+        raise RuntimeError(
+            "The openai package is required. "
+            "Install it with: pip install openai"
+        ) from exc
+
+
+# ==================================================================
+# Grounded Generation
+# ==================================================================
+
+def generate_answer(
+    query: str,
+    context: str,
+    client=None,
+    model: str | None = None,
+) -> str:
+    """
+    Generate an answer using ONLY the supplied context.
+
+    The model is explicitly instructed not to use
+    outside knowledge.
+    """
+
+    if client is None:
+        client = get_llm_client()
+
+    if model is None:
+        model = os.getenv(
+            "CHAT_MODEL",
+            DEFAULT_GENERATION_MODEL,
+        )
+
+    if not context.strip():
+        return FALLBACK_MESSAGE
+
+    prompt = f"""
+You are a grounded RAG assistant.
+
+Answer the question using ONLY the retrieved context.
+
+Rules:
+1. Do not use outside knowledge.
+2. Do not invent facts.
+3. Do not make assumptions.
+4. Every factual claim must be supported by the context.
+5. Cite factual claims using [1], [2], [3], etc.
+6. Use ONLY citation numbers that exist in the provided context.
+7. Do not fabricate citations.
+8. If the context does not contain enough information, say:
+   "I don't have enough information in the provided context to answer that reliably."
+
+Retrieved Context:
+{context}
+
+Question:
+{query}
+
+Return a concise answer with citations.
+"""
+
+    logger.info(
+        "LLM REQUEST"
+    )
+
+    response = client.chat.completions.create(
+        model=model,
+        temperature=0,
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "You are a grounded RAG assistant. "
+                    "You must answer only from supplied context."
+                ),
+            },
+            {
+                "role": "user",
+                "content": prompt,
+            },
+        ],
+    )
+
+    answer = (
+        response
+        .choices[0]
+        .message
+        .content
+        or ""
+    )
+
+    logger.info(
+        "LLM RESPONSE: %s",
+        answer,
+    )
+
+    return answer.strip()
+
+
+# ==================================================================
+# Citation Verification
+# ==================================================================
+
+def verify_answer_against_sources(
+    answer: str,
+    chunks: list[dict],
+) -> dict[str, Any]:
+    """
+    Verify every citation in the generated answer
+    against the original retrieved chunks.
+    """
+
+    citation_map = build_citation_map(
+        chunks
+    )
+
+    validation = validate_citations(
+        answer,
+        citation_map,
+    )
+
+    verification = verify_all_citations(
+        answer,
+        citation_map,
+    )
+
+    return {
+        "citation_validation": validation,
+        "citation_verification": verification,
+        "citations": citation_map,
+        "verified": (
+            validation.get(
+                "valid",
+                False,
+            )
+            and verification.get(
+                "all_verified",
+                False,
+            )
+        ),
+    }
+
+
+# ==================================================================
+# Grounded Answer
+# ==================================================================
 
 def generate_grounded_answer(
     question: str,
     retrieved_chunks: list[dict],
 ) -> dict:
     """
-    Generate an answer using only retrieved context.
+    Generate an answer from injected retrieved chunks.
+
+    This function does NOT perform retrieval.
+
+    This directly satisfies the assignment requirement:
+
+    "Generate an answer using only the injected retrieved context."
     """
 
     if not retrieved_chunks:
-
         return {
             "question": question,
             "answer": FALLBACK_MESSAGE,
             "context": "",
             "sources": [],
             "grounded": False,
-            "retrieved_chunks": [],
+            "status": "refused",
+            "reason": "no_context",
+            "citations": {},
         }
 
     prompt_data = build_prompt(
@@ -287,277 +531,376 @@ def generate_grounded_answer(
         retrieved_chunks,
     )
 
-    if not prompt_data["prompt"]:
-
-        return {
-            "question": question,
-            "answer": FALLBACK_MESSAGE,
-            "context": "",
-            "sources": [],
-            "grounded": False,
-            "retrieved_chunks": retrieved_chunks,
-        }
-
     answer = generate_answer(
-        question,
-        prompt_data["prompt"],
+        query=question,
+        context=prompt_data["context"],
     )
+
+    citation_result = verify_answer_against_sources(
+        answer,
+        retrieved_chunks,
+    )
+
+    sources = []
+
+    for index, chunk in enumerate(
+        retrieved_chunks,
+        start=1,
+    ):
+        metadata = chunk.get(
+            "metadata",
+            {},
+        ) or {}
+
+        source = metadata.get(
+            "source",
+            metadata.get(
+                "source_path",
+                "unknown",
+            ),
+        )
+
+        chunk_id = metadata.get(
+            "chunk_id",
+            chunk.get(
+                "id",
+                f"{source}:{metadata.get('chunk_index', index - 1)}",
+            ),
+        )
+
+        chunk_index = metadata.get(
+            "chunk_index",
+            index - 1,
+        )
+
+        section = metadata.get(
+            "section",
+            "unknown",
+        )
+
+        sources.append(
+            {
+                "citation": f"[{index}]",
+                "source": source,
+                "chunk_id": chunk_id,
+                "chunk_index": chunk_index,
+                "section": section,
+            }
+        )
 
     return {
         "question": question,
         "answer": answer,
         "context": prompt_data["context"],
-        "sources": prompt_data["sources_used"],
+        "sources": sources,
         "grounded": True,
+        "status": "answered",
+        "reason": "retrieved_context",
+        "citations": citation_result["citations"],
+        "citation_validation": citation_result[
+            "citation_validation"
+        ],
+        "citation_verification": citation_result[
+            "citation_verification"
+        ],
+        "verified": citation_result[
+            "verified"
+        ],
         "retrieved_chunks": retrieved_chunks,
     }
 
 
-# ---------------------------------------------------------
-# Supporting Context Check
-# ---------------------------------------------------------
+# ==================================================================
+# Retrieval Guardrails
+# ==================================================================
+
+def check_retrieval(
+    chunks: list[dict],
+    min_score: float = MIN_TOP_SCORE,
+    min_supporting_chunks: int = MIN_SUPPORTING_CHUNKS,
+) -> dict:
+    """
+    Check whether retrieval is strong enough to answer.
+
+    Conditions:
+
+    - At least one chunk must exist.
+    - At least one chunk must have score >= threshold.
+    """
+
+    if not chunks:
+        return {
+            "allowed": False,
+            "reason": "no_context",
+            "message": (
+                "No supporting context was retrieved."
+            ),
+            "diagnostics": {
+                "retrieved_count": 0,
+                "scores": [],
+                "top_score": 0.0,
+                "strong_chunk_count": 0,
+                "threshold": min_score,
+                "passed": False,
+            },
+        }
+
+    scores = []
+
+    for chunk in chunks:
+        score = chunk.get(
+            "similarity",
+            chunk.get(
+                "score",
+                0.0,
+            ),
+        )
+
+        try:
+            score = float(score)
+        except (
+            TypeError,
+            ValueError,
+        ):
+            score = 0.0
+
+        scores.append(score)
+
+    top_score = max(
+        scores
+    ) if scores else 0.0
+
+    strong_chunk_count = sum(
+        1
+        for score in scores
+        if score >= min_score
+    )
+
+    passed = (
+        strong_chunk_count
+        >= min_supporting_chunks
+    )
+
+    return {
+        "allowed": passed,
+        "reason": (
+            "strong_context"
+            if passed
+            else "weak_context"
+        ),
+        "message": (
+            "Retrieved context is strong enough."
+            if passed
+            else (
+                "Retrieved context did not meet "
+                "the minimum relevance threshold."
+            )
+        ),
+        "diagnostics": {
+            "retrieved_count": len(chunks),
+            "scores": scores,
+            "top_score": top_score,
+            "strong_chunk_count": strong_chunk_count,
+            "threshold": min_score,
+            "passed": passed,
+        },
+    }
+
+
+def get_strong_chunks(
+    chunks: list[dict],
+    min_score: float = MIN_TOP_SCORE,
+) -> list[dict]:
+    """
+    Return only chunks that pass the relevance threshold.
+    """
+
+    strong = []
+
+    for chunk in chunks:
+        score = chunk.get(
+            "similarity",
+            chunk.get(
+                "score",
+                0.0,
+            ),
+        )
+
+        try:
+            score = float(score)
+        except (
+            TypeError,
+            ValueError,
+        ):
+            score = 0.0
+
+        if score >= min_score:
+            strong.append(chunk)
+
+    return strong
+
 
 def has_supporting_context(
     question: str,
     chunks: list[dict],
 ) -> bool:
     """
-    Conservative lexical check to determine whether
-    retrieved chunks contain meaningful terms from the question.
+    Return True if retrieval contains strong context.
     """
 
-    if not chunks:
-        return False
-
-    question_terms = set(
-        re.findall(
-            r"\b[a-zA-Z]{4,}\b",
-            question.lower(),
-        )
+    result = check_retrieval(
+        chunks,
+        min_score=MIN_TOP_SCORE,
     )
 
-    stop_words = {
-        "what",
-        "should",
-        "could",
-        "would",
-        "does",
-        "this",
-        "that",
-        "with",
-        "from",
-        "when",
-        "where",
-        "which",
-        "have",
-        "into",
-        "your",
-        "their",
-        "there",
-        "technician",
-    }
-
-    question_terms -= stop_words
-
-    if not question_terms:
-        return False
-
-    combined_text = " ".join(
-        str(chunk.get("text", ""))
-        for chunk in chunks
-    ).lower()
-
-    matches = sum(
-        1
-        for term in question_terms
-        if term in combined_text
+    return bool(
+        result["allowed"]
     )
 
-    return matches >= 1
 
+# ==================================================================
+# Refusal
+# ==================================================================
 
-# ---------------------------------------------------------
-# Citation Number Validation
-# ---------------------------------------------------------
-
-def extract_citation_markers(
-    answer: str,
-) -> list[str]:
-    """
-    Extract citations such as [1], [2], [3].
-    """
-
-    if not answer:
-        return []
-
-    markers = re.findall(
-        r"\[\d+\]",
-        answer,
-    )
-
-    # Preserve order while removing duplicates.
-    unique_markers = []
-
-    for marker in markers:
-        if marker not in unique_markers:
-            unique_markers.append(marker)
-
-    return unique_markers
-
-
-def validate_citations(
-    answer: str,
-    chunks: list[dict],
+def refusal_response(
+    reason: str = "weak_context",
 ) -> dict:
     """
-    Verify that every citation in the answer maps
-    to an actual retrieved chunk.
+    Return a safe refusal response.
     """
 
-    cited_markers = extract_citation_markers(
-        answer
-    )
-
-    available_markers = {
-        f"[{index}]"
-        for index in range(
-            1,
-            len(chunks) + 1,
+    if reason == "no_context":
+        message = (
+            "I don't have enough information in the "
+            "provided context to answer that reliably."
         )
-    }
 
-    valid_citations = [
-        marker
-        for marker in cited_markers
-        if marker in available_markers
-    ]
-
-    invalid_citations = [
-        marker
-        for marker in cited_markers
-        if marker not in available_markers
-    ]
+    else:
+        message = (
+            "I don't have enough reliable context "
+            "to answer that question."
+        )
 
     return {
-        "valid": len(invalid_citations) == 0,
-        "cited_markers": cited_markers,
-        "valid_citations": valid_citations,
-        "invalid_citations": invalid_citations,
+        "answer": message,
+        "sources": [],
+        "status": "refused",
+        "reason": reason,
     }
 
 
-# ---------------------------------------------------------
-# Source Accuracy Check
-# ---------------------------------------------------------
+# ==================================================================
+# Guarded Answer
+# ==================================================================
 
-def check_source_accuracy(
-    answer: str,
-    chunks: list[dict],
+def guarded_answer(
+    question: str,
+    candidate_k: int = CANDIDATE_K,
+    final_k: int = FINAL_K,
+    min_score: float = MIN_TOP_SCORE,
 ) -> dict:
     """
-    Check whether cited sources contain supporting
-    text for the claims in the answer.
+    Complete hallucination-safe RAG pipeline.
 
-    This is a simple verification aid, not a substitute
-    for human review.
+    Question
+       ↓
+    Retrieval
+       ↓
+    Relevance threshold
+       ↓
+    Refuse OR Generate
     """
 
-    citation_validation = validate_citations(
-        answer,
-        chunks,
+    logger.info(
+        "GUARDED QUERY: %s",
+        question,
     )
 
-    results = {}
+    # --------------------------------------------------------------
+    # Retrieval
+    # --------------------------------------------------------------
 
-    for marker in citation_validation["valid_citations"]:
+    chunks = retrieve_chunks(
+        question,
+        k=candidate_k,
+    )
 
-        index = int(
-            marker.strip("[]")
-        ) - 1
+    logger.info(
+        "Retrieved %d chunks",
+        len(chunks),
+    )
 
-        chunk = chunks[index]
+    # --------------------------------------------------------------
+    # Guardrail
+    # --------------------------------------------------------------
 
-        source_text = str(
-            chunk.get(
-                "text",
-                "",
-            )
+    check = check_retrieval(
+        chunks,
+        min_score=min_score,
+    )
+
+    logger.info(
+        "Retrieval diagnostics: %s",
+        check["diagnostics"],
+    )
+
+    # --------------------------------------------------------------
+    # Refuse weak context
+    # --------------------------------------------------------------
+
+    if not check["allowed"]:
+        refusal = refusal_response(
+            check["reason"]
         )
 
-        source_lower = source_text.lower()
-
-        # Remove the citation marker.
-        answer_without_marker = answer.replace(
-            marker,
-            "",
-        )
-
-        answer_words = set(
-            re.findall(
-                r"\b[a-zA-Z]{4,}\b",
-                answer_without_marker.lower(),
-            )
-        )
-
-        source_words = set(
-            re.findall(
-                r"\b[a-zA-Z]{4,}\b",
-                source_lower,
-            )
-        )
-
-        matching_terms = sorted(
-            answer_words.intersection(
-                source_words
-            )
-        )
-
-        supported = len(matching_terms) >= 2
-
-        metadata = chunk.get(
-            "metadata",
-            {},
-        )
-
-        results[marker] = {
-            "verified": supported,
-            "source": metadata.get(
-                "source",
-                "unknown",
-            ),
-            "chunk_id": metadata.get(
-                "chunk_id",
-                chunk.get("id"),
-            ),
-            "chunk_index": metadata.get(
-                "chunk_index",
-            ),
-            "section": metadata.get(
-                "section",
-            ),
-            "page": metadata.get(
-                "page",
-            ),
-            "original_text": source_text,
-            "matching_terms": matching_terms,
+        return {
+            "question": question,
+            "answer": refusal["answer"],
+            "sources": [],
+            "status": "refused",
+            "reason": check["reason"],
+            "grounded": False,
+            "retrieved_chunks": chunks,
+            "diagnostics": check[
+                "diagnostics"
+            ],
+            "citations": {},
         }
 
-    return {
-        "all_verified": (
-            citation_validation["valid"]
-            and all(
-                item["verified"]
-                for item in results.values()
-            )
-        ),
-        "citation_validation": citation_validation,
-        "results": results,
-    }
+    # --------------------------------------------------------------
+    # Keep strong chunks
+    # --------------------------------------------------------------
+
+    strong_chunks = get_strong_chunks(
+        chunks,
+        min_score=min_score,
+    )
+
+    strong_chunks = strong_chunks[
+        :final_k
+    ]
+
+    # --------------------------------------------------------------
+    # Generate
+    # --------------------------------------------------------------
+
+    result = generate_grounded_answer(
+        question,
+        strong_chunks,
+    )
+
+    result["status"] = "answered"
+    result["reason"] = "strong_context"
+    result["diagnostics"] = check[
+        "diagnostics"
+    ]
+
+    return result
 
 
-# ---------------------------------------------------------
-# Complete Query
-# ---------------------------------------------------------
+# ==================================================================
+# Answer Query
+# ==================================================================
 
 def answer_query(
     question: str,
@@ -565,579 +908,408 @@ def answer_query(
     final_k: int = FINAL_K,
 ) -> dict:
     """
-    Complete retrieval + reranking + generation flow.
+    Main backwards-compatible query function.
+
+    Uses guarded retrieval + grounded generation.
     """
 
-    candidates = retrieve_chunks(
+    return guarded_answer(
         question,
-        k=candidate_k,
+        candidate_k=candidate_k,
+        final_k=final_k,
     )
 
-    if not candidates:
 
-        return {
-            "question": question,
-            "answer": FALLBACK_MESSAGE,
-            "context": "",
-            "sources": [],
-            "grounded": False,
-            "retrieved_chunks": [],
-            "citation_check": {
-                "all_verified": False,
-                "citation_validation": {},
-                "results": {},
-            },
-        }
-
-    # -----------------------------------------------------
-    # Reranking
-    # -----------------------------------------------------
-
-    try:
-
-        reranked = rerank_candidates(
-            question,
-            candidates,
-            top_k=final_k,
-        )
-
-        if reranked:
-
-            selected = []
-
-            for item in reranked:
-
-                if (
-                    isinstance(item, tuple)
-                    and len(item) == 2
-                ):
-                    selected.append(
-                        item[1]
-                    )
-                else:
-                    selected.append(
-                        item
-                    )
-
-            chunks = selected[:final_k]
-
-        else:
-
-            chunks = candidates[:final_k]
-
-    except Exception:
-
-        # If reranking fails, retrieval still works.
-        chunks = candidates[:final_k]
-
-    # -----------------------------------------------------
-    # Supporting context check
-    # -----------------------------------------------------
-
-    if not has_supporting_context(
-        question,
-        chunks,
-    ):
-
-        return {
-            "question": question,
-            "answer": FALLBACK_MESSAGE,
-            "context": format_context(chunks),
-            "sources": [],
-            "grounded": False,
-            "retrieved_chunks": chunks,
-            "citation_check": {
-                "all_verified": False,
-                "citation_validation": {},
-                "results": {},
-            },
-        }
-
-    # -----------------------------------------------------
-    # Generate
-    # -----------------------------------------------------
-
-    result = generate_grounded_answer(
-        question,
-        chunks,
-    )
-
-    # -----------------------------------------------------
-    # Citation validation
-    # -----------------------------------------------------
-
-    citation_check = check_source_accuracy(
-        result["answer"],
-        chunks,
-    )
-
-    result["citation_check"] = citation_check
-
-    return result
-
-
-# ---------------------------------------------------------
-# Without Retrieval
-# ---------------------------------------------------------
+# ==================================================================
+# Ungrounded Answer
+# ==================================================================
 
 def generate_ungrounded_answer(
     question: str,
 ) -> str:
     """
-    Generate an answer without retrieval.
+    Generate an answer WITHOUT retrieval.
 
-    This is used only for Task 4:
-    comparing answers with and without retrieval.
+    This exists only for the assignment's
+    with-vs-without retrieval comparison.
+
+    It is intentionally NOT grounded.
     """
 
+    client = get_llm_client()
+
+    model = os.getenv(
+        "CHAT_MODEL",
+        DEFAULT_GENERATION_MODEL,
+    )
+
     prompt = f"""
-Answer the following question using your general knowledge.
+Answer this question using your general language-model knowledge.
+
+Do not retrieve or use the project's documents.
 
 Question:
 {question}
-
-Answer:
 """
 
-    return generate_answer(
-        question,
-        prompt,
+    response = client.chat.completions.create(
+        model=model,
+        temperature=0,
+        messages=[
+            {
+                "role": "user",
+                "content": prompt,
+            }
+        ],
+    )
+
+    return (
+        response
+        .choices[0]
+        .message
+        .content
+        .strip()
     )
 
 
-# ---------------------------------------------------------
+# ==================================================================
 # Print Grounding Result
-# ---------------------------------------------------------
+# ==================================================================
 
 def print_grounding_check(
     result: dict,
 ) -> None:
-
-    print("\n" + "=" * 80)
-    print("GROUNDED ANSWER")
-    print("=" * 80)
-
-    print(
-        f"\nQuestion:\n{result['question']}"
-    )
-
-    print(
-        f"\nAnswer:\n{result['answer']}"
-    )
-
-    print(
-        f"\nGrounded: "
-        f"{result.get('grounded', False)}"
-    )
-
-    print("\nSources:")
-
-    for source in result.get(
-        "sources",
-        [],
-    ):
-        print(
-            f"  - {source}"
-        )
-
-    print("\nCitation Check:")
-
-    print(
-        json.dumps(
-            result.get(
-                "citation_check",
-                {},
-            ),
-            indent=2,
-            default=str,
-        )
-    )
-
-
-# ---------------------------------------------------------
-# Save Report
-# ---------------------------------------------------------
-
-def save_report(
-    supported: dict,
-    fallback: dict,
-    ungrounded: str,
-) -> None:
     """
-    Save assignment evidence to Markdown.
+    Print a readable grounded-generation result.
     """
 
-    lines = []
-
-    lines.append(
-        "# Grounded Answer Generation Report"
-    )
-
-    lines.append("")
-
-    # -----------------------------------------------------
-    # Task 1
-    # -----------------------------------------------------
-
-    lines.append(
-        "## Task 1 - Grounded Answer"
-    )
-
-    lines.append("")
-
-    lines.append(
-        f"**Question:** {supported['question']}"
-    )
-
-    lines.append("")
-
-    lines.append(
-        f"**Answer:** {supported['answer']}"
-    )
-
-    lines.append("")
-
-    lines.append(
-        "### Supporting Chunks"
-    )
-
-    lines.append("")
-
-    for index, chunk in enumerate(
-        supported.get(
-            "retrieved_chunks",
-            [],
-        ),
-        start=1,
-    ):
-
-        metadata = chunk.get(
-            "metadata",
-            {},
-        )
-
-        lines.append(
-            f"#### [{index}] "
-            f"{metadata.get('source', 'unknown')}"
-        )
-
-        lines.append("")
-
-        lines.append(
-            f"- Chunk ID: "
-            f"{metadata.get('chunk_id', chunk.get('id'))}"
-        )
-
-        lines.append(
-            f"- Chunk index: "
-            f"{metadata.get('chunk_index')}"
-        )
-
-        lines.append(
-            f"- Section: "
-            f"{metadata.get('section')}"
-        )
-
-        lines.append("")
-
-        lines.append(
-            "```text"
-        )
-
-        lines.append(
-            str(
-                chunk.get(
-                    "text",
-                    "",
-                )
-            )
-        )
-
-        lines.append(
-            "```"
-        )
-
-        lines.append("")
-
-    # -----------------------------------------------------
-    # Task 2
-    # -----------------------------------------------------
-
-    lines.append(
-        "## Task 2 - Source Accuracy"
-    )
-
-    lines.append("")
-
-    lines.append(
-        "```json"
-    )
-
-    lines.append(
-        json.dumps(
-            supported.get(
-                "citation_check",
-                {},
-            ),
-            indent=2,
-            default=str,
-        )
-    )
-
-    lines.append(
-        "```"
-    )
-
-    lines.append("")
-
-    # -----------------------------------------------------
-    # Task 3
-    # -----------------------------------------------------
-
-    lines.append(
-        "## Task 3 - Missing Context Fallback"
-    )
-
-    lines.append("")
-
-    lines.append(
-        f"**Question:** {fallback['question']}"
-    )
-
-    lines.append("")
-
-    lines.append(
-        f"**Answer:** {fallback['answer']}"
-    )
-
-    lines.append("")
-
-    lines.append(
-        "Sources: "
-        + str(
-            fallback.get(
-                "sources",
-                [],
-            )
-        )
-    )
-
-    lines.append("")
-
-    # -----------------------------------------------------
-    # Task 4
-    # -----------------------------------------------------
-
-    lines.append(
-        "## Task 4 - With vs Without Retrieval"
-    )
-
-    lines.append("")
-
-    lines.append(
-        f"**Question:** {supported['question']}"
-    )
-
-    lines.append("")
-
-    lines.append(
-        "### Without Retrieval"
-    )
-
-    lines.append("")
-
-    lines.append(
-        ungrounded
-    )
-
-    lines.append("")
-
-    lines.append(
-        "### With Retrieval"
-    )
-
-    lines.append("")
-
-    lines.append(
-        supported["answer"]
-    )
-
-    lines.append("")
-
-    lines.append(
-        "### Sources Used"
-    )
-
-    lines.append("")
-
-    for source in supported.get(
-        "sources",
-        [],
-    ):
-
-        lines.append(
-            f"- {source}"
-        )
-
-    lines.append("")
-
-    OUTPUT_FILE.write_text(
-        "\n".join(lines),
-        encoding="utf-8",
-    )
-
-
-# ---------------------------------------------------------
-# Main
-# ---------------------------------------------------------
-
-def main() -> None:
-
-    print("=" * 80)
-    print("GROUNDED ANSWER + SOURCE CITATION")
-    print("=" * 80)
-
-    # -----------------------------------------------------
-    # Task 1 + Task 2
-    # -----------------------------------------------------
-
     print(
-        "\n[1] Testing grounded answer..."
-    )
-
-    supported = answer_query(
-        SUPPORTED_QUERY,
-        candidate_k=CANDIDATE_K,
-        final_k=FINAL_K,
-    )
-
-    print_grounding_check(
-        supported
-    )
-
-    # -----------------------------------------------------
-    # Task 3
-    # -----------------------------------------------------
-
-    print(
-        "\n[2] Testing missing-context fallback..."
-    )
-
-    fallback = answer_query(
-        UNSUPPORTED_QUERY,
-        candidate_k=CANDIDATE_K,
-        final_k=FINAL_K,
+        "\n"
+        + "=" * 70
     )
 
     print(
-        f"\nQuestion:\n"
-        f"{fallback['question']}"
+        "GROUNDING + CITATION CHECK"
     )
 
     print(
-        f"\nAnswer:\n"
-        f"{fallback['answer']}"
+        "=" * 70
     )
 
     print(
-        f"\nGrounded: "
-        f"{fallback.get('grounded', False)}"
+        "\nQuestion:"
     )
 
     print(
-        f"\nSources:\n"
-        f"{fallback.get('sources', [])}"
-    )
-
-    # -----------------------------------------------------
-    # Task 4
-    # -----------------------------------------------------
-
-    print(
-        "\n[3] Comparing with and without retrieval..."
-    )
-
-    ungrounded = (
-        generate_ungrounded_answer(
-            SUPPORTED_QUERY
+        result.get(
+            "question",
+            "",
         )
     )
 
     print(
-        "\n" + "-" * 80
+        "\nStatus:"
     )
 
     print(
-        "WITHOUT RETRIEVAL"
+        result.get(
+            "status",
+            "",
+        )
     )
 
     print(
-        "-" * 80
+        "\nGrounded:"
     )
 
     print(
-        ungrounded
+        result.get(
+            "grounded",
+            False,
+        )
     )
 
     print(
-        "\n" + "-" * 80
+        "\nAnswer:"
     )
 
     print(
-        "WITH RETRIEVAL"
-    )
-
-    print(
-        "-" * 80
-    )
-
-    print(
-        supported["answer"]
+        result.get(
+            "answer",
+            "",
+        )
     )
 
     print(
         "\nSources:"
     )
 
-    for source in supported.get(
+    for source in result.get(
         "sources",
         [],
     ):
-
         print(
-            f"  - {source}"
+            f"  {source['citation']} "
+            f"{source['source']} "
+            f"(chunk {source['chunk_index']})"
         )
 
-    # -----------------------------------------------------
-    # Save report
-    # -----------------------------------------------------
-
-    save_report(
-        supported,
-        fallback,
-        ungrounded,
+    print(
+        "\nCitation verification:"
     )
 
     print(
-        "\n" + "=" * 80
+        result.get(
+            "citation_verification",
+            {},
+        )
+    )
+
+    diagnostics = result.get(
+        "diagnostics"
+    )
+
+    if diagnostics:
+
+        print(
+            "\nRetrieval diagnostics:"
+        )
+
+        print(
+            f"  Retrieved: "
+            f"{diagnostics.get('retrieved_count')}"
+        )
+
+        print(
+            f"  Top score: "
+            f"{diagnostics.get('top_score'):.4f}"
+        )
+
+        print(
+            f"  Strong chunks: "
+            f"{diagnostics.get('strong_chunk_count')}"
+        )
+
+        print(
+            f"  Threshold: "
+            f"{diagnostics.get('threshold')}"
+        )
+
+        print(
+            f"  Passed: "
+            f"{diagnostics.get('passed')}"
+        )
+
+    print(
+        "\n"
+        + "=" * 70
+    )
+
+
+# ==================================================================
+# Assignment Demonstration
+# ==================================================================
+
+def run_assignment_demo() -> None:
+    """
+    Demonstrate the assignment requirements.
+
+    1. Strong context → answer
+    2. Weak/no context → refusal
+    3. Citation verification
+    4. With retrieval vs without retrieval
+    """
+
+    question = (
+        "What should a technician do if abnormal "
+        "vibration is detected?"
     )
 
     print(
-        "✓ Report saved:"
+        "\n"
+        + "=" * 70
     )
 
     print(
-        f"  {OUTPUT_FILE}"
+        "RAG GENERATION + CITATION + GUARDRAIL DEMO"
     )
 
     print(
-        "=" * 80
+        "=" * 70
+    )
+
+    # --------------------------------------------------------------
+    # Test 1: Guarded answer
+    # --------------------------------------------------------------
+
+    print(
+        "\n[1] GUARDED ANSWER"
+    )
+
+    print(
+        "-" * 70
+    )
+
+    try:
+
+        result = guarded_answer(
+            question,
+            candidate_k=10,
+            final_k=3,
+        )
+
+        print_grounding_check(
+            result
+        )
+
+    except Exception as exc:
+
+        print(
+            f"ERROR: {exc}"
+        )
+
+        print(
+            "\nCheck your .env configuration:"
+        )
+
+        print(
+            "OPENAI_API_KEY=your_key"
+        )
+
+        print(
+            "OPENAI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/"
+        )
+
+        print(
+            "CHAT_MODEL=gemini-3.1-flash-lite"
+        )
+
+        print(
+            "EMBED_MODEL=gemini-embedding-001"
+        )
+
+        return
+
+    # --------------------------------------------------------------
+    # Test 2: Missing context
+    # --------------------------------------------------------------
+
+    print(
+        "\n[2] MISSING CONTEXT FALLBACK"
+    )
+
+    print(
+        "-" * 70
+    )
+
+    fallback = generate_grounded_answer(
+        "What is the refund policy for a product?",
+        [],
+    )
+
+    print(
+        fallback
+    )
+
+    # --------------------------------------------------------------
+    # Test 3: Citation verification
+    # --------------------------------------------------------------
+
+    print(
+        "\n[3] CITATION VERIFICATION"
+    )
+
+    print(
+        "-" * 70
+    )
+
+    print(
+        "Verified:",
+        result.get(
+            "verified",
+            False,
+        ),
+    )
+
+    print(
+        "Citation validation:"
+    )
+
+    print(
+        result.get(
+            "citation_validation",
+            {},
+        )
+    )
+
+    print(
+        "Citation verification:"
+    )
+
+    print(
+        result.get(
+            "citation_verification",
+            {},
+        )
+    )
+
+    # --------------------------------------------------------------
+    # Test 4: Without retrieval
+    # --------------------------------------------------------------
+
+    print(
+        "\n[4] WITHOUT RETRIEVAL"
+    )
+
+    print(
+        "-" * 70
+    )
+
+    try:
+
+        ungrounded = generate_ungrounded_answer(
+            question
+        )
+
+        print(
+            ungrounded
+        )
+
+    except Exception as exc:
+
+        print(
+            "Unable to generate ungrounded answer:"
+        )
+
+        print(
+            exc
+        )
+
+    # --------------------------------------------------------------
+    # Summary
+    # --------------------------------------------------------------
+
+    print(
+        "\n"
+        + "=" * 70
+    )
+
+    print(
+        "DEMO COMPLETE"
+    )
+
+    print(
+        "=" * 70
     )
 
 
-# ---------------------------------------------------------
-# Entry Point
-# ---------------------------------------------------------
+# ==================================================================
+# Main
+# ==================================================================
+
+def main() -> None:
+    run_assignment_demo()
+
 
 if __name__ == "__main__":
     main()
