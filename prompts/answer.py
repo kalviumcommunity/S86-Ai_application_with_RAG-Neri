@@ -16,7 +16,7 @@ ANSWER_TEMPLATE_V2 = (
     "Context:\n{context}\n\n"
     "Question: {question}\n\n"
     "Return JSON only with this shape: "
-    "{\"answer\": string, \"source\": string}."
+    "{{\"answer\": \"string\", \"source\": \"string\"}}."
 )
 
 # Backward-compatible alias used by existing scripts.
@@ -24,4 +24,5 @@ ANSWER_TEMPLATE = ANSWER_TEMPLATE_V2
 
 
 def render(template, **values):
+    """Render a prompt template with the supplied values."""
     return template.format(**values)

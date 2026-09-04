@@ -1,374 +1,289 @@
-"""Chunk re-ranking experiment."""
+"""
+Reranking utilities for improving retrieval precision.
 
-import os
-import re
-from pathlib import Path
+Uses embedding similarity to rerank retrieved candidates.
+"""
 
-from dotenv import load_dotenv
+from typing import Optional
 
-try:
-    from .embeddings import embed, rank_chunks
-    from .ingestion import ingest
-    from .embeddings import batch_embed_chunks
-except ImportError:
-    from embeddings import embed, rank_chunks
-    from ingestion import ingest
-    from embeddings import batch_embed_chunks
+from .embeddings import (
+    embed,
+    rank_chunks,
+)
 
 
-CANDIDATE_K = 10
-FINAL_K = 3
+# ============================================================
+# RERANK CANDIDATES
+# ============================================================
 
+def rerank_candidates(
+    query: str,
+    candidates: list,
+    top_k: int = 5,
+    client=None,
+    model: Optional[str] = None,
+) -> list:
+    """
+    Rerank retrieved candidates using semantic similarity.
 
-def normalize(text: str) -> str:
-    """Normalize text for keyword matching."""
-    return re.sub(r"[^a-z0-9\s]", " ", text.lower())
+    Args:
+        query:
+            User query.
 
+        candidates:
+            Retrieved chunks.
 
-def get_query_terms(query: str) -> list[str]:
-    """Extract meaningful query terms."""
-    stop_words = {
-        "what",
-        "is",
-        "the",
-        "a",
-        "an",
-        "are",
-        "to",
-        "of",
-        "and",
-        "in",
-        "on",
-        "for",
-        "do",
-        "does",
-        "should",
-        "can",
-        "i",
-        "before",
-        "if",
-    }
+        top_k:
+            Number of results to return.
 
-    return [
-        word
-        for word in normalize(query).split()
-        if word not in stop_words and len(word) > 2
-    ]
+        client:
+            Optional embedding client.
 
+        model:
+            Optional embedding model.
 
-def keyword_score(query: str, text: str) -> float:
-    """Measure how many query terms appear in the chunk."""
-    terms = get_query_terms(query)
+    Returns:
+        Reranked candidate list.
+    """
 
-    if not terms:
-        return 0.0
+    if not candidates:
+        return []
 
-    words = set(normalize(text).split())
+    if top_k <= 0:
+        return []
 
-    matches = sum(1 for term in terms if term in words)
+    # --------------------------------------------------------
+    # Generate query embedding
+    # --------------------------------------------------------
 
-    return matches / len(terms)
+    query_embedding = embed(
+        [query],
+        client=client,
+        model=model,
+    )[0]
 
+    # --------------------------------------------------------
+    # Some retrieval results already contain embeddings.
+    # --------------------------------------------------------
 
-def phrase_score(query: str, text: str) -> float:
-    """Give an additional score when related phrases appear."""
-    query_normalized = normalize(query)
-    text_normalized = normalize(text)
+    candidates_with_embeddings = []
 
-    if query_normalized in text_normalized:
-        return 1.0
+    for candidate in candidates:
 
-    terms = get_query_terms(query)
+        if isinstance(candidate, dict):
 
-    if len(terms) < 2:
-        return 0.0
+            embedding = candidate.get(
+                "embedding",
+                [],
+            )
 
-    matched = 0
+        else:
 
-    for index in range(len(terms) - 1):
-        phrase = f"{terms[index]} {terms[index + 1]}"
+            embedding = getattr(
+                candidate,
+                "embedding",
+                [],
+            )
 
-        if phrase in text_normalized:
-            matched += 1
+        if embedding:
 
-    return matched / (len(terms) - 1)
+            candidates_with_embeddings.append(
+                candidate
+            )
 
+    # --------------------------------------------------------
+    # If candidates contain embeddings, rank directly.
+    # --------------------------------------------------------
 
-def rerank_score(query: str, similarity: float, text: str):
-    """Calculate a second-stage relevance score."""
+    if candidates_with_embeddings:
 
-    keywords = keyword_score(query, text)
-    phrases = phrase_score(query, text)
+        return rank_chunks(
+            query_embedding,
+            candidates_with_embeddings,
+            top_k=top_k,
+        )
 
-    score = (
-        0.70 * similarity
-        + 0.20 * keywords
-        + 0.10 * phrases
+    # --------------------------------------------------------
+    # If candidates do not contain embeddings, create them.
+    # --------------------------------------------------------
+
+    texts = []
+
+    valid_candidates = []
+
+    for candidate in candidates:
+
+        if isinstance(candidate, dict):
+
+            text = candidate.get(
+                "text",
+                "",
+            )
+
+        else:
+
+            text = getattr(
+                candidate,
+                "text",
+                "",
+            )
+
+        if text:
+
+            texts.append(text)
+
+            valid_candidates.append(
+                candidate
+            )
+
+    if not valid_candidates:
+        return []
+
+    vectors = embed(
+        texts,
+        client=client,
+        model=model,
     )
 
-    return score, keywords, phrases
+    # --------------------------------------------------------
+    # Create temporary objects for ranking.
+    # --------------------------------------------------------
+
+    temporary = []
+
+    for candidate, vector in zip(
+        valid_candidates,
+        vectors,
+    ):
+
+        if isinstance(candidate, dict):
+
+            item = dict(candidate)
+
+            item["embedding"] = vector
+
+        else:
+
+            # For object-based candidates, create a dictionary
+            # containing the information needed for ranking.
+
+            item = {
+                "original": candidate,
+                "text": getattr(
+                    candidate,
+                    "text",
+                    "",
+                ),
+                "metadata": getattr(
+                    candidate,
+                    "metadata",
+                    {},
+                ),
+                "embedding": vector,
+            }
+
+        temporary.append(item)
+
+    ranked = rank_chunks(
+        query_embedding,
+        temporary,
+        top_k=top_k,
+    )
+
+    # --------------------------------------------------------
+    # Restore original objects where applicable.
+    # --------------------------------------------------------
+
+    final_results = []
+
+    for item in ranked:
+
+        if (
+            isinstance(item, dict)
+            and "original" in item
+        ):
+
+            final_results.append(
+                item["original"]
+            )
+
+        else:
+
+            final_results.append(item)
+
+    return final_results
 
 
-def print_initial_candidates(candidates):
-    """Print the initial vector retrieval ordering."""
+# ============================================================
+# OPTIONAL SCORE FUNCTION
+# ============================================================
 
-    print("\n" + "=" * 80)
-    print("INITIAL RETRIEVAL - TOP 10 CANDIDATES")
-    print("=" * 80)
+def rerank_with_scores(
+    query: str,
+    candidates: list,
+    top_k: int = 5,
+    client=None,
+    model: Optional[str] = None,
+) -> list[dict]:
+    """
+    Rerank candidates and return explicit similarity scores.
 
-    for rank, (similarity, record) in enumerate(candidates, start=1):
-        print(f"\nRank: {rank}")
-        print(f"Vector score: {similarity:.6f}")
-        print(f"Source: {record.metadata['source']}")
-        print(f"Section: {record.metadata['section']}")
-        print(f"Chunk: {record.metadata['chunk_index']}")
-        print(f"Text: {record.text.replace(chr(10), ' ')[:200]}")
+    Returns dictionaries like:
 
+        {
+            "candidate": ...,
+            "similarity": 0.82
+        }
+    """
 
-def rerank_candidates(query: str, candidates):
-    """Apply the second-stage ranking."""
+    if not candidates:
+        return []
+
+    query_embedding = embed(
+        [query],
+        client=client,
+        model=model,
+    )[0]
 
     results = []
 
-    for original_rank, (similarity, record) in enumerate(
-        candidates,
-        start=1,
-    ):
-        score, keywords, phrases = rerank_score(
-            query,
-            similarity,
-            record.text,
+    for candidate in candidates:
+
+        if isinstance(candidate, dict):
+
+            embedding = candidate.get(
+                "embedding",
+                [],
+            )
+
+        else:
+
+            embedding = getattr(
+                candidate,
+                "embedding",
+                [],
+            )
+
+        if not embedding:
+            continue
+
+        from .embeddings import cosine_similarity
+
+        similarity = cosine_similarity(
+            query_embedding,
+            embedding,
         )
 
         results.append(
             {
-                "original_rank": original_rank,
-                "vector_score": similarity,
-                "keyword_score": keywords,
-                "phrase_score": phrases,
-                "rerank_score": score,
-                "source": record.metadata["source"],
-                "section": record.metadata["section"],
-                "chunk_index": record.metadata["chunk_index"],
-                "text": record.text,
-                "metadata": record.metadata,
+                "candidate": candidate,
+                "similarity": similarity,
             }
         )
 
     results.sort(
-        key=lambda item: item["rerank_score"],
+        key=lambda item: item["similarity"],
         reverse=True,
     )
 
-    for rank, item in enumerate(results, start=1):
-        item["rerank_rank"] = rank
-
-    return results
-
-
-def print_reranked_results(results):
-    """Print the final re-ranked ordering."""
-
-    print("\n" + "=" * 80)
-    print("AFTER RE-RANKING")
-    print("=" * 80)
-
-    for item in results:
-        print(f"\nFinal rank: {item['rerank_rank']}")
-        print(f"Original rank: {item['original_rank']}")
-        print(f"Vector score: {item['vector_score']:.6f}")
-        print(f"Keyword score: {item['keyword_score']:.6f}")
-        print(f"Phrase score: {item['phrase_score']:.6f}")
-        print(f"Re-rank score: {item['rerank_score']:.6f}")
-        print(f"Source: {item['source']}")
-        print(f"Section: {item['section']}")
-        print(f"Chunk: {item['chunk_index']}")
-        print(f"Text: {item['text'].replace(chr(10), ' ')[:200]}")
-
-
-def write_report(
-    query: str,
-    candidates,
-    reranked,
-    output_path: Path,
-):
-    """Save before-and-after results as Markdown."""
-
-    lines = [
-        "# Chunk Re-Ranking Experiment",
-        "",
-        f"**Query:** {query}",
-        "",
-        f"**Candidate set:** {len(candidates)}",
-        "",
-        f"**Final k:** {FINAL_K}",
-        "",
-        "## Before Re-Ranking",
-        "",
-        "| Rank | Vector Score | Source | Section | Chunk |",
-        "| ---: | ---: | --- | --- | ---: |",
-    ]
-
-    for rank, (similarity, record) in enumerate(candidates, start=1):
-        lines.append(
-            f"| {rank} | {similarity:.6f} | "
-            f"{record.metadata['source']} | "
-            f"{record.metadata['section']} | "
-            f"{record.metadata['chunk_index']} |"
-        )
-
-    lines.extend(
-        [
-            "",
-            "## After Re-Ranking",
-            "",
-            "| Final Rank | Original Rank | Vector Score | "
-            "Keyword Score | Phrase Score | Re-Rank Score | Source |",
-            "| ---: | ---: | ---: | ---: | ---: | ---: | --- |",
-        ]
-    )
-
-    for item in reranked:
-        lines.append(
-            f"| {item['rerank_rank']} | "
-            f"{item['original_rank']} | "
-            f"{item['vector_score']:.6f} | "
-            f"{item['keyword_score']:.6f} | "
-            f"{item['phrase_score']:.6f} | "
-            f"{item['rerank_score']:.6f} | "
-            f"{item['source']} |"
-        )
-
-    lines.extend(
-        [
-            "",
-            "## Final Selected Chunks",
-            "",
-        ]
-    )
-
-    for item in reranked[:FINAL_K]:
-        lines.extend(
-            [
-                f"### Rank {item['rerank_rank']}",
-                "",
-                f"**Source:** {item['source']}",
-                "",
-                f"**Section:** {item['section']}",
-                "",
-                f"**Original rank:** {item['original_rank']}",
-                "",
-                f"**Re-rank score:** {item['rerank_score']:.6f}",
-                "",
-                item["text"].replace("\n", " "),
-                "",
-            ]
-        )
-
-    lines.extend(
-        [
-            "## Trade-off",
-            "",
-            "Initial vector retrieval is efficient because it searches "
-            "the embedding space.",
-            "",
-            "Re-ranking adds a second scoring stage over only the "
-            "candidate set. This can improve precision, but it adds "
-            "computation and latency.",
-            "",
-            "A practical approach is to retrieve a larger candidate set "
-            "and then keep only the highest-scoring final chunks.",
-        ]
-    )
-
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(
-        "\n".join(lines) + "\n",
-        encoding="utf-8",
-    )
-
-
-def main():
-    load_dotenv()
-
-    query = "What should a technician do if abnormal vibration is detected?"
-
-    print("=" * 80)
-    print("CHUNK RE-RANKING FOR PRECISION")
-    print("=" * 80)
-
-    print(f"\nQuery: {query}")
-    print(f"Candidate k: {CANDIDATE_K}")
-    print(f"Final k: {FINAL_K}")
-
-    data_dir = Path("data").resolve()
-
-    _, _, chunks, failures = ingest(data_dir)
-
-    model = (
-        os.getenv("EMBEDDING_MODEL")
-        or os.getenv("EMBED_MODEL")
-    )
-
-    records, summary = batch_embed_chunks(
-        chunks,
-        model=model,
-        batch_size=1,
-        cache_path="outputs/embedding_cache.json",
-        max_retries=0,
-    )
-
-    if not records:
-        raise SystemExit("No embedded records available.")
-
-    print(f"\nEmbedded records available: {len(records)}")
-
-    query_vector = embed(
-        [query],
-        model=model,
-    )[0]
-
-    ranked = rank_chunks(
-        query_vector,
-        records,
-        top_k=CANDIDATE_K,
-    )
-
-    print_initial_candidates(ranked)
-
-    reranked = rerank_candidates(
-        query,
-        ranked,
-    )
-
-    print_reranked_results(reranked)
-
-    final_results = reranked[:FINAL_K]
-
-    print("\n" + "=" * 80)
-    print("FINAL TOP 3")
-    print("=" * 80)
-
-    for item in final_results:
-        print(
-            f"\n{item['rerank_rank']}. "
-            f"{item['source']} | "
-            f"re-rank score={item['rerank_score']:.6f}"
-        )
-
-    output_path = Path(
-        "outputs/reranking_results.md"
-    )
-
-    write_report(
-        query,
-        ranked,
-        reranked,
-        output_path,
-    )
-
-    print(f"\nReport saved to: {output_path}")
-
-
-if __name__ == "__main__":
-    main()
+    return results[:top_k]
