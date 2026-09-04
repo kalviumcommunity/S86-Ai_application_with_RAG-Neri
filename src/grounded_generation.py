@@ -1,12 +1,13 @@
 """
-Grounded Answer Generation for the RAG pipeline.
+Grounded Answer Generation
 
-Tasks covered:
-1. Generate answers from retrieved context.
-2. Check source accuracy.
-3. Handle missing-context fallback.
-4. Compare grounded vs ungrounded answers.
-5. Save sample grounded answers and verification results.
+This module:
+1. Retrieves relevant chunks.
+2. Builds a prompt using only retrieved context.
+3. Generates grounded answers.
+4. Handles missing-context fallback.
+5. Compares answers with and without retrieval.
+6. Provides source information for citation work.
 """
 
 import json
@@ -18,14 +19,13 @@ from dotenv import load_dotenv
 
 from .embeddings import embed
 from .llm_api import generate_answer
-from .rag_pipeline import (
-    retrieve_context,
-)
-from .reranking import (
-    rerank_candidates,
-)
+from .reranking import rerank_candidates
 from .vector_store import VectorStore
 
+
+# ---------------------------------------------------------
+# Environment
+# ---------------------------------------------------------
 
 load_dotenv()
 
@@ -34,42 +34,41 @@ load_dotenv()
 # Configuration
 # ---------------------------------------------------------
 
-VECTOR_DIR = Path(
-    "outputs/chroma_db"
-)
+VECTOR_DIR = Path("outputs/chroma_db")
 
-OUTPUT_FILE = Path(
-    "outputs/grounded_answers.md"
-)
+OUTPUT_DIR = Path("outputs")
+OUTPUT_DIR.mkdir(exist_ok=True)
+
+OUTPUT_FILE = OUTPUT_DIR / "grounded_answers.md"
 
 CANDIDATE_K = 10
 FINAL_K = 3
 
 FALLBACK_MESSAGE = (
-    "I don't have enough information "
-    "in the provided context."
+    "I don't have enough information in the provided context."
 )
 
-
 SUPPORTED_QUERY = (
-    "What should a technician do if abnormal "
-    "vibration is detected?"
+    "What should a technician do if abnormal vibration is detected?"
 )
 
 UNSUPPORTED_QUERY = (
-    "What is the warranty period for this machine?"
+    "Who is the president of India?"
 )
 
 
 # ---------------------------------------------------------
-# Vector store
+# Vector Store
 # ---------------------------------------------------------
 
 def get_vector_store() -> VectorStore:
-    """Create the project vector store."""
+    """
+    Return the project's existing vector store.
+    """
 
     return VectorStore(
         persist_dir=VECTOR_DIR,
+        collection_name="rag_chunks",
         vector_dimension=3072,
     )
 
@@ -83,36 +82,39 @@ def retrieve_chunks(
     k: int = FINAL_K,
 ) -> list[dict]:
     """
-    Retrieve relevant chunks for a question.
+    Retrieve relevant chunks from Chroma.
 
-    Uses the existing RAG pipeline retrieval function.
+    Important:
+    VectorStore.search() expects top_k, not k.
     """
+
+    if not question or not question.strip():
+        return []
 
     vector_store = get_vector_store()
 
-    query_vector = embed(
-        [question]
-    )[0]
+    # Generate embedding for the query.
+    query_vector = embed([question])[0]
 
-    chunks = retrieve_context(
+    # IMPORTANT:
+    # Your VectorStore.search() uses top_k.
+    chunks = vector_store.search(
         query_vector,
-        vector_store,
-        k=k,
+        top_k=k,
     )
 
     return chunks
 
 
 # ---------------------------------------------------------
-# Context formatting
+# Context Formatting
 # ---------------------------------------------------------
 
 def format_context(
     chunks: list[dict],
 ) -> str:
     """
-    Convert retrieved chunks into explicit
-    source-labelled context.
+    Format retrieved chunks with source information.
     """
 
     if not chunks:
@@ -120,10 +122,7 @@ def format_context(
 
     context_parts = []
 
-    for index, chunk in enumerate(
-        chunks,
-        start=1,
-    ):
+    for index, chunk in enumerate(chunks, start=1):
 
         metadata = chunk.get(
             "metadata",
@@ -135,9 +134,24 @@ def format_context(
             "unknown",
         )
 
+        chunk_id = metadata.get(
+            "chunk_id",
+            chunk.get("id", "unknown"),
+        )
+
+        chunk_index = metadata.get(
+            "chunk_index",
+            "unknown",
+        )
+
         section = metadata.get(
             "section",
             "unknown",
+        )
+
+        page = metadata.get(
+            "page",
+            None,
         )
 
         text = chunk.get(
@@ -145,20 +159,27 @@ def format_context(
             "",
         )
 
+        location = (
+            f"chunk_id={chunk_id}, "
+            f"chunk_index={chunk_index}"
+        )
+
+        if page is not None:
+            location += f", page={page}"
+
         context_parts.append(
-            f"[SOURCE {index}]\n"
+            f"[{index}]\n"
             f"Source: {source}\n"
+            f"Location: {location}\n"
             f"Section: {section}\n"
             f"Content:\n{text}"
         )
 
-    return "\n\n".join(
-        context_parts
-    )
+    return "\n\n".join(context_parts)
 
 
 # ---------------------------------------------------------
-# Prompt
+# Prompt Construction
 # ---------------------------------------------------------
 
 def build_prompt(
@@ -166,12 +187,23 @@ def build_prompt(
     chunks: list[dict],
 ) -> dict:
     """
-    Build the grounded prompt and source metadata.
+    Build a grounded prompt.
+
+    The model is explicitly instructed to:
+    - use only supplied context
+    - cite claims using [1], [2], etc.
+    - never invent citations
+    - fall back when context is insufficient
     """
 
-    context = format_context(
-        chunks
-    )
+    context = format_context(chunks)
+
+    if not context:
+        return {
+            "prompt": "",
+            "context": "",
+            "sources_used": [],
+        }
 
     sources = []
 
@@ -190,39 +222,45 @@ def build_prompt(
         if source not in sources:
             sources.append(source)
 
-    prompt = (
-        "You are a support assistant.\n\n"
+    prompt = f"""
+You are a technical support assistant.
 
-        "GROUNDING RULE:\n"
-        "Answer ONLY using the supplied context.\n"
-        "Do NOT use outside knowledge.\n"
-        "Do NOT guess or invent missing information.\n"
-        "Every factual claim must be supported "
-        "by the supplied context.\n"
-        "If the context does not contain enough "
-        "information to answer the question, say:\n"
-        f"\"{FALLBACK_MESSAGE}\"\n\n"
+GROUNDING RULES:
 
-        "CITATION RULE:\n"
-        "Mention the source file supporting "
-        "your answer.\n\n"
+1. Answer ONLY using the supplied context.
+2. Do NOT use outside knowledge.
+3. Do NOT guess.
+4. Do NOT invent facts.
+5. Do NOT invent source names.
+6. Every factual claim must be supported by the supplied context.
+7. Cite factual claims using the source markers [1], [2], [3], etc.
+8. Only use citation numbers that actually appear in the supplied context.
+9. If the context does not contain enough information, respond exactly with:
 
-        f"CONTEXT:\n{context}\n\n"
+"I don't have enough information in the provided context."
 
-        f"QUESTION:\n{question}\n\n"
+10. Never create a citation for information that is not present in the context.
 
-        "Provide a concise answer."
-    )
+CONTEXT:
+
+{context}
+
+QUESTION:
+
+{question}
+
+ANSWER:
+"""
 
     return {
         "prompt": prompt,
-        "sources_used": sources,
         "context": context,
+        "sources_used": sources,
     }
 
 
 # ---------------------------------------------------------
-# Grounded generation
+# Grounded Answer Generation
 # ---------------------------------------------------------
 
 def generate_grounded_answer(
@@ -241,6 +279,7 @@ def generate_grounded_answer(
             "context": "",
             "sources": [],
             "grounded": False,
+            "retrieved_chunks": [],
         }
 
     prompt_data = build_prompt(
@@ -248,9 +287,20 @@ def generate_grounded_answer(
         retrieved_chunks,
     )
 
+    if not prompt_data["prompt"]:
+
+        return {
+            "question": question,
+            "answer": FALLBACK_MESSAGE,
+            "context": "",
+            "sources": [],
+            "grounded": False,
+            "retrieved_chunks": retrieved_chunks,
+        }
+
     answer = generate_answer(
         question,
-        prompt_data["context"],
+        prompt_data["prompt"],
     )
 
     return {
@@ -259,11 +309,12 @@ def generate_grounded_answer(
         "context": prompt_data["context"],
         "sources": prompt_data["sources_used"],
         "grounded": True,
+        "retrieved_chunks": retrieved_chunks,
     }
 
 
 # ---------------------------------------------------------
-# Missing context
+# Supporting Context Check
 # ---------------------------------------------------------
 
 def has_supporting_context(
@@ -271,10 +322,8 @@ def has_supporting_context(
     chunks: list[dict],
 ) -> bool:
     """
-    Determine whether retrieved chunks contain
-    useful lexical support for the question.
-
-    This is intentionally conservative.
+    Conservative lexical check to determine whether
+    retrieved chunks contain meaningful terms from the question.
     """
 
     if not chunks:
@@ -301,13 +350,20 @@ def has_supporting_context(
         "where",
         "which",
         "have",
+        "into",
+        "your",
+        "their",
+        "there",
         "technician",
     }
 
     question_terms -= stop_words
 
+    if not question_terms:
+        return False
+
     combined_text = " ".join(
-        chunk.get("text", "")
+        str(chunk.get("text", ""))
         for chunk in chunks
     ).lower()
 
@@ -320,13 +376,196 @@ def has_supporting_context(
     return matches >= 1
 
 
+# ---------------------------------------------------------
+# Citation Number Validation
+# ---------------------------------------------------------
+
+def extract_citation_markers(
+    answer: str,
+) -> list[str]:
+    """
+    Extract citations such as [1], [2], [3].
+    """
+
+    if not answer:
+        return []
+
+    markers = re.findall(
+        r"\[\d+\]",
+        answer,
+    )
+
+    # Preserve order while removing duplicates.
+    unique_markers = []
+
+    for marker in markers:
+        if marker not in unique_markers:
+            unique_markers.append(marker)
+
+    return unique_markers
+
+
+def validate_citations(
+    answer: str,
+    chunks: list[dict],
+) -> dict:
+    """
+    Verify that every citation in the answer maps
+    to an actual retrieved chunk.
+    """
+
+    cited_markers = extract_citation_markers(
+        answer
+    )
+
+    available_markers = {
+        f"[{index}]"
+        for index in range(
+            1,
+            len(chunks) + 1,
+        )
+    }
+
+    valid_citations = [
+        marker
+        for marker in cited_markers
+        if marker in available_markers
+    ]
+
+    invalid_citations = [
+        marker
+        for marker in cited_markers
+        if marker not in available_markers
+    ]
+
+    return {
+        "valid": len(invalid_citations) == 0,
+        "cited_markers": cited_markers,
+        "valid_citations": valid_citations,
+        "invalid_citations": invalid_citations,
+    }
+
+
+# ---------------------------------------------------------
+# Source Accuracy Check
+# ---------------------------------------------------------
+
+def check_source_accuracy(
+    answer: str,
+    chunks: list[dict],
+) -> dict:
+    """
+    Check whether cited sources contain supporting
+    text for the claims in the answer.
+
+    This is a simple verification aid, not a substitute
+    for human review.
+    """
+
+    citation_validation = validate_citations(
+        answer,
+        chunks,
+    )
+
+    results = {}
+
+    for marker in citation_validation["valid_citations"]:
+
+        index = int(
+            marker.strip("[]")
+        ) - 1
+
+        chunk = chunks[index]
+
+        source_text = str(
+            chunk.get(
+                "text",
+                "",
+            )
+        )
+
+        source_lower = source_text.lower()
+
+        # Remove the citation marker.
+        answer_without_marker = answer.replace(
+            marker,
+            "",
+        )
+
+        answer_words = set(
+            re.findall(
+                r"\b[a-zA-Z]{4,}\b",
+                answer_without_marker.lower(),
+            )
+        )
+
+        source_words = set(
+            re.findall(
+                r"\b[a-zA-Z]{4,}\b",
+                source_lower,
+            )
+        )
+
+        matching_terms = sorted(
+            answer_words.intersection(
+                source_words
+            )
+        )
+
+        supported = len(matching_terms) >= 2
+
+        metadata = chunk.get(
+            "metadata",
+            {},
+        )
+
+        results[marker] = {
+            "verified": supported,
+            "source": metadata.get(
+                "source",
+                "unknown",
+            ),
+            "chunk_id": metadata.get(
+                "chunk_id",
+                chunk.get("id"),
+            ),
+            "chunk_index": metadata.get(
+                "chunk_index",
+            ),
+            "section": metadata.get(
+                "section",
+            ),
+            "page": metadata.get(
+                "page",
+            ),
+            "original_text": source_text,
+            "matching_terms": matching_terms,
+        }
+
+    return {
+        "all_verified": (
+            citation_validation["valid"]
+            and all(
+                item["verified"]
+                for item in results.values()
+            )
+        ),
+        "citation_validation": citation_validation,
+        "results": results,
+    }
+
+
+# ---------------------------------------------------------
+# Complete Query
+# ---------------------------------------------------------
+
 def answer_query(
     question: str,
     candidate_k: int = CANDIDATE_K,
     final_k: int = FINAL_K,
 ) -> dict:
     """
-    Complete grounded query flow.
+    Complete retrieval + reranking + generation flow.
     """
 
     candidates = retrieve_chunks(
@@ -343,22 +582,30 @@ def answer_query(
             "sources": [],
             "grounded": False,
             "retrieved_chunks": [],
+            "citation_check": {
+                "all_verified": False,
+                "citation_validation": {},
+                "results": {},
+            },
         }
 
-    # Existing reranking function may return
-    # tuples of (score, chunk).
+    # -----------------------------------------------------
+    # Reranking
+    # -----------------------------------------------------
+
     try:
 
         reranked = rerank_candidates(
             question,
             candidates,
+            top_k=final_k,
         )
 
         if reranked:
 
             selected = []
 
-            for item in reranked[:final_k]:
+            for item in reranked:
 
                 if (
                     isinstance(item, tuple)
@@ -368,18 +615,24 @@ def answer_query(
                         item[1]
                     )
                 else:
-                    selected.append(item)
+                    selected.append(
+                        item
+                    )
 
-            chunks = selected
+            chunks = selected[:final_k]
 
         else:
+
             chunks = candidates[:final_k]
 
     except Exception:
 
-        # Retrieval itself remains usable
-        # even if reranking is unavailable.
+        # If reranking fails, retrieval still works.
         chunks = candidates[:final_k]
+
+    # -----------------------------------------------------
+    # Supporting context check
+    # -----------------------------------------------------
 
     if not has_supporting_context(
         question,
@@ -393,20 +646,38 @@ def answer_query(
             "sources": [],
             "grounded": False,
             "retrieved_chunks": chunks,
+            "citation_check": {
+                "all_verified": False,
+                "citation_validation": {},
+                "results": {},
+            },
         }
+
+    # -----------------------------------------------------
+    # Generate
+    # -----------------------------------------------------
 
     result = generate_grounded_answer(
         question,
         chunks,
     )
 
-    result["retrieved_chunks"] = chunks
+    # -----------------------------------------------------
+    # Citation validation
+    # -----------------------------------------------------
+
+    citation_check = check_source_accuracy(
+        result["answer"],
+        chunks,
+    )
+
+    result["citation_check"] = citation_check
 
     return result
 
 
 # ---------------------------------------------------------
-# Ungrounded generation
+# Without Retrieval
 # ---------------------------------------------------------
 
 def generate_ungrounded_answer(
@@ -415,165 +686,76 @@ def generate_ungrounded_answer(
     """
     Generate an answer without retrieval.
 
-    This is used only for comparison.
+    This is used only for Task 4:
+    comparing answers with and without retrieval.
     """
+
+    prompt = f"""
+Answer the following question using your general knowledge.
+
+Question:
+{question}
+
+Answer:
+"""
 
     return generate_answer(
         question,
-        "",
+        prompt,
     )
 
 
 # ---------------------------------------------------------
-# Grounding verification
-# ---------------------------------------------------------
-
-def verify_answer_against_sources(
-    answer: str,
-    chunks: list[dict],
-) -> dict:
-    """
-    Basic technical grounding check.
-
-    It checks whether answer sentences have
-    meaningful overlap with the retrieved context.
-    """
-
-    if not chunks:
-
-        return {
-            "supported": False,
-            "claims_checked": 0,
-            "unsupported_claims": [
-                answer
-            ],
-        }
-
-    context = " ".join(
-        chunk.get("text", "")
-        for chunk in chunks
-    ).lower()
-
-    sentences = [
-        sentence.strip()
-        for sentence in re.split(
-            r"[.!?]+",
-            answer,
-        )
-        if sentence.strip()
-    ]
-
-    unsupported = []
-
-    for sentence in sentences:
-
-        words = set(
-            re.findall(
-                r"\b[a-zA-Z]{4,}\b",
-                sentence.lower(),
-            )
-        )
-
-        if not words:
-            continue
-
-        overlap = sum(
-            1
-            for word in words
-            if word in context
-        )
-
-        # Conservative threshold.
-        if overlap < 1:
-            unsupported.append(
-                sentence
-            )
-
-    return {
-        "supported": len(unsupported) == 0,
-        "claims_checked": len(sentences),
-        "unsupported_claims": unsupported,
-    }
-
-
-# ---------------------------------------------------------
-# Formatting
+# Print Grounding Result
 # ---------------------------------------------------------
 
 def print_grounding_check(
     result: dict,
 ) -> None:
 
-    print("\n" + "=" * 70)
+    print("\n" + "=" * 80)
+    print("GROUNDED ANSWER")
+    print("=" * 80)
 
     print(
-        "GROUNDING CHECK"
-    )
-
-    print("=" * 70)
-
-    print(
-        f"\nQuestion:\n"
-        f"{result['question']}"
+        f"\nQuestion:\n{result['question']}"
     )
 
     print(
-        f"\nAnswer:\n"
-        f"{result['answer']}"
+        f"\nAnswer:\n{result['answer']}"
+    )
+
+    print(
+        f"\nGrounded: "
+        f"{result.get('grounded', False)}"
     )
 
     print("\nSources:")
 
-    if result["sources"]:
-
-        for source in result["sources"]:
-            print(
-                f"  - {source}"
-            )
-
-    else:
+    for source in result.get(
+        "sources",
+        [],
+    ):
         print(
-            "  - None"
+            f"  - {source}"
         )
 
-    verification = (
-        verify_answer_against_sources(
-            result["answer"],
+    print("\nCitation Check:")
+
+    print(
+        json.dumps(
             result.get(
-                "retrieved_chunks",
-                [],
+                "citation_check",
+                {},
             ),
+            indent=2,
+            default=str,
         )
     )
-
-    print(
-        "\nSupported:"
-        f" {verification['supported']}"
-    )
-
-    print(
-        "Claims checked:"
-        f" {verification['claims_checked']}"
-    )
-
-    if verification[
-        "unsupported_claims"
-    ]:
-
-        print(
-            "\nPotentially unsupported claims:"
-        )
-
-        for claim in verification[
-            "unsupported_claims"
-        ]:
-            print(
-                f"  - {claim}"
-            )
 
 
 # ---------------------------------------------------------
-# Save report
+# Save Report
 # ---------------------------------------------------------
 
 def save_report(
@@ -581,19 +763,21 @@ def save_report(
     fallback: dict,
     ungrounded: str,
 ) -> None:
-
-    OUTPUT_FILE.parent.mkdir(
-        parents=True,
-        exist_ok=True,
-    )
+    """
+    Save assignment evidence to Markdown.
+    """
 
     lines = []
 
     lines.append(
-        "# Grounded Answer Generation"
+        "# Grounded Answer Generation Report"
     )
 
     lines.append("")
+
+    # -----------------------------------------------------
+    # Task 1
+    # -----------------------------------------------------
 
     lines.append(
         "## Task 1 - Grounded Answer"
@@ -602,35 +786,22 @@ def save_report(
     lines.append("")
 
     lines.append(
-        f"**Question:** "
-        f"{supported['question']}"
+        f"**Question:** {supported['question']}"
     )
 
     lines.append("")
 
     lines.append(
-        f"**Answer:** "
-        f"{supported['answer']}"
+        f"**Answer:** {supported['answer']}"
     )
-
-    lines.append("")
-
-    lines.append(
-        "### Supporting Sources"
-    )
-
-    for source in supported[
-        "sources"
-    ]:
-        lines.append(
-            f"- `{source}`"
-        )
 
     lines.append("")
 
     lines.append(
         "### Supporting Chunks"
     )
+
+    lines.append("")
 
     for index, chunk in enumerate(
         supported.get(
@@ -646,77 +817,82 @@ def save_report(
         )
 
         lines.append(
-            f"\n#### Chunk {index}"
-        )
-
-        lines.append(
-            f"- Source: "
-            f"`{metadata.get('source', 'unknown')}`"
-        )
-
-        lines.append(
-            f"- Section: "
-            f"`{metadata.get('section', 'unknown')}`"
+            f"#### [{index}] "
+            f"{metadata.get('source', 'unknown')}"
         )
 
         lines.append("")
 
         lines.append(
-            chunk.get("text", "")
+            f"- Chunk ID: "
+            f"{metadata.get('chunk_id', chunk.get('id'))}"
         )
 
-    lines.append("")
+        lines.append(
+            f"- Chunk index: "
+            f"{metadata.get('chunk_index')}"
+        )
+
+        lines.append(
+            f"- Section: "
+            f"{metadata.get('section')}"
+        )
+
+        lines.append("")
+
+        lines.append(
+            "```text"
+        )
+
+        lines.append(
+            str(
+                chunk.get(
+                    "text",
+                    "",
+                )
+            )
+        )
+
+        lines.append(
+            "```"
+        )
+
+        lines.append("")
+
+    # -----------------------------------------------------
+    # Task 2
+    # -----------------------------------------------------
 
     lines.append(
         "## Task 2 - Source Accuracy"
     )
 
-    verification = (
-        verify_answer_against_sources(
-            supported["answer"],
+    lines.append("")
+
+    lines.append(
+        "```json"
+    )
+
+    lines.append(
+        json.dumps(
             supported.get(
-                "retrieved_chunks",
-                [],
+                "citation_check",
+                {},
             ),
+            indent=2,
+            default=str,
         )
+    )
+
+    lines.append(
+        "```"
     )
 
     lines.append("")
 
-    lines.append(
-        f"- Supported: "
-        f"`{verification['supported']}`"
-    )
-
-    lines.append(
-        f"- Claims checked: "
-        f"`{verification['claims_checked']}`"
-    )
-
-    if verification[
-        "unsupported_claims"
-    ]:
-
-        lines.append(
-            "- Unsupported claims:"
-        )
-
-        for claim in verification[
-            "unsupported_claims"
-        ]:
-
-            lines.append(
-                f"  - {claim}"
-            )
-
-    else:
-
-        lines.append(
-            "- No unsupported claims detected "
-            "by the lexical verification check."
-        )
-
-    lines.append("")
+    # -----------------------------------------------------
+    # Task 3
+    # -----------------------------------------------------
 
     lines.append(
         "## Task 3 - Missing Context Fallback"
@@ -725,18 +901,32 @@ def save_report(
     lines.append("")
 
     lines.append(
-        f"**Question:** "
-        f"{fallback['question']}"
+        f"**Question:** {fallback['question']}"
     )
 
     lines.append("")
 
     lines.append(
-        f"**Fallback:** "
-        f"{fallback['answer']}"
+        f"**Answer:** {fallback['answer']}"
     )
 
     lines.append("")
+
+    lines.append(
+        "Sources: "
+        + str(
+            fallback.get(
+                "sources",
+                [],
+            )
+        )
+    )
+
+    lines.append("")
+
+    # -----------------------------------------------------
+    # Task 4
+    # -----------------------------------------------------
 
     lines.append(
         "## Task 4 - With vs Without Retrieval"
@@ -745,8 +935,7 @@ def save_report(
     lines.append("")
 
     lines.append(
-        f"**Question:** "
-        f"{supported['question']}"
+        f"**Question:** {supported['question']}"
     )
 
     lines.append("")
@@ -776,34 +965,21 @@ def save_report(
     lines.append("")
 
     lines.append(
-        "### Sources"
+        "### Sources Used"
     )
 
-    for source in supported[
-        "sources"
-    ]:
+    lines.append("")
+
+    for source in supported.get(
+        "sources",
+        [],
+    ):
 
         lines.append(
-            f"- `{source}`"
+            f"- {source}"
         )
 
     lines.append("")
-
-    lines.append(
-        "## Grounding Conclusion"
-    )
-
-    lines.append("")
-
-    lines.append(
-        "The grounded answer is generated using "
-        "retrieved context and identifies the "
-        "supporting source. When supporting "
-        "context is unavailable, the system "
-        "returns a missing-context fallback "
-        "instead of relying on unsupported "
-        "model knowledge."
-    )
 
     OUTPUT_FILE.write_text(
         "\n".join(lines),
@@ -818,31 +994,15 @@ def save_report(
 def main() -> None:
 
     print("=" * 80)
-
-    print(
-        "GROUNDED ANSWER GENERATION"
-    )
-
+    print("GROUNDED ANSWER + SOURCE CITATION")
     print("=" * 80)
 
-    print(
-        f"\nQuery: {SUPPORTED_QUERY}"
-    )
+    # -----------------------------------------------------
+    # Task 1 + Task 2
+    # -----------------------------------------------------
 
     print(
-        f"Candidate k: {CANDIDATE_K}"
-    )
-
-    print(
-        f"Final k: {FINAL_K}"
-    )
-
-    # ---------------------------------------------
-    # Task 1
-    # ---------------------------------------------
-
-    print(
-        "\n[1] Generating grounded answer..."
+        "\n[1] Testing grounded answer..."
     )
 
     supported = answer_query(
@@ -855,9 +1015,9 @@ def main() -> None:
         supported
     )
 
-    # ---------------------------------------------
+    # -----------------------------------------------------
     # Task 3
-    # ---------------------------------------------
+    # -----------------------------------------------------
 
     print(
         "\n[2] Testing missing-context fallback..."
@@ -870,26 +1030,31 @@ def main() -> None:
     )
 
     print(
-        f"\nQuestion: "
+        f"\nQuestion:\n"
         f"{fallback['question']}"
     )
 
     print(
-        f"Answer: "
+        f"\nAnswer:\n"
         f"{fallback['answer']}"
     )
 
     print(
-        f"Sources: "
-        f"{fallback['sources']}"
+        f"\nGrounded: "
+        f"{fallback.get('grounded', False)}"
     )
 
-    # ---------------------------------------------
+    print(
+        f"\nSources:\n"
+        f"{fallback.get('sources', [])}"
+    )
+
+    # -----------------------------------------------------
     # Task 4
-    # ---------------------------------------------
+    # -----------------------------------------------------
 
     print(
-        "\n[3] Comparing without retrieval..."
+        "\n[3] Comparing with and without retrieval..."
     )
 
     ungrounded = (
@@ -899,7 +1064,15 @@ def main() -> None:
     )
 
     print(
-        "\nWITHOUT RETRIEVAL:"
+        "\n" + "-" * 80
+    )
+
+    print(
+        "WITHOUT RETRIEVAL"
+    )
+
+    print(
+        "-" * 80
     )
 
     print(
@@ -907,7 +1080,15 @@ def main() -> None:
     )
 
     print(
-        "\nWITH RETRIEVAL:"
+        "\n" + "-" * 80
+    )
+
+    print(
+        "WITH RETRIEVAL"
+    )
+
+    print(
+        "-" * 80
     )
 
     print(
@@ -918,17 +1099,18 @@ def main() -> None:
         "\nSources:"
     )
 
-    for source in supported[
-        "sources"
-    ]:
+    for source in supported.get(
+        "sources",
+        [],
+    ):
 
         print(
             f"  - {source}"
         )
 
-    # ---------------------------------------------
-    # Save
-    # ---------------------------------------------
+    # -----------------------------------------------------
+    # Save report
+    # -----------------------------------------------------
 
     save_report(
         supported,
@@ -937,7 +1119,11 @@ def main() -> None:
     )
 
     print(
-        "\n✓ Report saved to:"
+        "\n" + "=" * 80
+    )
+
+    print(
+        "✓ Report saved:"
     )
 
     print(
@@ -945,9 +1131,13 @@ def main() -> None:
     )
 
     print(
-        "\n✓ Grounded generation completed."
+        "=" * 80
     )
 
+
+# ---------------------------------------------------------
+# Entry Point
+# ---------------------------------------------------------
 
 if __name__ == "__main__":
     main()
