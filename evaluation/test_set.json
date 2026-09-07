@@ -1,0 +1,64 @@
+[
+  {
+    "id": "electrical-preinspection",
+    "question": "What should I do before inspecting equipment?",
+    "expected_sources": ["electrical_safety.txt"],
+    "claims": [
+      {
+        "text": "Disconnect the main power supply before inspection.",
+        "required_terms": ["disconnect", "main power", "inspection"],
+        "supporting_sources": ["electrical_safety.txt"]
+      }
+    ],
+    "candidate_answer": "Disconnect the main power supply before inspection. [1]"
+  },
+  {
+    "id": "vibration-response",
+    "question": "What should I do when unusual vibration is detected?",
+    "expected_sources": ["vibration_procedure.txt"],
+    "claims": [
+      {
+        "text": "Stop the equipment immediately.",
+        "required_terms": ["stop", "equipment", "immediately"],
+        "supporting_sources": ["vibration_procedure.txt"]
+      },
+      {
+        "text": "Inspect for loose components, damaged bearings, and worn belts.",
+        "required_terms": ["inspect", "loose components", "damaged bearings", "worn belts"],
+        "supporting_sources": ["vibration_procedure.txt"]
+      }
+    ],
+    "candidate_answer": "Stop the equipment immediately and inspect for loose components, damaged bearings, and worn belts. [1]"
+  },
+  {
+    "id": "temperature-log",
+    "question": "What should happen when the machine temperature exceeds its range?",
+    "expected_sources": ["temperature_procedure.txt"],
+    "claims": [
+      {
+        "text": "Stop the equipment and investigate the cause.",
+        "required_terms": ["stop", "equipment", "investigate", "cause"],
+        "supporting_sources": ["temperature_procedure.txt"]
+      },
+      {
+        "text": "Record abnormal temperature readings in the maintenance log.",
+        "required_terms": ["record", "abnormal temperature", "maintenance log"],
+        "supporting_sources": ["temperature_procedure.txt"]
+      }
+    ],
+    "candidate_answer": "Stop the equipment and investigate the cause, then record abnormal temperature readings in the maintenance log. [1]"
+  },
+  {
+    "id": "citation-failure",
+    "question": "What should I do when unusual vibration is detected?",
+    "expected_sources": ["vibration_procedure.txt"],
+    "claims": [
+      {
+        "text": "Stop the equipment immediately.",
+        "required_terms": ["stop", "equipment", "immediately"],
+        "supporting_sources": ["vibration_procedure.txt"]
+      }
+    ],
+    "candidate_answer": "Stop the equipment immediately. [2]"
+  }
+]

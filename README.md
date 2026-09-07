@@ -240,6 +240,26 @@ The complete two-turn example, including rewritten queries, retrieved context,
 and cited answers, is in
 [outputs/conversational_dialogue.md](outputs/conversational_dialogue.md).
 
+## Answer Quality Evaluation
+
+The answer-level benchmark is defined in
+[evaluation/test_set.json](evaluation/test_set.json) and runs through the
+production query stages with deterministic local evidence:
+
+```text
+python -m src.answer_evaluation
+```
+
+It scores expected claims for correctness (terms present in the answer),
+grounding (terms present in retrieved context), and citation quality (valid
+markers whose cited source supports the claim). The generated machine-readable
+results are in [evaluation/scored_results.json](evaluation/scored_results.json)
+and the reviewer summary is in
+[evaluation/quality_summary.md](evaluation/quality_summary.md). The current
+run scores 100% correctness, 100% grounding, and 75% citation quality; the
+reported failure is an intentionally invalid citation used to verify failure
+reporting.
+
 Example output from the offline stage test:
 
 ```text

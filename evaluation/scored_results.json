@@ -1,0 +1,356 @@
+{
+  "summary": {
+    "cases": 4,
+    "correctness": 1.0,
+    "grounding": 1.0,
+    "citation_quality": 0.75,
+    "perfect_cases": 3,
+    "failures": [
+      {
+        "id": "citation-failure",
+        "reason": "citation was missing, invalid, or unsupported"
+      }
+    ]
+  },
+  "results": [
+    {
+      "id": "electrical-preinspection",
+      "question": "What should I do before inspecting equipment?",
+      "expected_sources": [
+        "electrical_safety.txt"
+      ],
+      "answer": "Disconnect the main power supply before inspection. [1]",
+      "retrieved_sources": [
+        "electrical_safety.txt",
+        "temperature_procedure.txt",
+        "vibration_procedure.txt"
+      ],
+      "cited_markers": [
+        "[1]"
+      ],
+      "invalid_citations": [],
+      "claims": [
+        {
+          "claim": "Disconnect the main power supply before inspection.",
+          "correct": true,
+          "answer_terms_found": [
+            "disconnect",
+            "main power",
+            "inspection"
+          ],
+          "required_terms": [
+            "disconnect",
+            "main power",
+            "inspection"
+          ],
+          "grounded": true,
+          "context_terms_found": [
+            "disconnect",
+            "main power",
+            "inspection"
+          ],
+          "citation_supported": true,
+          "supporting_sources": [
+            "electrical_safety.txt"
+          ],
+          "citation_checks": [
+            {
+              "verified": true,
+              "citation": "[1]",
+              "source": "electrical_safety.txt",
+              "chunk_id": null,
+              "chunk_index": null,
+              "section": "Document body",
+              "page": null,
+              "original_text": "Electrical Safety Procedure\n\nBefore inspecting or repairing equipment, disconnect the main power supply.\n\nVerify that the equipment is completely isolated before beginning maintenance.\n\nTechnicians must follow the approved electrical safety procedure.",
+              "matching_terms": [
+                "before",
+                "disconnect",
+                "main",
+                "power",
+                "supply"
+              ],
+              "reason": "Claim has supporting terms in the original retrieved chunk."
+            }
+          ]
+        }
+      ],
+      "correctness": 1.0,
+      "grounding": 1.0,
+      "citation_quality": 1.0,
+      "citation_markers_valid": true
+    },
+    {
+      "id": "vibration-response",
+      "question": "What should I do when unusual vibration is detected?",
+      "expected_sources": [
+        "vibration_procedure.txt"
+      ],
+      "answer": "Stop the equipment immediately and inspect for loose components, damaged bearings, and worn belts. [1]",
+      "retrieved_sources": [
+        "vibration_procedure.txt"
+      ],
+      "cited_markers": [
+        "[1]"
+      ],
+      "invalid_citations": [],
+      "claims": [
+        {
+          "claim": "Stop the equipment immediately.",
+          "correct": true,
+          "answer_terms_found": [
+            "stop",
+            "equipment",
+            "immediately"
+          ],
+          "required_terms": [
+            "stop",
+            "equipment",
+            "immediately"
+          ],
+          "grounded": true,
+          "context_terms_found": [
+            "stop",
+            "equipment",
+            "immediately"
+          ],
+          "citation_supported": true,
+          "supporting_sources": [
+            "vibration_procedure.txt"
+          ],
+          "citation_checks": [
+            {
+              "verified": true,
+              "citation": "[1]",
+              "source": "vibration_procedure.txt",
+              "chunk_id": null,
+              "chunk_index": null,
+              "section": "Document body",
+              "page": null,
+              "original_text": "Vibration Inspection Procedure\n\nIf unusual vibration is detected during machine operation, stop the equipment immediately.\n\nInspect the machine for loose components, damaged bearings, worn belts, and other mechanical problems.\n\nDo not restart the equipment until the inspection has been completed and the machine is considered safe.",
+              "matching_terms": [
+                "equipment",
+                "immediately",
+                "stop"
+              ],
+              "reason": "Claim has supporting terms in the original retrieved chunk."
+            }
+          ]
+        },
+        {
+          "claim": "Inspect for loose components, damaged bearings, and worn belts.",
+          "correct": true,
+          "answer_terms_found": [
+            "inspect",
+            "loose components",
+            "damaged bearings",
+            "worn belts"
+          ],
+          "required_terms": [
+            "inspect",
+            "loose components",
+            "damaged bearings",
+            "worn belts"
+          ],
+          "grounded": true,
+          "context_terms_found": [
+            "inspect",
+            "loose components",
+            "damaged bearings",
+            "worn belts"
+          ],
+          "citation_supported": true,
+          "supporting_sources": [
+            "vibration_procedure.txt"
+          ],
+          "citation_checks": [
+            {
+              "verified": true,
+              "citation": "[1]",
+              "source": "vibration_procedure.txt",
+              "chunk_id": null,
+              "chunk_index": null,
+              "section": "Document body",
+              "page": null,
+              "original_text": "Vibration Inspection Procedure\n\nIf unusual vibration is detected during machine operation, stop the equipment immediately.\n\nInspect the machine for loose components, damaged bearings, worn belts, and other mechanical problems.\n\nDo not restart the equipment until the inspection has been completed and the machine is considered safe.",
+              "matching_terms": [
+                "bearings",
+                "belts",
+                "components",
+                "damaged",
+                "inspect",
+                "loose",
+                "worn"
+              ],
+              "reason": "Claim has supporting terms in the original retrieved chunk."
+            }
+          ]
+        }
+      ],
+      "correctness": 1.0,
+      "grounding": 1.0,
+      "citation_quality": 1.0,
+      "citation_markers_valid": true
+    },
+    {
+      "id": "temperature-log",
+      "question": "What should happen when the machine temperature exceeds its range?",
+      "expected_sources": [
+        "temperature_procedure.txt"
+      ],
+      "answer": "Stop the equipment and investigate the cause, then record abnormal temperature readings in the maintenance log. [1]",
+      "retrieved_sources": [
+        "temperature_procedure.txt",
+        "vibration_procedure.txt"
+      ],
+      "cited_markers": [
+        "[1]"
+      ],
+      "invalid_citations": [],
+      "claims": [
+        {
+          "claim": "Stop the equipment and investigate the cause.",
+          "correct": true,
+          "answer_terms_found": [
+            "stop",
+            "equipment",
+            "investigate",
+            "cause"
+          ],
+          "required_terms": [
+            "stop",
+            "equipment",
+            "investigate",
+            "cause"
+          ],
+          "grounded": true,
+          "context_terms_found": [
+            "stop",
+            "equipment",
+            "investigate",
+            "cause"
+          ],
+          "citation_supported": true,
+          "supporting_sources": [
+            "temperature_procedure.txt"
+          ],
+          "citation_checks": [
+            {
+              "verified": true,
+              "citation": "[1]",
+              "source": "temperature_procedure.txt",
+              "chunk_id": null,
+              "chunk_index": null,
+              "section": "Document body",
+              "page": null,
+              "original_text": "Temperature Monitoring\n\nMonitor the operating temperature of the machine during operation.\n\nIf the temperature exceeds the recommended range, stop the equipment and investigate the cause.\n\nRecord abnormal temperature readings in the maintenance log.",
+              "matching_terms": [
+                "cause",
+                "equipment",
+                "investigate",
+                "stop"
+              ],
+              "reason": "Claim has supporting terms in the original retrieved chunk."
+            }
+          ]
+        },
+        {
+          "claim": "Record abnormal temperature readings in the maintenance log.",
+          "correct": true,
+          "answer_terms_found": [
+            "record",
+            "abnormal temperature",
+            "maintenance log"
+          ],
+          "required_terms": [
+            "record",
+            "abnormal temperature",
+            "maintenance log"
+          ],
+          "grounded": true,
+          "context_terms_found": [
+            "record",
+            "abnormal temperature",
+            "maintenance log"
+          ],
+          "citation_supported": true,
+          "supporting_sources": [
+            "temperature_procedure.txt"
+          ],
+          "citation_checks": [
+            {
+              "verified": true,
+              "citation": "[1]",
+              "source": "temperature_procedure.txt",
+              "chunk_id": null,
+              "chunk_index": null,
+              "section": "Document body",
+              "page": null,
+              "original_text": "Temperature Monitoring\n\nMonitor the operating temperature of the machine during operation.\n\nIf the temperature exceeds the recommended range, stop the equipment and investigate the cause.\n\nRecord abnormal temperature readings in the maintenance log.",
+              "matching_terms": [
+                "abnormal",
+                "maintenance",
+                "readings",
+                "record",
+                "temperature"
+              ],
+              "reason": "Claim has supporting terms in the original retrieved chunk."
+            }
+          ]
+        }
+      ],
+      "correctness": 1.0,
+      "grounding": 1.0,
+      "citation_quality": 1.0,
+      "citation_markers_valid": true
+    },
+    {
+      "id": "citation-failure",
+      "question": "What should I do when unusual vibration is detected?",
+      "expected_sources": [
+        "vibration_procedure.txt"
+      ],
+      "answer": "Stop the equipment immediately. [2]",
+      "retrieved_sources": [
+        "vibration_procedure.txt"
+      ],
+      "cited_markers": [
+        "[2]"
+      ],
+      "invalid_citations": [
+        "[2]"
+      ],
+      "claims": [
+        {
+          "claim": "Stop the equipment immediately.",
+          "correct": true,
+          "answer_terms_found": [
+            "stop",
+            "equipment",
+            "immediately"
+          ],
+          "required_terms": [
+            "stop",
+            "equipment",
+            "immediately"
+          ],
+          "grounded": true,
+          "context_terms_found": [
+            "stop",
+            "equipment",
+            "immediately"
+          ],
+          "citation_supported": false,
+          "supporting_sources": [
+            "vibration_procedure.txt"
+          ],
+          "citation_checks": []
+        }
+      ],
+      "correctness": 1.0,
+      "grounding": 1.0,
+      "citation_quality": 0.0,
+      "citation_markers_valid": false
+    }
+  ]
+}
