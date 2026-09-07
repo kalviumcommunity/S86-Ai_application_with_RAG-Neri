@@ -226,6 +226,20 @@ print(result["answer"])
 print(result["sources"])
 ```
 
+## Conversational RAG
+
+Follow-up support is implemented in
+[src/conversational_rag.py](src/conversational_rag.py). `ConversationalRAG`
+keeps user and assistant turns in `ConversationHistory`, rewrites each
+follow-up before embedding, and sends that rewritten query through the normal
+retrieval and grounded-generation stages. A model-backed rewriter can be
+injected for complex references; the default rewriter includes the previous
+question for simple follow-ups.
+
+The complete two-turn example, including rewritten queries, retrieved context,
+and cited answers, is in
+[outputs/conversational_dialogue.md](outputs/conversational_dialogue.md).
+
 Example output from the offline stage test:
 
 ```text
@@ -413,7 +427,7 @@ NERI aims to transform how manufacturing teams access maintenance knowledge.
 Instead of spending valuable time searching through thousands of documents, technicians can describe a machine problem and receive a clear, safety-conscious, source-referenced troubleshooting response.
 
 > **NERI — Find the information. Fix the problem. Work safely.**
-......
+
 
 ---
 
