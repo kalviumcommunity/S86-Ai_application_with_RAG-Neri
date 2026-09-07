@@ -3,6 +3,7 @@
 import unittest
 
 try:
+    from .conversational_rag import ConversationalRAG, default_rewrite_query
     from .rag_pipeline import (
         NO_CONTEXT_ANSWER,
         answer_query,
@@ -10,6 +11,7 @@ try:
         build_augmented_prompt,
     )
 except ImportError:
+    from conversational_rag import ConversationalRAG, default_rewrite_query
     from rag_pipeline import NO_CONTEXT_ANSWER, answer_query, assemble_context, build_augmented_prompt
 
 
@@ -93,6 +95,62 @@ class RagPipelineTests(unittest.TestCase):
         self.assertIn("[1] Source: safety.txt", result["prompt"])
         self.assertNotIn("[2] Source: manual.txt", result["prompt"])
         self.assertLessEqual(result["total_reserved_tokens"], 80)
+
+    def test_conversational_rag_rewrites_follow_up_and_tracks_history(self):
+        store = FakeStore([{
+            "text": "Isolate electrical power before inspecting the motor.",
+            "metadata": {"source": "electrical_safety.txt"},
+        }])
+        embedded_queries = []
+        generated_queries = []
+
+        def embedder(texts):
+            embedded_queries.append(texts[0])
+            return [[0.5, 0.5]]
+
+        def generator(query, context):
+            generated_queries.append(query)
+            return "Power must be isolated before inspection."
+
+        def rewriter(question, history):
+            if not history.turns:
+                return question
+            return "What safety precautions apply before inspecting the motor?"
+
+        conversation = ConversationalRAG(
+            store,
+            embedder=embedder,
+            generator=generator,
+            rewriter=rewriter,
+            top_k=1,
+        )
+        first = conversation.ask("What should I do before inspecting the motor?")
+        second = conversation.ask("What about safety?")
+
+        self.assertEqual(first["rewritten_query"], first["question"])
+        self.assertEqual(second["rewritten_query"], "What safety precautions apply before inspecting the motor?")
+        self.assertEqual(embedded_queries[1], second["rewritten_query"])
+        self.assertEqual(generated_queries[1], second["rewritten_query"])
+        self.assertEqual(len(conversation.history.turns), 2)
+        self.assertEqual(len(second["history"]), 4)
+        self.assertTrue(second["retrieved"])
+
+    def test_default_rewriter_uses_previous_turn(self):
+        store = FakeStore([])
+        conversation = ConversationalRAG(
+            store,
+            embedder=lambda texts: [[1.0]],
+            generator=lambda query, context: "No context.",
+        )
+        conversation.ask("What is the restart procedure for the conveyor?")
+
+        rewritten = default_rewrite_query(
+            "Does it require a safety check?",
+            conversation.history,
+        )
+
+        self.assertIn("restart procedure for the conveyor", rewritten)
+        self.assertIn("Does it require a safety check?", rewritten)
 
 
 if __name__ == "__main__":
