@@ -1,0 +1,9 @@
+
+Runtime indexing test document.
+
+This document was uploaded after the RAG API started.
+
+Technicians must inspect equipment before restarting
+a machine after detecting abnormal vibration.
+
+This content is being used to verify runtime indexing.

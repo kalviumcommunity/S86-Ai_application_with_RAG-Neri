@@ -1,0 +1,7 @@
+Runtime Knowledge Base Test
+
+When abnormal vibration is detected, the technician must stop the machine immediately.
+
+The technician must inspect the equipment before restarting it.
+
+The machine must not be restarted until the inspection is complete and the equipment is considered safe.
