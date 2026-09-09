@@ -38,3 +38,5 @@ node_modules/
 Thumbs.db
 
 !uploads/test_stream.py
+
+outputs/chroma_db/
