@@ -37,4 +37,4 @@ node_modules/
 .DS_Store
 Thumbs.db
 
-uploads/
+!uploads/test_stream.py
