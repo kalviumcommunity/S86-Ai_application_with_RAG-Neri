@@ -1,453 +1,200 @@
-# NERI
+# Neri – AI Application with RAG
+### About the Project
 
-## AI-Powered Industrial Maintenance Troubleshooting Assistant
+Neri is a Retrieval-Augmented Generation (RAG) application that allows users to upload documents, search their content, and ask questions through a chat interface.
 
-NERI is an AI-powered maintenance troubleshooting assistant designed to help manufacturing technicians quickly find reliable information when machines fail.
+The system retrieves relevant document chunks before generating an answer, ensuring that responses are grounded in the available knowledge base. It also provides citations so users can verify the source of an answer.
 
-Manufacturing companies maintain large collections of equipment manuals, maintenance logs, and safety procedures. However, this information is often scattered across documents, making it difficult for technicians to quickly find the correct troubleshooting procedure during a machine failure.
+## Problem Statement
 
-NERI uses Retrieval-Augmented Generation (RAG) to retrieve relevant information from approved company documents and provide technicians with source-grounded troubleshooting guidance.
+Traditional AI assistants can generate plausible answers that are not supported by the provided documents. This makes it difficult for users to verify whether an answer is accurate and based on reliable information.
 
----
+There is a need for a system that can:
 
-## Problem
-
-When a machine fails, technicians often need to search through multiple documents to find information about:
-
-- Possible causes of the failure
-- Troubleshooting procedures
-- Safety precautions
-- Previous maintenance incidents
-- Equipment-specific instructions
-
-Manually searching through large document collections can increase machine downtime and may lead to technicians relying on incomplete or incorrect information.
-
----
+- Retrieve relevant information from documents.
+- Generate answers using only the retrieved context.
+- Provide citations for generated answers.
+- Refuse to answer when sufficient context is unavailable.
+- Allow new documents to be added to the knowledge base at runtime.
 
 ## Solution
 
-NERI provides a single interface where technicians can describe a machine problem using natural language.
+Neri uses a Retrieval-Augmented Generation pipeline to connect document retrieval with answer generation.
+
+### The application:
+
+- Accepts documents through an upload endpoint.
+- Ingests and cleans the document content.
+- Splits documents into smaller chunks.
+- Generates embeddings for the chunks.
+- Stores the embeddings in a vector store.
+- Retrieves relevant chunks when a user asks a question.
+- Generates a grounded answer using the retrieved context.
+- Adds citations that map answers back to source chunks.
+- Uses hallucination guardrails when retrieval is weak or unavailable.
+- Provides the functionality through a backend API and user interface.
 
-The system retrieves relevant information from company-approved documentation and uses it to generate a clear troubleshooting response.
 
-The response can include:
+## Project Folder Structure
 
-- Possible causes
-- Troubleshooting steps
-- Safety warnings
-- Supporting document references
-- Relevant sections or pages
-- Previous troubleshooting information
+S86-Ai_application_with_RAG-Neri/
+│
+├── api/
+│   ├── __init__.py
+│   └── main.py
+│
+├── src/
+│   ├── __init__.py
+│   ├── ingestion.py
+│   ├── document_intake.py
+│   ├── chunking.py
+│   ├── embeddings.py
+│   ├── indexing.py
+│   ├── vector_store.py
+│   ├── grounded_generation.py
+│   ├── citations.py
+│   └── guardrails.py
+│
+├── data/
+│   └── documents/
+│
+├── uploads/
+│
+├── outputs/
+│
+├── frontend/
+│   └── ...
+│
+├── requirements.txt
+├── .env.example
+├── .gitignore
+├── api_sample.md
+├── upload_sample.md
+└── README.md
 
-This allows technicians to spend less time searching through documents and more time resolving machine problems safely.
 
----
+## How to Run the App
+#### 1. Clone the Repository
+- git clone https://github.com/kalviumcommunity/S86-Ai_application_with_RAG-Neri.git
+- cd S86-Ai_application_with_RAG-Neri
 
-## How NERI Works
+#### 2. Create a Virtual Environment
+- python -m venv .venv
 
-```text
-Technician
-    │
-    ▼
-Select Machine
-    │
-    ▼
-Describe Machine Problem
-    │
-    ▼
-NERI
-    │
-    ▼
-Retrieve Relevant Documents
-    │
-    ▼
-Generate Grounded Response
-    │
-    ├── Possible Causes
-    │
-    ├── Safety Warnings
-    │
-    ├── Troubleshooting Steps
-    │
-    └── Source References
+#### 3. Activate the Virtual Environment
+**Windows**
+- .venv\Scripts\activate
 
-```
+#### 4. Install Dependencies
+- pip install -r requirements.txt
 
-## Key Features
+#### 5. Configure Environment Variables
 
-### Natural-Language Troubleshooting
+Create a .env file in the project root.
 
-Technicians can describe machine problems in their own words instead of searching manually through technical documentation.
+- OPENAI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/
+- OPENAI_API_KEY=your_api_key_here
+- CHAT_MODEL=gemini-3.1-flash-lite
+- EMBED_MODEL=gemini-embedding-001
 
-### Equipment-Specific Guidance
+**Note:** Do not commit the actual .env file or API key to GitHub.
 
-NERI can use the selected machine and relevant documentation to provide troubleshooting information specific to the equipment.
+#### 6. Start the Backend API
+- python -m uvicorn api.main:app --reload
 
-### Possible Cause Identification
+The backend will run at:
 
-The system presents potential causes of a reported machine problem based on the available documentation.
+- http://127.0.0.1:8000
 
-### Step-by-Step Troubleshooting
+#### 7. Open the API Documentation
 
-Troubleshooting guidance is presented as clear, numbered steps to make procedures easier to follow.
+Open the following URL in your browser:
 
-### Safety Warnings
+- http://127.0.0.1:8000/docs
 
-Relevant safety procedures and precautions are presented prominently so technicians can consider safety requirements before performing troubleshooting actions.
+FastAPI provides an interactive interface where you can test the available API endpoints.
 
-### Source-Referenced Answers
+### Main Features
+#### Document Upload
 
-NERI provides supporting document references so technicians can verify where the information came from.
+- Users can upload supported documents through the API. Uploaded documents are processed and added to the knowledge base.
 
-### Troubleshooting History
+#### Document Ingestion
 
-Previous troubleshooting incidents can be reviewed to help technicians and maintenance teams understand recurring machine problems.
+- Documents are loaded and cleaned before being passed to the chunking stage.
 
-### Document Management
+#### Chunking
 
-Authorized users can manage company knowledge sources such as:
+- Large documents are divided into smaller chunks so that relevant sections can be retrieved efficiently.
 
-- Equipment manuals
-- Maintenance logs
-- Safety procedures
+#### Embedding Generation
 
----
+- Document chunks are converted into vector embeddings for semantic search.
 
-## Source-Grounded AI
+#### Vector Retrieval
 
-NERI is designed to provide answers based on company-approved documentation rather than relying only on general model knowledge.
+- When a user asks a question, the system retrieves the most relevant document chunks from the knowledge base.
 
-The system follows a **Retrieval-Augmented Generation (RAG)** approach:
+#### Grounded Answer Generation
 
-```text
-Company Documents
-        │
-        ▼
-Document Processing
-        │
-        ▼
-Document Chunks
-        │
-        ▼
-Embeddings
-        │
-        ▼
-Vector Database
-        │
-        ▼
-Relevant Information
-        │
-        ▼
-Language Model
-        │
-        ▼
-Grounded Response
-        │
-        ▼
-Source References
-```
-
-## Document Chunking
-
-The chunking comparison and metadata tagging are implemented in [src/chunking.py](src/chunking.py). It cleans the corpus first, then compares:
-
-- **Fixed-size with overlap:** 500-character windows with 50 characters of overlap. This gives predictable embedding sizes and preserves text near window boundaries.
-- **Paragraph:** one non-empty paragraph per chunk. This respects the meaning and structure of the manuals, logs, and safety procedure, although chunk sizes vary.
-
-Run the comparison with:
-
-```text
-python src/chunking.py
-```
-
-## Retrieval Evaluation
-
-## Query-Time RAG Pipeline
-
-The query-time flow is implemented as separate, testable stages in
-[src/rag_pipeline.py](src/rag_pipeline.py):
-
-```text
-User query
-        -> embed_query(query)
-        -> retrieve_context(query_vector, vector_store, k)
-        -> assemble_context(chunks)
-        -> generate_answer(query, context)
-        -> answer + sources
-```
-
-`answer_query` orchestrates these stages and returns a dictionary containing
-the grounded answer and the metadata for every retrieved source. The embedder
-and generator are injectable, so retrieval and prompt assembly can be tested
-without network access. If retrieval returns no chunks, generation is skipped
-and the pipeline returns `I could not find relevant context for that question.`
-
-`build_augmented_prompt` uses the `cl100k_base` tokenizer to keep the complete
-prompt within `model_token_budget`. It reserves `answer_token_reserve` tokens
-for generation, then adds retrieved chunks in rank order until the remaining
-context budget is full. Every chunk is marked as `[n] Source: filename` and the
-prompt instructs the model to answer only from that evidence.
-
-Sample augmented prompt and budget report:
+- The system generates answers using the retrieved context rather than relying only on the model's general knowledge.
 
-```text
-Answer only from the provided context. Cite evidence with its [number]. If the context is insufficient, say what information is missing.
+#### Source Citations
 
-Context:
-[1] Source: electrical_safety.txt (Isolation)
-Isolate electrical power before opening the motor housing.
+Generated answers include citation markers such as:
 
-[2] Source: motor_inspection.txt (Inspection)
-Record the inspection result in the maintenance log.
+- [1]
+- [2]
 
-Question: What should I do before inspecting the motor?
+Each citation can be mapped to information such as the source document, chunk ID, section, and original retrieved text.
 
-Budget: model=120, prompt=86, answer reserve=20, total reserved=106, chunks=2
-```
+#### Hallucination Guardrails
 
-Run the focused offline tests with:
+- The system checks the quality of retrieved context before generating an answer.
 
-```text
-python -m unittest src.rag_pipeline_test
-```
+When sufficient supporting context is not available, the system returns a safe fallback such as:
 
-An end-to-end run using the configured embedding and chat APIs can be driven
-after indexing with a small script:
+- I don't have enough reliable context to answer that question.
 
-```python
-from src.rag_pipeline import answer_query
-from src.vector_store import VectorStore
+#### Backend API
 
-result = answer_query(
-        "What should I do before inspecting the motor?",
-        VectorStore(persist_dir="outputs/chroma_db"),
-)
-print(result["answer"])
-print(result["sources"])
-```
+The RAG functionality is exposed through backend API endpoints so that a frontend or another application can communicate with the system.
 
-## Conversational RAG
+#### Chat / Query Interface
 
-Follow-up support is implemented in
-[src/conversational_rag.py](src/conversational_rag.py). `ConversationalRAG`
-keeps user and assistant turns in `ConversationHistory`, rewrites each
-follow-up before embedding, and sends that rewritten query through the normal
-retrieval and grounded-generation stages. A model-backed rewriter can be
-injected for complex references; the default rewriter includes the previous
-question for simple follow-ups.
+Users can enter questions and receive grounded answers together with the sources used to generate the answer.
 
-The complete two-turn example, including rewritten queries, retrieved context,
-and cited answers, is in
-[outputs/conversational_dialogue.md](outputs/conversational_dialogue.md).
+#### Streaming Responses
 
-## Answer Quality Evaluation
+The application supports progressively displaying generated responses instead of waiting for the complete answer.
 
-The answer-level benchmark is defined in
-[evaluation/test_set.json](evaluation/test_set.json) and runs through the
-production query stages with deterministic local evidence:
+#### Caching
 
-```text
-python -m src.answer_evaluation
-```
+Repeated identical queries can be served from cache to reduce unnecessary retrieval and generation work.
 
-It scores expected claims for correctness (terms present in the answer),
-grounding (terms present in retrieved context), and citation quality (valid
-markers whose cited source supports the claim). The generated machine-readable
-results are in [evaluation/scored_results.json](evaluation/scored_results.json)
-and the reviewer summary is in
-[evaluation/quality_summary.md](evaluation/quality_summary.md). The current
-run scores 100% correctness, 100% grounding, and 75% citation quality; the
-reported failure is an intentionally invalid citation used to verify failure
-reporting.
+#### Logging and Usage Monitoring
 
-Example output from the offline stage test:
+The application records useful information for monitoring and debugging, including:
 
-```text
-Power must be isolated before inspection.
-[{"source": "electrical_safety.txt", "section": "Isolation"}]
-```
+- Questions
+- Answer previews
+- Retrieved sources
+- Cache hits
+- Request latency
+- Token usage
+- Estimated cost
+- Errors
+- Uses
 
-Retrieval quality can be measured with labelled chunk IDs using the evaluator
-documented in [RETRIEVAL_EVALUATION.md](RETRIEVAL_EVALUATION.md). It reports
-recall and precision at top-k and retains failed queries for inspection.
+Neri can be used as a document-based knowledge assistant for:
 
-Every chunk keeps its text beside the same metadata fields: `source`, `source_path`, `strategy`, `chunk_index`, `char_start`, `char_end`, and `section`. The report includes sample text plus metadata and demonstrates tracing a retrieved chunk back to its source file and exact character range. Paragraph chunking is the chosen strategy for this corpus because the source documents use short, structured sections where keeping a complete procedure or safety instruction together is more valuable than uniform chunk sizes. Fixed-size chunks remain a useful baseline for dense text and can be tuned later with retrieval tests.
+- Internal company documents
+- Technical manuals
+- Project documentation
+- Policies and procedures
+- Educational materials
+- Research documents
+- Frequently asked questions
+- Organizational knowledge bases
 
-Chunk sizes must also fit the model's context budget: retrieved chunks, the prompt, and the expected answer all share the context window. Increasing chunk size or top-k can improve context but can also exceed that budget and increase embedding and generation cost.
-
-## Token-Aware Chunk Sizing
-
-The same module also provides `token_chunks`, which uses the `cl100k_base` tokenizer rather than character length. The default is 64 tokens per chunk with 16 repeated tokens of overlap. This conservative size leaves room for the system prompt, the user question, and multiple retrieved chunks in a typical 4K+ token context window, while the 25% overlap preserves instructions that cross a boundary. The generated report includes a controlled boundary example comparing the result with and without overlap.
-
-Run `python src/chunking.py` to regenerate the token counts and boundary demonstration. The size and overlap can be tested with `--token-size` and `--token-overlap`; smaller chunks improve precision and cost, while larger chunks provide more context but consume more of the model budget.
-
-## Full Ingestion Validation
-
-Run the complete load, clean, token-chunk, and metadata-tagging pipeline with:
-
-```text
-python src/ingestion.py
-```
-
-The command reports discovered files, successfully ingested documents, chunks, and per-file failures. It also asserts that every file is accounted for by either a successful document or a recorded failure, then prints one chunk with its metadata. Adjust token sizing with `--token-size` and `--token-overlap`.
-
-## Embeddings
-
-Generate vectors for the prepared ingestion chunks with:
-
-```text
-python src/embeddings.py
-```
-
-Set `OPENAI_BASE_URL`, `OPENAI_API_KEY`, and `EMBEDDING_MODEL` in `.env` first. `EMBED_MODEL` is also supported for compatibility with the existing project configuration. The script batches requests, preserves each chunk's text and metadata beside its vector, retries transient failures with exponential backoff, and caches successful embeddings in `outputs/embedding_cache.json`. It reports total chunks, generated embeddings, skipped chunks, retries, failures, input tokens, and an approximate cost. Use `--batch-size`, `--max-retries`, `--backoff-seconds`, and `--cache` to configure the run. Set `EMBEDDING_COST_PER_1K` to override the default approximate rate of `$0.00002` per 1K input tokens.
-
-### Similarity Ranking
-
-Compare a question with every embedded chunk and write a ranked sample report:
-
-```text
-python src/embeddings.py --query "What should I do before inspecting the machine?" --top-k 5
-```
-
-The command uses cosine similarity, prints ranked source text and metadata, and writes the results to `outputs/similarity_ranking.md`. A high score means that a chunk is likely relevant in embedding space; it does not prove that the information is correct, current, complete, or safe to use without validation. The reusable `rank_chunks` function sorts from highest similarity to lowest similarity.
-
-### Retrieval Sanity Checks
-
-Run known relevance checks before trusting retrieval results:
-
-```text
-python src/sanity_test.py
-```
-
-The offline checker uses the production `rank_chunks` function with labeled fixture vectors. It verifies that electrical-safety, vibration, and PPE queries rank their known relevant chunks first, then records a deliberately broad routine-maintenance query as a surprise when it favors the PPE section. The report is written to `outputs/sanity_report.md`; the surprise demonstrates why broad queries need top-k review, metadata filters, and additional evaluation cases.
-
----
-
-## Safety First
-
-NERI is designed with safety as an important part of the troubleshooting experience.
-
-Safety-related information should be clearly separated from general troubleshooting instructions and presented prominently when relevant.
-
-NERI should not invent maintenance procedures or provide unsupported instructions when sufficient information is not available in the approved documentation.
-
-When the available information is insufficient, the system should clearly communicate that it cannot provide a reliable troubleshooting procedure.
-
----
-
-## Target Users
-
-### Manufacturing Floor Technicians
-
-The primary users of NERI. They use the system during machine failures to quickly find troubleshooting information.
-
-### Maintenance Supervisors
-
-Can review troubleshooting incidents and identify recurring machine problems.
-
-### Plant Engineers
-
-Can use the system to access equipment-specific technical information.
-
-### Safety Officers
-
-Can ensure that relevant safety procedures and documentation are available to technicians.
-
-### Authorized Document Managers
-
-Can manage the documents that form the knowledge base used by NERI.
-
----
-
-## Technology
-
-NERI is being developed as an AI-powered RAG application using technologies such as:
-
-- Python
-- Large Language Models (LLMs)
-- OpenAI-compatible APIs
-- ChromaDB
-- Embeddings
-- Retrieval-Augmented Generation (RAG)
-
----
-
-## Project Architecture
-
-```text
-                    ┌─────────────────────┐
-                    │      Technician     │
-                    └──────────┬──────────┘
-                               │
-                               ▼
-                    ┌─────────────────────┐
-                    │    NERI Interface   │
-                    └──────────┬──────────┘
-                               │
-                               ▼
-                    ┌─────────────────────┐
-                    │      Retrieval      │
-                    └──────────┬──────────┘
-                               │
-                  ┌────────────┼────────────┐
-                  ▼            ▼            ▼
-             Equipment     Maintenance    Safety
-              Manuals         Logs       Procedures
-                  │            │            │
-                  └────────────┼────────────┘
-                               ▼
-                    ┌─────────────────────┐
-                    │   Relevant Context  │
-                    └──────────┬──────────┘
-                               │
-                               ▼
-                    ┌─────────────────────┐
-                    │    Language Model   │
-                    └──────────┬──────────┘
-                               │
-                               ▼
-                    ┌─────────────────────┐
-                    │    NERI Response    │
-                    │                     │
-                    │   Possible Causes   │
-                    │   Safety Warnings   │
-                    │   Troubleshooting   │
-                    │   Sources           │
-                    └─────────────────────┘
-```
-
----
-
-## Core Principles
-
-NERI is built around four core principles:
-
-### Reliable Information
-
-Provide information based on approved company documentation.
-
-### Safe Troubleshooting
-
-Make relevant safety information visible before troubleshooting actions.
-
-### Source Transparency
-
-Allow technicians to verify the information behind the AI-generated response.
-
-### Reduced Downtime
-
-Help technicians find useful troubleshooting information faster during machine failures.
-
----
-
-## Project Vision
-
-NERI aims to transform how manufacturing teams access maintenance knowledge.
-
-Instead of spending valuable time searching through thousands of documents, technicians can describe a machine problem and receive a clear, safety-conscious, source-referenced troubleshooting response.
-
-> **NERI — Find the information. Fix the problem. Work safely.**
-
-
----
-
+The system is particularly useful when answers need to be grounded in specific documents and verified through source citations.
