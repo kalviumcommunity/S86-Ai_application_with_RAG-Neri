@@ -1,365 +1,307 @@
-import os
-
+import json
 import requests
 import streamlit as st
-from dotenv import load_dotenv
 
 
-# ============================================================
-# CONFIGURATION
-# ============================================================
+API_URL = "http://127.0.0.1:8000"
 
-load_dotenv()
-
-API_URL = os.getenv(
-    "RAG_API_URL",
-    "http://127.0.0.1:8000",
-)
-
-QUERY_ENDPOINT = f"{API_URL}/query"
-
-
-# ============================================================
-# PAGE CONFIGURATION
-# ============================================================
 
 st.set_page_config(
-    page_title="RAG Knowledge Assistant",
+    page_title="RAG Assistant",
     page_icon="🤖",
-    layout="centered",
+    layout="wide",
 )
 
 
-# ============================================================
-# CUSTOM STYLING
-# ============================================================
+st.title("🤖 Grounded RAG Assistant")
 
-st.markdown(
-    """
-    <style>
-        .main-title {
-            font-size: 2.2rem;
-            font-weight: 700;
-            margin-bottom: 0.2rem;
-        }
-
-        .subtitle {
-            color: #666;
-            margin-bottom: 1.5rem;
-        }
-
-        .source-box {
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            margin-bottom: 8px;
-        }
-
-        .status-box {
-            padding: 10px;
-            border-radius: 8px;
-            background-color: #f5f5f5;
-        }
-    </style>
-    """,
-    unsafe_allow_html=True,
+st.write(
+    "Ask a question and receive a grounded answer "
+    "with verifiable source citations."
 )
 
 
-# ============================================================
-# HEADER
-# ============================================================
+# --------------------------------------------------
+# Question input
+# --------------------------------------------------
 
-st.markdown(
-    '<div class="main-title">🤖 RAG Knowledge Assistant</div>',
-    unsafe_allow_html=True,
-)
-
-st.markdown(
-    '<div class="subtitle">'
-    'Ask questions and get answers grounded in the knowledge base.'
-    '</div>',
-    unsafe_allow_html=True,
-)
-
-
-# ============================================================
-# API STATUS
-# ============================================================
-
-with st.sidebar:
-
-    st.header("⚙️ Configuration")
-
-    st.write("Backend API:")
-
-    st.code(API_URL)
-
-    if st.button("Check API"):
-
-        try:
-
-            response = requests.get(
-                f"{API_URL}/health",
-                timeout=5,
-            )
-
-            if response.ok:
-
-                st.success("Backend is online.")
-
-            else:
-
-                st.error(
-                    f"Backend returned HTTP {response.status_code}"
-                )
-
-        except requests.RequestException:
-
-            st.error(
-                "Could not connect to the backend."
-            )
-
-
-# ============================================================
-# QUESTION INPUT
-# ============================================================
-
-question = st.text_area(
+question = st.text_input(
     "Ask a question",
     placeholder=(
-        "Example: What should a technician do "
-        "if abnormal vibration is detected?"
+        "What should a technician do if abnormal vibration is detected?"
     ),
-    height=120,
 )
 
-
-# ============================================================
-# SUBMIT BUTTON
-# ============================================================
 
 ask_button = st.button(
-    "🔍 Ask Question",
+    "Ask",
     type="primary",
-    use_container_width=True,
 )
 
 
-# ============================================================
-# QUERY FUNCTION
-# ============================================================
-
-def ask_rag_api(question: str):
-
-    response = requests.post(
-        QUERY_ENDPOINT,
-        json={
-            "question": question,
-        },
-        timeout=120,
-    )
-
-    if not response.ok:
-
-        try:
-            error_detail = response.json().get(
-                "detail",
-                "RAG API request failed.",
-            )
-        except ValueError:
-            error_detail = "RAG API request failed."
-
-        raise RuntimeError(
-            f"HTTP {response.status_code}: {error_detail}"
-        )
-
-    return response.json()
-
-
-# ============================================================
-# PROCESS QUESTION
-# ============================================================
+# --------------------------------------------------
+# Ask question
+# --------------------------------------------------
 
 if ask_button:
-
-    # --------------------------------------------------------
-    # Validate input
-    # --------------------------------------------------------
 
     if not question.strip():
 
         st.warning(
-            "Please enter a question before submitting."
+            "Please enter a question."
         )
 
-    elif len(question.strip()) < 3:
+        st.stop()
 
-        st.warning(
-            "Question must contain at least 3 characters."
-        )
-
-    else:
-
-        # ----------------------------------------------------
-        # Call backend
-        # ----------------------------------------------------
-
-        try:
-
-            with st.spinner(
-                "Searching the knowledge base and generating an answer..."
-            ):
-
-                result = ask_rag_api(
-                    question.strip()
-                )
-
-            # Save result
-            st.session_state["last_result"] = result
-
-        except requests.ConnectionError:
-
-            st.error(
-                "Could not connect to the RAG backend. "
-                "Make sure the FastAPI server is running."
-            )
-
-        except requests.Timeout:
-
-            st.error(
-                "The request timed out. "
-                "Please try again."
-            )
-
-        except RuntimeError as error:
-
-            st.error(str(error))
-
-        except Exception as error:
-
-            st.error(
-                f"Unexpected error: {error}"
-            )
-
-
-# ============================================================
-# DISPLAY RESULT
-# ============================================================
-
-if "last_result" in st.session_state:
-
-    result = st.session_state["last_result"]
 
     st.divider()
 
-    # --------------------------------------------------------
-    # Answer
-    # --------------------------------------------------------
+    st.subheader("Answer")
 
-    st.subheader("💬 Answer")
 
-    answer = result.get(
-        "answer",
-        "No answer returned.",
-    )
+    answer_placeholder = st.empty()
 
-    st.write(answer)
 
-    # --------------------------------------------------------
-    # Status
-    # --------------------------------------------------------
+    sources_placeholder = st.empty()
 
-    status = result.get(
-        "status",
-        "unknown",
-    )
 
-    if status == "answered":
+    error_placeholder = st.empty()
 
-        st.success(
-            "Answer generated from retrieved context."
-        )
 
-    elif "refused" in status:
+    answer = ""
 
-        st.warning(
-            "The system could not find enough reliable "
-            "context to answer this question."
-        )
+    sources = []
 
-    else:
+    stream_error = None
 
-        st.info(
-            f"Status: {status}"
-        )
 
-    # --------------------------------------------------------
-    # Sources
-    # --------------------------------------------------------
+    try:
 
-    st.subheader("📚 Sources")
+        # --------------------------------------------------
+        # Start streaming request
+        # --------------------------------------------------
 
-    sources = result.get(
-        "sources",
-        [],
-    )
+        with st.spinner("Retrieving context..."):
 
-    if sources:
+            response = requests.post(
+                f"{API_URL}/query/stream",
+                json={
+                    "question": question
+                },
+                stream=True,
+                timeout=120,
+            )
 
-        for index, source in enumerate(
-            sources,
-            start=1,
+
+        # --------------------------------------------------
+        # HTTP error
+        # --------------------------------------------------
+
+        if response.status_code != 200:
+
+            raise RuntimeError(
+                f"API returned HTTP {response.status_code}"
+            )
+
+
+        # --------------------------------------------------
+        # Read SSE events
+        # --------------------------------------------------
+
+        for raw_line in response.iter_lines(
+            decode_unicode=True
         ):
 
-            source_name = source.get(
-                "source",
-                "Unknown source",
-            )
+            if not raw_line:
+                continue
 
-            chunk_id = source.get(
-                "chunk_id",
-                "N/A",
-            )
 
-            score = source.get(
-                "score",
-                None,
-            )
+            if not raw_line.startswith("data: "):
+                continue
 
-            with st.expander(
-                f"[{index}] {source_name}"
-            ):
 
-                st.write(
-                    f"**Source:** {source_name}"
+            try:
+
+                event = json.loads(
+                    raw_line[6:]
                 )
 
-                st.write(
-                    f"**Chunk ID:** {chunk_id}"
+            except json.JSONDecodeError:
+
+                continue
+
+
+            event_type = event.get(
+                "type"
+            )
+
+
+            # ----------------------------------------------
+            # Citations
+            # ----------------------------------------------
+
+            if event_type == "citations":
+
+                sources = event.get(
+                    "sources",
+                    []
                 )
 
-                if score is not None:
+
+            # ----------------------------------------------
+            # Token
+            # ----------------------------------------------
+
+            elif event_type == "token":
+
+                answer += event.get(
+                    "text",
+                    ""
+                )
+
+                answer_placeholder.markdown(
+                    answer + "▌"
+                )
+
+
+            # ----------------------------------------------
+            # Error
+            # ----------------------------------------------
+
+            elif event_type == "refusal":
+
+                stream_error = event.get(
+                    "message",
+                    "I don't have enough reliable context to answer that."
+                )
+
+                answer_placeholder.warning(
+                    answer
+                )
+
+            # ----------------------------------------------
+            # Done
+            # ----------------------------------------------
+
+            elif event_type == "done":
+
+                break
+
+
+        # --------------------------------------------------
+        # Final answer
+        # --------------------------------------------------
+
+        if answer:
+
+            answer_placeholder.markdown(
+                answer
+            )
+
+
+        # --------------------------------------------------
+        # Error display
+        # --------------------------------------------------
+
+        if stream_error:
+
+            error_placeholder.error(
+                stream_error
+            )
+
+
+        # --------------------------------------------------
+        # Sources
+        # --------------------------------------------------
+
+        if sources:
+
+            st.divider()
+
+            st.subheader(
+                "📚 Sources"
+            )
+
+
+            for source in sources:
+
+                label = source.get(
+                    "label",
+                    "[?]"
+                )
+
+                document = source.get(
+                    "document",
+                    "Unknown document"
+                )
+
+                chunk_id = source.get(
+                    "chunk_id",
+                    "Unknown chunk"
+                )
+
+                score = source.get(
+                    "score"
+                )
+
+
+                title = (
+                    f"{label} {document} "
+                    f"— {chunk_id}"
+                )
+
+
+                with st.expander(title):
+
+                    if score is not None:
+
+                        st.caption(
+                            f"Similarity score: {score:.3f}"
+                        )
+
+
+                    if source.get(
+                        "section"
+                    ):
+
+                        st.caption(
+                            f"Section: "
+                            f"{source['section']}"
+                        )
+
 
                     st.write(
-                        f"**Similarity score:** "
-                        f"{score:.4f}"
+                        source.get(
+                            "text",
+                            "No source text available."
+                        )
                     )
 
-    else:
 
-        st.info(
-            "No sources were returned."
+        elif not stream_error:
+
+            st.info(
+                "No sources were returned."
+            )
+
+
+    except requests.exceptions.Timeout:
+
+        error_placeholder.error(
+            "The request timed out. Please try again."
         )
 
 
-# ============================================================
-# FOOTER
-# ============================================================
+    except requests.exceptions.ConnectionError:
 
-st.divider()
+        error_placeholder.error(
+            "Could not connect to the RAG API. "
+            "Make sure the backend server is running."
+        )
 
-st.caption(
-    "Answers are generated using the retrieved knowledge "
-    "base context. Check the sources to verify the answer."
-)
+
+    except Exception as error:
+
+        error_placeholder.error(
+            f"Something went wrong: {error}"
+        )
