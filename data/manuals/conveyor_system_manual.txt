@@ -1,0 +1,63 @@
+Conveyor System Maintenance Manual
+==================================================
+
+Machine Information
+-------------------
+Machine: Conveyor System
+Machine ID: CON-001
+Manufacturer: Dorner
+Model: 2200 Series
+Department: Material Handling
+Location: Plant C - Bay 1
+
+General Troubleshooting Guidance
+--------------------------------
+Use this manual together with approved maintenance logs and safety procedures.
+Technicians must stop the machine before performing inspection or maintenance.
+Do not perform procedures that are not supported by approved documentation.
+
+Problem: belt slipping
+----------------------
+1. Stop the conveyor before inspection.
+2. Inspect the belt and accessible drive components.
+3. Check the maintenance log for previous belt-slip events.
+4. Adjust or repair the belt only according to the approved procedure.
+
+Problem: belt misalignment
+--------------------------
+1. Stop the conveyor before inspection.
+2. Inspect belt tracking and accessible rollers.
+3. Review previous maintenance records.
+4. Correct alignment according to the approved procedure.
+
+Problem: motor overheating
+--------------------------
+1. Stop the conveyor and allow the motor to cool.
+2. Check ventilation around the motor.
+3. Review maintenance history.
+4. Do not access internal electrical components while energized.
+
+Problem: abnormal noise
+-----------------------
+1. Stop the conveyor if the noise is unexpected or increasing.
+2. Inspect accessible rollers and belt components.
+3. Review maintenance records.
+4. Do not enter guarded areas without following safety procedures.
+
+Problem: conveyor not starting
+------------------------------
+1. Confirm the conveyor is in a safe stopped state.
+2. Check the operator panel for alarms.
+3. Review recent maintenance records.
+4. Follow the approved restart procedure.
+
+Problem: unexpected shutdown
+----------------------------
+1. Record the alarm or error condition.
+2. Keep the conveyor stopped until the cause is identified.
+3. Review maintenance history.
+4. Follow the approved restart procedure.
+
+Escalation Guidance
+-------------------
+If the documented troubleshooting steps do not resolve the issue, stop further intervention and escalate the problem to the authorized maintenance supervisor.

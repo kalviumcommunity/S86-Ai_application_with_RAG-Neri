@@ -1,0 +1,63 @@
+Industrial Drill Maintenance Manual
+==================================================
+
+Machine Information
+-------------------
+Machine: Industrial Drill
+Machine ID: DRL-001
+Manufacturer: Bosch Rexroth
+Model: ID-500
+Department: Fabrication
+Location: Plant B - Bay 1
+
+General Troubleshooting Guidance
+--------------------------------
+Use this manual together with approved maintenance logs and safety procedures.
+Technicians must stop the machine before performing inspection or maintenance.
+Do not perform procedures that are not supported by approved documentation.
+
+Problem: drill bit slipping
+---------------------------
+1. Stop the drill before inspecting the tool holder.
+2. Check the drill bit and chuck for visible damage.
+3. Verify that the drill bit is secured according to the operating procedure.
+4. Review maintenance records for previous chuck problems.
+
+Problem: excessive vibration
+----------------------------
+1. Stop drilling before inspection.
+2. Inspect the drill bit for damage or excessive wear.
+3. Check the workpiece setup.
+4. Review previous vibration-related maintenance records.
+
+Problem: motor overheating
+--------------------------
+1. Stop the drill and allow the motor to cool.
+2. Check for blocked ventilation around the motor.
+3. Review maintenance records for previous overheating events.
+4. Do not access internal electrical components while energized.
+
+Problem: poor drilling accuracy
+-------------------------------
+1. Stop the operation if accuracy continues to degrade.
+2. Inspect the drill bit for wear.
+3. Check the workpiece setup.
+4. Review maintenance history for alignment problems.
+
+Problem: abnormal noise
+-----------------------
+1. Stop the drill if abnormal noise increases.
+2. Record when the noise occurs.
+3. Inspect accessible tooling for visible damage.
+4. Review previous maintenance records.
+
+Problem: unexpected shutdown
+----------------------------
+1. Record the displayed alarm.
+2. Keep the machine stopped until the cause is reviewed.
+3. Check recent maintenance records.
+4. Follow the approved restart procedure.
+
+Escalation Guidance
+-------------------
+If the documented troubleshooting steps do not resolve the issue, stop further intervention and escalate the problem to the authorized maintenance supervisor.

@@ -1,0 +1,308 @@
+CNC Lathe Maintenance History
+==================================================
+
+Machine ID: LAT-001
+Manufacturer: DMG Mori
+Model: NLX 2500
+Department: Machining
+Location: Plant A - Bay 2
+
+Maintenance Record 1
+------------------------------
+Date: 2025-11-25
+Work Order: WO-LAT-001-1001
+Inspection ID: INS-60019
+Technician: Jennifer Brown
+Problem: chuck problem
+Error Code: CHUCK-LOCK
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a chuck problem condition and performed the documented inspection procedure.
+
+Maintenance Record 2
+------------------------------
+Date: 2026-07-11
+Work Order: WO-LAT-001-1002
+Inspection ID: INS-82512
+Technician: Julie King
+Problem: unexpected shutdown
+Error Code: PWR-FAIL
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a unexpected shutdown condition and performed the documented inspection procedure.
+
+Maintenance Record 3
+------------------------------
+Date: 2026-03-19
+Work Order: WO-LAT-001-1003
+Inspection ID: INS-99353
+Technician: Alexandra Le
+Problem: tool alignment issue
+Error Code: TOOL-ALIGN
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a tool alignment issue condition and performed the documented inspection procedure.
+
+Maintenance Record 4
+------------------------------
+Date: 2025-10-31
+Work Order: WO-LAT-001-1004
+Inspection ID: INS-54587
+Technician: Nicole Mack
+Problem: chuck problem
+Error Code: CHUCK-LOCK
+Status: Escalated and resolved
+Resolution Time: 5 day(s)
+Maintenance Note: The technician recorded a chuck problem condition and performed the documented inspection procedure.
+
+Maintenance Record 5
+------------------------------
+Date: 2025-12-02
+Work Order: WO-LAT-001-1005
+Inspection ID: INS-44522
+Technician: Jeffrey Chavez
+Problem: excessive vibration
+Error Code: VIB-101
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a excessive vibration condition and performed the documented inspection procedure.
+
+Maintenance Record 6
+------------------------------
+Date: 2026-07-17
+Work Order: WO-LAT-001-1006
+Inspection ID: INS-23947
+Technician: Pamela Romero
+Problem: chuck problem
+Error Code: CHUCK-LOCK
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a chuck problem condition and performed the documented inspection procedure.
+
+Maintenance Record 7
+------------------------------
+Date: 2026-07-17
+Work Order: WO-LAT-001-1007
+Inspection ID: INS-89818
+Technician: Elizabeth Fowler
+Problem: poor surface finish
+Error Code: FIN-102
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a poor surface finish condition and performed the documented inspection procedure.
+
+Maintenance Record 8
+------------------------------
+Date: 2026-06-25
+Work Order: WO-LAT-001-1008
+Inspection ID: INS-79514
+Technician: James Martin
+Problem: tool alignment issue
+Error Code: TOOL-ALIGN
+Status: Escalated and resolved
+Resolution Time: 5 day(s)
+Maintenance Note: The technician recorded a tool alignment issue condition and performed the documented inspection procedure.
+
+Maintenance Record 9
+------------------------------
+Date: 2026-08-30
+Work Order: WO-LAT-001-1009
+Inspection ID: INS-24662
+Technician: Linda Burns
+Problem: excessive vibration
+Error Code: VIB-101
+Status: Resolved
+Resolution Time: 2 day(s)
+Maintenance Note: The technician recorded a excessive vibration condition and performed the documented inspection procedure.
+
+Maintenance Record 10
+------------------------------
+Date: 2025-11-11
+Work Order: WO-LAT-001-1010
+Inspection ID: INS-50306
+Technician: Sherry Decker
+Problem: spindle overheating
+Error Code: TEMP-301
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a spindle overheating condition and performed the documented inspection procedure.
+
+Maintenance Record 11
+------------------------------
+Date: 2026-05-05
+Work Order: WO-LAT-001-1011
+Inspection ID: INS-20322
+Technician: David Bradley
+Problem: poor surface finish
+Error Code: SURF-QUAL
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a poor surface finish condition and performed the documented inspection procedure.
+
+Maintenance Record 12
+------------------------------
+Date: 2026-05-29
+Work Order: WO-LAT-001-1012
+Inspection ID: INS-79822
+Technician: John Jones
+Problem: unexpected shutdown
+Error Code: PWR-FAIL
+Status: Escalated and resolved
+Resolution Time: 5 day(s)
+Maintenance Note: The technician recorded a unexpected shutdown condition and performed the documented inspection procedure.
+
+Maintenance Record 13
+------------------------------
+Date: 2026-08-01
+Work Order: WO-LAT-001-1013
+Inspection ID: INS-82063
+Technician: Betty Alvarez
+Problem: chuck problem
+Error Code: CHUCK-101
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a chuck problem condition and performed the documented inspection procedure.
+
+Maintenance Record 14
+------------------------------
+Date: 2025-12-02
+Work Order: WO-LAT-001-1014
+Inspection ID: INS-37760
+Technician: Joseph Obrien
+Problem: unexpected shutdown
+Error Code: SYS-STOP
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a unexpected shutdown condition and performed the documented inspection procedure.
+
+Maintenance Record 15
+------------------------------
+Date: 2026-07-18
+Work Order: WO-LAT-001-1015
+Inspection ID: INS-50857
+Technician: Nicole Vaughn
+Problem: chuck problem
+Error Code: CHUCK-101
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a chuck problem condition and performed the documented inspection procedure.
+
+Maintenance Record 16
+------------------------------
+Date: 2025-11-11
+Work Order: WO-LAT-001-1016
+Inspection ID: INS-77839
+Technician: Michael Brooks
+Problem: poor surface finish
+Error Code: SURF-QUAL
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a poor surface finish condition and performed the documented inspection procedure.
+
+Maintenance Record 17
+------------------------------
+Date: 2025-10-14
+Work Order: WO-LAT-001-1017
+Inspection ID: INS-12757
+Technician: David Brown
+Problem: spindle overheating
+Error Code: SPN-TEMP
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a spindle overheating condition and performed the documented inspection procedure.
+
+Maintenance Record 18
+------------------------------
+Date: 2025-10-28
+Work Order: WO-LAT-001-1018
+Inspection ID: INS-19305
+Technician: Crystal Robinson
+Problem: tool alignment issue
+Error Code: ALIGN-101
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a tool alignment issue condition and performed the documented inspection procedure.
+
+Maintenance Record 19
+------------------------------
+Date: 2026-06-14
+Work Order: WO-LAT-001-1019
+Inspection ID: INS-14117
+Technician: Amy Jones
+Problem: poor surface finish
+Error Code: SURF-QUAL
+Status: Escalated and resolved
+Resolution Time: 5 day(s)
+Maintenance Note: The technician recorded a poor surface finish condition and performed the documented inspection procedure.
+
+Maintenance Record 20
+------------------------------
+Date: 2026-08-18
+Work Order: WO-LAT-001-1020
+Inspection ID: INS-97684
+Technician: Andrea Young
+Problem: chuck problem
+Error Code: CHUCK-101
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a chuck problem condition and performed the documented inspection procedure.
+
+Maintenance Record 21
+------------------------------
+Date: 2026-01-28
+Work Order: WO-LAT-001-1021
+Inspection ID: INS-85525
+Technician: Mr. Nathaniel Khan
+Problem: tool alignment issue
+Error Code: ALIGN-101
+Status: Resolved
+Resolution Time: 2 day(s)
+Maintenance Note: The technician recorded a tool alignment issue condition and performed the documented inspection procedure.
+
+Maintenance Record 22
+------------------------------
+Date: 2026-01-01
+Work Order: WO-LAT-001-1022
+Inspection ID: INS-34957
+Technician: Richard Aguirre
+Problem: tool alignment issue
+Error Code: TOOL-ALIGN
+Status: Resolved
+Resolution Time: 2 day(s)
+Maintenance Note: The technician recorded a tool alignment issue condition and performed the documented inspection procedure.
+
+Maintenance Record 23
+------------------------------
+Date: 2026-09-15
+Work Order: WO-LAT-001-1023
+Inspection ID: INS-63883
+Technician: Matthew Gomez
+Problem: unexpected shutdown
+Error Code: SYS-STOP
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a unexpected shutdown condition and performed the documented inspection procedure.
+
+Maintenance Record 24
+------------------------------
+Date: 2026-04-27
+Work Order: WO-LAT-001-1024
+Inspection ID: INS-94696
+Technician: Nicholas Nunez
+Problem: poor surface finish
+Error Code: FIN-102
+Status: Resolved
+Resolution Time: 2 day(s)
+Maintenance Note: The technician recorded a poor surface finish condition and performed the documented inspection procedure.
+
+Maintenance Record 25
+------------------------------
+Date: 2026-01-19
+Work Order: WO-LAT-001-1025
+Inspection ID: INS-24322
+Technician: James Morgan
+Problem: poor surface finish
+Error Code: SURF-QUAL
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a poor surface finish condition and performed the documented inspection procedure.

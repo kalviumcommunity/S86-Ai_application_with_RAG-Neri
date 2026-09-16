@@ -1,0 +1,308 @@
+Surface Grinder Maintenance History
+==================================================
+
+Machine ID: GRD-001
+Manufacturer: Okamoto
+Model: ACC-63
+Department: Finishing
+Location: Plant B - Bay 5
+
+Maintenance Record 1
+------------------------------
+Date: 2026-07-31
+Work Order: WO-GRD-001-1001
+Inspection ID: INS-86556
+Technician: Ross Price
+Problem: grinding wheel vibration
+Error Code: WHEEL-VIB
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a grinding wheel vibration condition and performed the documented inspection procedure.
+
+Maintenance Record 2
+------------------------------
+Date: 2026-02-15
+Work Order: WO-GRD-001-1002
+Inspection ID: INS-85456
+Technician: Alicia Gilmore
+Problem: unexpected shutdown
+Error Code: SYS-STOP
+Status: Resolved
+Resolution Time: 2 day(s)
+Maintenance Note: The technician recorded a unexpected shutdown condition and performed the documented inspection procedure.
+
+Maintenance Record 3
+------------------------------
+Date: 2026-03-01
+Work Order: WO-GRD-001-1003
+Inspection ID: INS-61116
+Technician: Aaron Bell
+Problem: wheel wear
+Error Code: GRIND-201
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a wheel wear condition and performed the documented inspection procedure.
+
+Maintenance Record 4
+------------------------------
+Date: 2026-06-25
+Work Order: WO-GRD-001-1004
+Inspection ID: INS-81582
+Technician: Tiffany Barnes
+Problem: unexpected shutdown
+Error Code: PWR-FAIL
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a unexpected shutdown condition and performed the documented inspection procedure.
+
+Maintenance Record 5
+------------------------------
+Date: 2026-08-21
+Work Order: WO-GRD-001-1005
+Inspection ID: INS-45774
+Technician: Stephanie Freeman
+Problem: poor surface finish
+Error Code: FIN-102
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a poor surface finish condition and performed the documented inspection procedure.
+
+Maintenance Record 6
+------------------------------
+Date: 2026-07-27
+Work Order: WO-GRD-001-1006
+Inspection ID: INS-99016
+Technician: Allen Rogers
+Problem: unexpected shutdown
+Error Code: SYS-STOP
+Status: Resolved
+Resolution Time: 2 day(s)
+Maintenance Note: The technician recorded a unexpected shutdown condition and performed the documented inspection procedure.
+
+Maintenance Record 7
+------------------------------
+Date: 2026-06-22
+Work Order: WO-GRD-001-1007
+Inspection ID: INS-26728
+Technician: Misty Pittman
+Problem: wheel wear
+Error Code: GRIND-201
+Status: Escalated and resolved
+Resolution Time: 5 day(s)
+Maintenance Note: The technician recorded a wheel wear condition and performed the documented inspection procedure.
+
+Maintenance Record 8
+------------------------------
+Date: 2026-02-08
+Work Order: WO-GRD-001-1008
+Inspection ID: INS-96900
+Technician: Ms. Susan Vargas
+Problem: grinding wheel vibration
+Error Code: WHEEL-VIB
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a grinding wheel vibration condition and performed the documented inspection procedure.
+
+Maintenance Record 9
+------------------------------
+Date: 2026-05-11
+Work Order: WO-GRD-001-1009
+Inspection ID: INS-70515
+Technician: Marvin Taylor
+Problem: coolant flow issue
+Error Code: COOL-FLOW
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a coolant flow issue condition and performed the documented inspection procedure.
+
+Maintenance Record 10
+------------------------------
+Date: 2026-06-03
+Work Order: WO-GRD-001-1010
+Inspection ID: INS-69598
+Technician: David Murphy
+Problem: coolant flow issue
+Error Code: COOL-LOW
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a coolant flow issue condition and performed the documented inspection procedure.
+
+Maintenance Record 11
+------------------------------
+Date: 2026-08-18
+Work Order: WO-GRD-001-1011
+Inspection ID: INS-65255
+Technician: Philip Gray
+Problem: unexpected shutdown
+Error Code: SYS-STOP
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a unexpected shutdown condition and performed the documented inspection procedure.
+
+Maintenance Record 12
+------------------------------
+Date: 2025-11-01
+Work Order: WO-GRD-001-1012
+Inspection ID: INS-80702
+Technician: Bradley Smith
+Problem: wheel wear
+Error Code: GRIND-201
+Status: Escalated and resolved
+Resolution Time: 5 day(s)
+Maintenance Note: The technician recorded a wheel wear condition and performed the documented inspection procedure.
+
+Maintenance Record 13
+------------------------------
+Date: 2026-01-08
+Work Order: WO-GRD-001-1013
+Inspection ID: INS-18993
+Technician: Trevor Walker
+Problem: poor surface finish
+Error Code: FIN-102
+Status: Escalated and resolved
+Resolution Time: 5 day(s)
+Maintenance Note: The technician recorded a poor surface finish condition and performed the documented inspection procedure.
+
+Maintenance Record 14
+------------------------------
+Date: 2025-09-27
+Work Order: WO-GRD-001-1014
+Inspection ID: INS-42411
+Technician: Marissa Webster
+Problem: poor surface finish
+Error Code: SURF-QUAL
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a poor surface finish condition and performed the documented inspection procedure.
+
+Maintenance Record 15
+------------------------------
+Date: 2026-07-24
+Work Order: WO-GRD-001-1015
+Inspection ID: INS-26544
+Technician: Alex Hernandez
+Problem: poor surface finish
+Error Code: FIN-102
+Status: Escalated and resolved
+Resolution Time: 5 day(s)
+Maintenance Note: The technician recorded a poor surface finish condition and performed the documented inspection procedure.
+
+Maintenance Record 16
+------------------------------
+Date: 2026-04-15
+Work Order: WO-GRD-001-1016
+Inspection ID: INS-70952
+Technician: Brian Gould
+Problem: grinding wheel vibration
+Error Code: WHEEL-VIB
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a grinding wheel vibration condition and performed the documented inspection procedure.
+
+Maintenance Record 17
+------------------------------
+Date: 2026-09-06
+Work Order: WO-GRD-001-1017
+Inspection ID: INS-89593
+Technician: Pamela Jackson
+Problem: motor overheating
+Error Code: MOTOR-TEMP
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a motor overheating condition and performed the documented inspection procedure.
+
+Maintenance Record 18
+------------------------------
+Date: 2026-01-17
+Work Order: WO-GRD-001-1018
+Inspection ID: INS-31465
+Technician: Michelle Strickland
+Problem: coolant flow issue
+Error Code: COOL-FLOW
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a coolant flow issue condition and performed the documented inspection procedure.
+
+Maintenance Record 19
+------------------------------
+Date: 2025-11-08
+Work Order: WO-GRD-001-1019
+Inspection ID: INS-50888
+Technician: Ashley Johnson
+Problem: unexpected shutdown
+Error Code: SYS-STOP
+Status: Escalated and resolved
+Resolution Time: 5 day(s)
+Maintenance Note: The technician recorded a unexpected shutdown condition and performed the documented inspection procedure.
+
+Maintenance Record 20
+------------------------------
+Date: 2025-12-14
+Work Order: WO-GRD-001-1020
+Inspection ID: INS-35995
+Technician: Susan Brooks
+Problem: coolant flow issue
+Error Code: COOL-LOW
+Status: Escalated and resolved
+Resolution Time: 5 day(s)
+Maintenance Note: The technician recorded a coolant flow issue condition and performed the documented inspection procedure.
+
+Maintenance Record 21
+------------------------------
+Date: 2025-10-10
+Work Order: WO-GRD-001-1021
+Inspection ID: INS-23356
+Technician: Michael Burton
+Problem: unexpected shutdown
+Error Code: PWR-FAIL
+Status: Resolved
+Resolution Time: 2 day(s)
+Maintenance Note: The technician recorded a unexpected shutdown condition and performed the documented inspection procedure.
+
+Maintenance Record 22
+------------------------------
+Date: 2026-05-06
+Work Order: WO-GRD-001-1022
+Inspection ID: INS-25866
+Technician: Elizabeth Sutton
+Problem: poor surface finish
+Error Code: SURF-QUAL
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a poor surface finish condition and performed the documented inspection procedure.
+
+Maintenance Record 23
+------------------------------
+Date: 2026-04-29
+Work Order: WO-GRD-001-1023
+Inspection ID: INS-79827
+Technician: Kylie Williams
+Problem: coolant flow issue
+Error Code: COOL-FLOW
+Status: Resolved
+Resolution Time: 2 day(s)
+Maintenance Note: The technician recorded a coolant flow issue condition and performed the documented inspection procedure.
+
+Maintenance Record 24
+------------------------------
+Date: 2026-06-22
+Work Order: WO-GRD-001-1024
+Inspection ID: INS-54725
+Technician: Jacob Hunter
+Problem: unexpected shutdown
+Error Code: PWR-FAIL
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a unexpected shutdown condition and performed the documented inspection procedure.
+
+Maintenance Record 25
+------------------------------
+Date: 2026-05-03
+Work Order: WO-GRD-001-1025
+Inspection ID: INS-66822
+Technician: Jason Henry
+Problem: poor surface finish
+Error Code: FIN-102
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a poor surface finish condition and performed the documented inspection procedure.

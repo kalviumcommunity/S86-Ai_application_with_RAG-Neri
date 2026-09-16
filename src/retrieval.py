@@ -1,369 +1,203 @@
-"""Similarity search and top-k retrieval from indexed corpus."""
-
-import re
-from dataclasses import dataclass
-from typing import Optional
-
-try:
-    from .embeddings import embed
-    from .vector_store import VectorStore
-except ImportError:
-    from embeddings import embed
-    from vector_store import VectorStore
+from src.embeddings import create_embedding
+from src.vector_store import search_documents
 
 
-@dataclass
-class RetrievalResult:
-    """Single search result with score, text, and metadata."""
+# ============================================================
+# Helper
+# ============================================================
 
-    rank: int
-    score: float  # Distance score (lower is better for cosine)
-    similarity: float  # Similarity score (higher is better, 0-1)
-    keyword_score: float = 0.0
-    hybrid_score: float = 0.0
-    text: str = ""
-    metadata: dict = None
-    chunk_id: str = ""
-
-    def __post_init__(self):
-        if self.metadata is None:
-            self.metadata = {}
-
-
-@dataclass
-class RetrievalResponse:
-    """Complete retrieval response for a query."""
-
-    query: str
-    top_k: int
-    total_retrieved: int
-    results: list[RetrievalResult]
-    query_embedding: list[float]
-
-
-def _keyword_matches(text: str, terms: list[str]) -> float:
-    """Return a normalized keyword score in [0, 1]."""
-    if not terms:
-        return 0.0
-
-    normalized = re.sub(r"[^a-z0-9]+", " ", text.lower()).strip()
-    tokens = set(normalized.split()) if normalized else set()
-    hits = 0
-    for term in terms:
-        clean_term = re.sub(r"[^a-z0-9]+", " ", term.lower()).strip()
-        if not clean_term:
-            continue
-        if clean_term in tokens or clean_term in normalized:
-            hits += 1
-    return hits / len(terms)
-
-
-def retrieve(
-    query: str,
-    vector_store: Optional[VectorStore] = None,
-    top_k: int = 3,
-    where: Optional[dict] = None,
-    keyword_terms: Optional[list[str]] = None,
-    hybrid_weight: float = 0.0,
-    query_embedding: Optional[list[float]] = None,
-) -> RetrievalResponse:
-    """Retrieve top-k chunks most similar to query.
-
-    Args:
-        query: User query string
-        vector_store: Initialized VectorStore (creates default if None)
-        top_k: Number of results to return
-        where: Optional metadata filter dict
-        keyword_terms: Exact terms to boost in hybrid mode
-        hybrid_weight: Weight to assign to keyword matching in [0, 1]
-
-    Returns:
-        RetrievalResponse with ranked results
+def _convert_results(
+    results: dict,
+) -> list[dict]:
     """
-    if vector_store is None:
-        vector_store = VectorStore()
+    Convert ChromaDB results into Neri's
+    internal retrieval format.
+    """
 
-    if top_k <= 0:
-        raise ValueError("top_k must be greater than zero")
-    if not 0.0 <= hybrid_weight <= 1.0:
-        raise ValueError("hybrid_weight must be between 0 and 1")
+    documents = results.get(
+        "documents",
+        [[]],
+    )[0]
 
-    if query_embedding is None:
-        query_embedding = embed([query])[0]
-    search_results = vector_store.search(
-        query_embedding=query_embedding,
-        top_k=max(top_k, 10),
-        where=where,
-    )
+    metadatas = results.get(
+        "metadatas",
+        [[]],
+    )[0]
 
-    normalized_terms = [term for term in (keyword_terms or []) if term and str(term).strip()]
-    scored_results = []
+    distances = results.get(
+        "distances",
+        [[]],
+    )[0]
 
-    for result in search_results:
-        keyword_score = 0.0
-        if normalized_terms:
-            text_blob = " ".join([result["text"], *[str(v) for v in result["metadata"].values()]])
-            keyword_score = _keyword_matches(text_blob, normalized_terms)
+    retrieved_chunks = []
 
-        if normalized_terms and hybrid_weight > 0:
-            hybrid_score = (1.0 - hybrid_weight) * float(result["similarity"]) + hybrid_weight * keyword_score
-        else:
-            hybrid_score = float(result["similarity"])
+    for document, metadata, distance in zip(
+        documents,
+        metadatas,
+        distances,
+    ):
 
-        scored_results.append({
-            "result": result,
-            "keyword_score": keyword_score,
-            "hybrid_score": hybrid_score,
-        })
-
-    if normalized_terms and hybrid_weight > 0:
-        scored_results.sort(key=lambda item: item["hybrid_score"], reverse=True)
-        scored_results = scored_results[:top_k]
-    else:
-        scored_results = scored_results[:top_k]
-
-    formatted_results = [
-        RetrievalResult(
-            rank=rank,
-            score=result["result"]["distance"],
-            similarity=result["result"]["similarity"],
-            keyword_score=result["keyword_score"],
-            hybrid_score=result["hybrid_score"],
-            text=result["result"]["text"],
-            metadata=result["result"]["metadata"],
-            chunk_id=result["result"]["id"],
+        retrieved_chunks.append(
+            {
+                "text": document,
+                "metadata": metadata,
+                "distance": distance,
+            }
         )
-        for rank, result in enumerate(scored_results, 1)
-    ]
 
-    return RetrievalResponse(
-        query=query,
-        top_k=top_k,
-        total_retrieved=len(formatted_results),
-        results=formatted_results,
-        query_embedding=query_embedding,
+    return retrieved_chunks
+
+
+# ============================================================
+# Main Retrieval
+# ============================================================
+
+def retrieve_documents(
+    query: str,
+    machine: str | None = None,
+    n_results: int = 5,
+) -> list[dict]:
+    """
+    Retrieve approved documentation for a troubleshooting query.
+
+    Normal retrieval:
+        Searches documentation assigned to the selected machine.
+
+    Safety-critical retrieval:
+        In addition to normal retrieval, explicitly searches
+        the selected machine's approved safety documentation.
+
+    This ensures that safety evidence is not missed simply
+    because a safety document did not appear in the normal
+    semantic top-k results.
+    """
+
+    if not query.strip():
+        return []
+
+    query_embedding = create_embedding(
+        query
     )
 
+    # ========================================================
+    # Normal Machine Retrieval
+    # ========================================================
 
-def retrieve_with_context(
-    query: str,
-    vector_store: Optional[VectorStore] = None,
-    top_k: int = 3,
-) -> str:
-    """Retrieve and format results as context string for LLM.
-
-    Args:
-        query: User query
-        vector_store: Initialized VectorStore
-        top_k: Number of results
-
-    Returns:
-        Formatted context string ready for prompt
-    """
-    response = retrieve(query, vector_store, top_k)
-
-    if not response.results:
-        return "(No relevant context found)"
-
-    context_parts = [f"Retrieved {len(response.results)} relevant chunks:"]
-
-    for result in response.results:
-        source = result.metadata.get("source", "unknown")
-        section = result.metadata.get("section", "")
-        section_str = f" / {section}" if section else ""
-
-        context_parts.append(f"\n[{result.rank}] Similarity: {result.similarity:.4f}")
-        context_parts.append(f"    Source: {source}{section_str}")
-        context_parts.append(f"    Text: {result.text}")
-
-    return "\n".join(context_parts)
-
-
-def compare_k_values(
-    query: str,
-    k_values: list[int],
-    vector_store: Optional[VectorStore] = None,
-) -> dict:
-    """Compare retrieval results for different k values.
-
-    Args:
-        query: User query
-        k_values: List of k values to test (e.g., [1, 3, 5])
-        vector_store: Initialized VectorStore
-
-    Returns:
-        Dict with results for each k value
-    """
-    if vector_store is None:
-        vector_store = VectorStore()
-
-    results = {}
-    for k in sorted(k_values):
-        response = retrieve(query, vector_store, top_k=k)
-        results[k] = response
-
-    return results
-
-
-def compare_filtered_retrieval(
-    query: str,
-    vector_store: Optional[VectorStore] = None,
-    where: Optional[dict] = None,
-    top_k: int = 3,
-    keyword_terms: Optional[list[str]] = None,
-    hybrid_weight: float = 0.5,
-) -> dict:
-    """Compare filtered and unfiltered retrieval for the same query."""
-    if vector_store is None:
-        vector_store = VectorStore()
-
-    unfiltered = retrieve(
-        query,
-        vector_store=vector_store,
-        top_k=top_k,
-        keyword_terms=keyword_terms,
-        hybrid_weight=hybrid_weight,
+    results = search_documents(
+        embedding=query_embedding,
+        n_results=n_results,
     )
-    filtered = retrieve(
-        query,
-        vector_store=vector_store,
-        top_k=top_k,
-        where=where,
-        keyword_terms=keyword_terms,
-        hybrid_weight=hybrid_weight,
+
+    normal_chunks = _convert_results(
+        results
     )
-    return {
-        "query": query,
-        "filter": where,
-        "top_k": top_k,
-        "unfiltered": unfiltered,
-        "filtered": filtered,
-    }
 
+    # Strict machine filtering.
+    if machine:
 
-def print_retrieval_results(response: RetrievalResponse) -> None:
-    """Pretty-print retrieval results.
+        filtered_chunks = []
 
-    Args:
-        response: RetrievalResponse to display
-    """
-    print("\n" + "=" * 80)
-    print("SIMILARITY SEARCH RESULTS")
-    print("=" * 80)
-    print(f"\nQuery: {response.query}")
-    print(f"Top-k: {response.top_k}")
-    print(f"Retrieved: {response.total_retrieved} chunks\n")
+        for chunk in normal_chunks:
 
-    if not response.results:
-        print("(No results found)")
-        return
+            metadata = chunk.get(
+                "metadata",
+                {},
+            )
 
-    for result in response.results:
-        print(f"[{result.rank}] Similarity: {result.similarity:.4f} | Distance: {result.score:.4f}")
-        if result.keyword_score > 0 or result.hybrid_score != result.similarity:
-            print(f"    Keyword: {result.keyword_score:.3f} | Hybrid: {result.hybrid_score:.4f}")
-        print(f"    ID: {result.chunk_id}")
-        print(f"    Source: {result.metadata.get('source', 'unknown')}")
-        if result.metadata.get("section"):
-            print(f"    Section: {result.metadata['section']}")
-        print(f"    Chunk Index: {result.metadata.get('chunk_index', 'N/A')}")
-        print(f"    Text: {result.text[:100]}...")
-        print()
+            chunk_machine = metadata.get(
+                "machine",
+                "unknown",
+            )
 
+            if (
+                chunk_machine.lower()
+                == machine.lower()
+            ):
+                filtered_chunks.append(
+                    chunk
+                )
 
-def print_k_comparison(
-    query: str,
-    comparison_results: dict[int, RetrievalResponse],
-) -> None:
-    """Print comparison of retrieval results across k values.
+        normal_chunks = filtered_chunks
 
-    Args:
-        query: Original query
-        comparison_results: Dict with results for each k from compare_k_values()
-    """
-    print("\n" + "=" * 80)
-    print("TOP-K COMPARISON")
-    print("=" * 80)
-    print(f"\nQuery: {query}\n")
+    # ========================================================
+    # Explicit Safety Retrieval
+    # ========================================================
 
-    for k in sorted(comparison_results.keys()):
-        response = comparison_results[k]
-        print(f"{'─' * 80}")
-        print(f"k = {k} ({response.total_retrieved} results)\n")
+    safety_chunks = []
 
-        for result in response.results:
-            print(f"  [{result.rank}] {result.similarity:.4f} | {result.text[:70]}...")
-            print(f"      Source: {result.metadata.get('source')} | "
-                  f"Section: {result.metadata.get('section', 'N/A')}")
+    if machine:
 
-        print()
-
-
-def analyze_retrieval_quality(response: RetrievalResponse) -> dict:
-    """Analyze quality metrics of retrieval results.
-
-    Args:
-        response: RetrievalResponse to analyze
-
-    Returns:
-        Dict with quality metrics
-    """
-    if not response.results:
-        return {
-            "num_results": 0,
-            "avg_similarity": 0.0,
-            "min_similarity": 0.0,
-            "max_similarity": 0.0,
-            "similarity_spread": 0.0,
+        safety_where = {
+            "$and": [
+                {
+                    "machine": {
+                        "$eq": machine
+                    }
+                },
+                {
+                    "document_type": {
+                        "$eq": "safety"
+                    }
+                },
+            ]
         }
 
-    similarities = [r.similarity for r in response.results]
+        safety_results = search_documents(
+            embedding=query_embedding,
+            n_results=3,
+            where=safety_where,
+        )
 
-    return {
-        "num_results": len(response.results),
-        "avg_similarity": sum(similarities) / len(similarities),
-        "min_similarity": min(similarities),
-        "max_similarity": max(similarities),
-        "similarity_spread": max(similarities) - min(similarities),
-        "top_result_quality": "HIGH" if similarities[0] > 0.7 else "MEDIUM" if similarities[0] > 0.5 else "LOW",
-    }
+        safety_chunks = _convert_results(
+            safety_results
+        )
 
+    # ========================================================
+    # Combine Results
+    # ========================================================
 
-if __name__ == "__main__":
-    # Example usage
-    import sys
+    combined_chunks = []
 
-    store = VectorStore()
+    seen_chunk_ids = set()
 
-    # Test retrieval
-    test_queries = [
-        "How do I reset my password?",
-        "What are safety procedures?",
-        "Where is the maintenance log?",
-    ]
+    # Add normal results first.
+    for chunk in normal_chunks:
 
-    print("Testing Similarity Search & Top-K Retrieval\n")
+        chunk_id = chunk.get(
+            "metadata",
+            {},
+        ).get(
+            "chunk_id"
+        )
 
-    for query in test_queries:
-        print(f"\nQuery: {query}")
-        
-        try:
-            # Single retrieval
-            response = retrieve(query, store, top_k=3)
-            print_retrieval_results(response)
+        if chunk_id not in seen_chunk_ids:
 
-            # Quality analysis
-            metrics = analyze_retrieval_quality(response)
-            print("Quality Metrics:")
-            for key, value in metrics.items():
-                if isinstance(value, float):
-                    print(f"  {key}: {value:.4f}")
-                else:
-                    print(f"  {key}: {value}")
+            combined_chunks.append(
+                chunk
+            )
 
-        except ValueError as e:
-            print(f"  Error: {e}")
-            if "dimension" in str(e).lower():
-                print("  Note: Vector store is empty. Run indexing first.")
+            seen_chunk_ids.add(
+                chunk_id
+            )
 
-    print("\n" + "=" * 80)
+    # Add explicit safety results.
+    for chunk in safety_chunks:
+
+        chunk_id = chunk.get(
+            "metadata",
+            {},
+        ).get(
+            "chunk_id"
+        )
+
+        if chunk_id not in seen_chunk_ids:
+
+            combined_chunks.append(
+                chunk
+            )
+
+            seen_chunk_ids.add(
+                chunk_id
+            )
+
+    return combined_chunks

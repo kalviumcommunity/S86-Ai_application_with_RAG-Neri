@@ -1,0 +1,26 @@
+Air Compressor Safety Procedures
+==================================================
+
+Machine Information
+-------------------
+Machine: Air Compressor
+Machine ID: CMP-001
+Manufacturer: Atlas Copco
+Model: GA 30
+Location: Plant D - Utility Room
+
+Approved Safety Procedures
+--------------------------
+1. Stop and isolate the compressor before authorized maintenance.
+2. Do not open pressurized components while pressure remains in the system.
+3. Keep clear of hot surfaces and moving components.
+4. Use the approved lockout and tagout procedure.
+5. Follow emergency procedures for fire, electrical faults, or significant air-system leaks.
+
+Emergency Escalation
+--------------------
+For fire, smoke, electrical sparking, serious injury, uncontrolled machine movement, or another immediate hazard, stop operation when it is safe to do so and follow the organization's approved emergency procedure.
+
+Safety Note
+-----------
+Safety procedures in this document are machine-specific approved guidance. Do not substitute undocumented procedures.

@@ -1,0 +1,26 @@
+Industrial Drill Safety Procedures
+==================================================
+
+Machine Information
+-------------------
+Machine: Industrial Drill
+Machine ID: DRL-001
+Manufacturer: Bosch Rexroth
+Model: ID-500
+Location: Plant B - Bay 1
+
+Approved Safety Procedures
+--------------------------
+1. Stop the drill before changing or inspecting tooling.
+2. Keep loose clothing and hands away from rotating components.
+3. Use approved eye protection in the drilling area.
+4. Use lockout and tagout before maintenance requiring access to hazardous components.
+5. If electrical smoke or sparking occurs, stop operation and follow the emergency procedure.
+
+Emergency Escalation
+--------------------
+For fire, smoke, electrical sparking, serious injury, uncontrolled machine movement, or another immediate hazard, stop operation when it is safe to do so and follow the organization's approved emergency procedure.
+
+Safety Note
+-----------
+Safety procedures in this document are machine-specific approved guidance. Do not substitute undocumented procedures.

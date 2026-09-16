@@ -1,0 +1,308 @@
+Hydraulic Press Maintenance History
+==================================================
+
+Machine ID: PRS-001
+Manufacturer: Schuler
+Model: HP-160
+Department: Forming
+Location: Plant A - Bay 4
+
+Maintenance Record 1
+------------------------------
+Date: 2025-09-25
+Work Order: WO-PRS-001-1001
+Inspection ID: INS-65296
+Technician: Connor West
+Problem: low pressure
+Error Code: HYD-101
+Status: Resolved
+Resolution Time: 2 day(s)
+Maintenance Note: The technician recorded a low pressure condition and performed the documented inspection procedure.
+
+Maintenance Record 2
+------------------------------
+Date: 2026-07-13
+Work Order: WO-PRS-001-1002
+Inspection ID: INS-19880
+Technician: Joel Baxter
+Problem: unexpected shutdown
+Error Code: SYS-STOP
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a unexpected shutdown condition and performed the documented inspection procedure.
+
+Maintenance Record 3
+------------------------------
+Date: 2026-09-12
+Work Order: WO-PRS-001-1003
+Inspection ID: INS-16630
+Technician: Scott Pierce
+Problem: low pressure
+Error Code: PRESS-LOW
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a low pressure condition and performed the documented inspection procedure.
+
+Maintenance Record 4
+------------------------------
+Date: 2025-10-19
+Work Order: WO-PRS-001-1004
+Inspection ID: INS-22224
+Technician: Kimberly Smith
+Problem: low pressure
+Error Code: PRESS-LOW
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a low pressure condition and performed the documented inspection procedure.
+
+Maintenance Record 5
+------------------------------
+Date: 2026-06-05
+Work Order: WO-PRS-001-1005
+Inspection ID: INS-73653
+Technician: Sarah Martin
+Problem: hydraulic leak
+Error Code: HYD-LEAK
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a hydraulic leak condition and performed the documented inspection procedure.
+
+Maintenance Record 6
+------------------------------
+Date: 2026-01-02
+Work Order: WO-PRS-001-1006
+Inspection ID: INS-10282
+Technician: Dr. Steven Martin
+Problem: hydraulic leak
+Error Code: HYD-301
+Status: Resolved
+Resolution Time: 2 day(s)
+Maintenance Note: The technician recorded a hydraulic leak condition and performed the documented inspection procedure.
+
+Maintenance Record 7
+------------------------------
+Date: 2026-01-17
+Work Order: WO-PRS-001-1007
+Inspection ID: INS-65444
+Technician: Mrs. Rachel Gibson
+Problem: pressure fluctuation
+Error Code: HYD-205
+Status: Escalated and resolved
+Resolution Time: 5 day(s)
+Maintenance Note: The technician recorded a pressure fluctuation condition and performed the documented inspection procedure.
+
+Maintenance Record 8
+------------------------------
+Date: 2025-12-21
+Work Order: WO-PRS-001-1008
+Inspection ID: INS-96752
+Technician: Monica Logan
+Problem: slow operation
+Error Code: HYD-SLOW
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a slow operation condition and performed the documented inspection procedure.
+
+Maintenance Record 9
+------------------------------
+Date: 2026-03-15
+Work Order: WO-PRS-001-1009
+Inspection ID: INS-17665
+Technician: Brittney Phillips
+Problem: low pressure
+Error Code: HYD-101
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a low pressure condition and performed the documented inspection procedure.
+
+Maintenance Record 10
+------------------------------
+Date: 2025-10-12
+Work Order: WO-PRS-001-1010
+Inspection ID: INS-17492
+Technician: Kimberly Adkins
+Problem: slow operation
+Error Code: HYD-SLOW
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a slow operation condition and performed the documented inspection procedure.
+
+Maintenance Record 11
+------------------------------
+Date: 2025-10-16
+Work Order: WO-PRS-001-1011
+Inspection ID: INS-79615
+Technician: John Calhoun
+Problem: overheating
+Error Code: TEMP-HIGH
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a overheating condition and performed the documented inspection procedure.
+
+Maintenance Record 12
+------------------------------
+Date: 2025-11-09
+Work Order: WO-PRS-001-1012
+Inspection ID: INS-34356
+Technician: Tyler Miller
+Problem: overheating
+Error Code: TEMP-ALARM
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a overheating condition and performed the documented inspection procedure.
+
+Maintenance Record 13
+------------------------------
+Date: 2026-06-16
+Work Order: WO-PRS-001-1013
+Inspection ID: INS-62923
+Technician: Barry Hensley
+Problem: pressure fluctuation
+Error Code: PRESS-FLUC
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a pressure fluctuation condition and performed the documented inspection procedure.
+
+Maintenance Record 14
+------------------------------
+Date: 2025-12-17
+Work Order: WO-PRS-001-1014
+Inspection ID: INS-87924
+Technician: Steve Sanchez
+Problem: pressure fluctuation
+Error Code: HYD-205
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a pressure fluctuation condition and performed the documented inspection procedure.
+
+Maintenance Record 15
+------------------------------
+Date: 2025-10-23
+Work Order: WO-PRS-001-1015
+Inspection ID: INS-84085
+Technician: Bradley Sandoval
+Problem: slow operation
+Error Code: SPEED-LOW
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a slow operation condition and performed the documented inspection procedure.
+
+Maintenance Record 16
+------------------------------
+Date: 2025-10-10
+Work Order: WO-PRS-001-1016
+Inspection ID: INS-51180
+Technician: Taylor Harris
+Problem: unexpected shutdown
+Error Code: SYS-STOP
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a unexpected shutdown condition and performed the documented inspection procedure.
+
+Maintenance Record 17
+------------------------------
+Date: 2025-11-01
+Work Order: WO-PRS-001-1017
+Inspection ID: INS-49321
+Technician: James Powers
+Problem: unexpected shutdown
+Error Code: SYS-STOP
+Status: Escalated and resolved
+Resolution Time: 5 day(s)
+Maintenance Note: The technician recorded a unexpected shutdown condition and performed the documented inspection procedure.
+
+Maintenance Record 18
+------------------------------
+Date: 2026-04-11
+Work Order: WO-PRS-001-1018
+Inspection ID: INS-11220
+Technician: Timothy Walls
+Problem: pressure fluctuation
+Error Code: PRESS-FLUC
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a pressure fluctuation condition and performed the documented inspection procedure.
+
+Maintenance Record 19
+------------------------------
+Date: 2026-04-08
+Work Order: WO-PRS-001-1019
+Inspection ID: INS-19602
+Technician: Zachary Ferrell
+Problem: slow operation
+Error Code: SPEED-LOW
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a slow operation condition and performed the documented inspection procedure.
+
+Maintenance Record 20
+------------------------------
+Date: 2025-09-16
+Work Order: WO-PRS-001-1020
+Inspection ID: INS-55745
+Technician: Katie Anderson
+Problem: pressure fluctuation
+Error Code: HYD-205
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a pressure fluctuation condition and performed the documented inspection procedure.
+
+Maintenance Record 21
+------------------------------
+Date: 2026-02-08
+Work Order: WO-PRS-001-1021
+Inspection ID: INS-30676
+Technician: Sherry Wood
+Problem: hydraulic leak
+Error Code: HYD-301
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a hydraulic leak condition and performed the documented inspection procedure.
+
+Maintenance Record 22
+------------------------------
+Date: 2025-12-03
+Work Order: WO-PRS-001-1022
+Inspection ID: INS-95717
+Technician: Joshua Turner
+Problem: overheating
+Error Code: TEMP-ALARM
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a overheating condition and performed the documented inspection procedure.
+
+Maintenance Record 23
+------------------------------
+Date: 2025-10-14
+Work Order: WO-PRS-001-1023
+Inspection ID: INS-96951
+Technician: Mary Spencer
+Problem: hydraulic leak
+Error Code: HYD-LEAK
+Status: Resolved
+Resolution Time: 2 day(s)
+Maintenance Note: The technician recorded a hydraulic leak condition and performed the documented inspection procedure.
+
+Maintenance Record 24
+------------------------------
+Date: 2026-02-22
+Work Order: WO-PRS-001-1024
+Inspection ID: INS-24029
+Technician: Shawn Baker
+Problem: overheating
+Error Code: TEMP-HIGH
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a overheating condition and performed the documented inspection procedure.
+
+Maintenance Record 25
+------------------------------
+Date: 2026-05-30
+Work Order: WO-PRS-001-1025
+Inspection ID: INS-37607
+Technician: Brittney Campbell
+Problem: low pressure
+Error Code: HYD-101
+Status: Escalated and resolved
+Resolution Time: 5 day(s)
+Maintenance Note: The technician recorded a low pressure condition and performed the documented inspection procedure.

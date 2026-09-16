@@ -1,0 +1,26 @@
+Hydraulic Press Safety Procedures
+==================================================
+
+Machine Information
+-------------------
+Machine: Hydraulic Press
+Machine ID: PRS-001
+Manufacturer: Schuler
+Model: HP-160
+Location: Plant A - Bay 4
+
+Approved Safety Procedures
+--------------------------
+1. Never place hands or body parts inside the press working area.
+2. Use the approved lockout and tagout procedure before maintenance.
+3. Do not inspect pressurized hydraulic components while the system is energized.
+4. Keep unauthorized personnel away from the press during maintenance.
+5. If a hydraulic leak creates a hazardous condition, stop operation and follow site safety procedures.
+
+Emergency Escalation
+--------------------
+For fire, smoke, electrical sparking, serious injury, uncontrolled machine movement, or another immediate hazard, stop operation when it is safe to do so and follow the organization's approved emergency procedure.
+
+Safety Note
+-----------
+Safety procedures in this document are machine-specific approved guidance. Do not substitute undocumented procedures.

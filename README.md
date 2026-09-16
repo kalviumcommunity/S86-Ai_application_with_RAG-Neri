@@ -1,200 +1,770 @@
-# Neri – AI Application with RAG
-### About the Project
+# Neri
 
-Neri is a Retrieval-Augmented Generation (RAG) application that allows users to upload documents, search their content, and ask questions through a chat interface.
+## AI-Powered Maintenance Troubleshooting Assistant
 
-The system retrieves relevant document chunks before generating an answer, ensuring that responses are grounded in the available knowledge base. It also provides citations so users can verify the source of an answer.
+Neri is a Retrieval-Augmented Generation (RAG) application designed to help manufacturing floor technicians troubleshoot machine problems using approved technical documentation.
+
+Instead of relying only on general AI knowledge, Neri retrieves relevant information from authorized machine manuals, maintenance logs, and safety procedures before generating a troubleshooting response.
+
+> **Neri helps technicians find the right information faster — it does not control machines or perform repairs autonomously.**
+
+---
 
 ## Problem Statement
 
-Traditional AI assistants can generate plausible answers that are not supported by the provided documents. This makes it difficult for users to verify whether an answer is accurate and based on reliable information.
+Maintenance teams often have access to machine manuals, maintenance records, and safety procedures, but finding the correct information during a machine problem can take valuable time.
 
-There is a need for a system that can:
+Neri connects these sources into a single troubleshooting workflow so technicians can:
 
-- Retrieve relevant information from documents.
-- Generate answers using only the retrieved context.
-- Provide citations for generated answers.
-- Refuse to answer when sufficient context is unavailable.
-- Allow new documents to be added to the knowledge base at runtime.
+- Describe a machine problem in natural language.
+- Retrieve relevant approved documentation.
+- Identify possible causes.
+- Follow grounded troubleshooting steps.
+- View the sources used to generate the answer.
+- See relevant safety warnings.
+- Review previous troubleshooting sessions.
 
-## Solution
+---
 
-Neri uses a Retrieval-Augmented Generation pipeline to connect document retrieval with answer generation.
+## Objectives
 
-### The application:
+Neri is designed to:
 
-- Accepts documents through an upload endpoint.
-- Ingests and cleans the document content.
-- Splits documents into smaller chunks.
-- Generates embeddings for the chunks.
-- Stores the embeddings in a vector store.
-- Retrieves relevant chunks when a user asks a question.
-- Generates a grounded answer using the retrieved context.
-- Adds citations that map answers back to source chunks.
-- Uses hallucination guardrails when retrieval is weak or unavailable.
-- Provides the functionality through a backend API and user interface.
+- Reduce time spent searching maintenance documentation.
+- Provide grounded troubleshooting guidance.
+- Connect machine problems with relevant maintenance information.
+- Surface safety information before troubleshooting.
+- Provide traceable source references.
+- Avoid generating unsupported maintenance procedures.
+- Maintain a history of troubleshooting sessions.
 
+---
 
-## Project Folder Structure
+## Key Features
 
-S86-Ai_application_with_RAG-Neri/
-│
-├── api/
-│   ├── __init__.py
-│   └── main.py
-│
-├── src/
-│   ├── __init__.py
-│   ├── ingestion.py
-│   ├── document_intake.py
-│   ├── chunking.py
-│   ├── embeddings.py
-│   ├── indexing.py
-│   ├── vector_store.py
-│   ├── grounded_generation.py
-│   ├── citations.py
-│   └── guardrails.py
-│
-├── data/
-│   └── documents/
-│
-├── uploads/
-│
-├── outputs/
-│
-├── frontend/
-│   └── ...
-│
-├── requirements.txt
-├── .env.example
-├── .gitignore
-├── api_sample.md
-├── upload_sample.md
-└── README.md
+### 1. AI Troubleshooting
 
+Technicians provide:
 
-## How to Run the App
-#### 1. Clone the Repository
-- git clone https://github.com/kalviumcommunity/S86-Ai_application_with_RAG-Neri.git
-- cd S86-Ai_application_with_RAG-Neri
+- Machine name
+- Machine ID
+- Problem description
+- Optional error code
 
-#### 2. Create a Virtual Environment
-- python -m venv .venv
+Neri retrieves relevant documentation and generates a structured troubleshooting response.
 
-#### 3. Activate the Virtual Environment
-**Windows**
-- .venv\Scripts\activate
+### 2. Retrieval-Augmented Generation
 
-#### 4. Install Dependencies
-- pip install -r requirements.txt
+Neri follows a RAG pipeline:
 
-#### 5. Configure Environment Variables
+    User Problem
+         |
+         v
+    Query Processing
+         |
+         v
+    Gemini Embedding
+         |
+         v
+    ChromaDB Retrieval
+         |
+         v
+    Relevant Documentation
+         |
+         v
+    Grounded LLM Generation
+         |
+         v
+    Troubleshooting Response
 
-Create a .env file in the project root.
+### 3. Source References
 
-- OPENAI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/
-- OPENAI_API_KEY=your_api_key_here
-- CHAT_MODEL=gemini-3.1-flash-lite
-- EMBED_MODEL=gemini-embedding-001
+Generated answers are accompanied by source information such as:
 
-**Note:** Do not commit the actual .env file or API key to GitHub.
+- Document name
+- Document type
+- Section
+- Page number
 
-#### 6. Start the Backend API
-- python -m uvicorn api.main:app --reload
+This allows technicians to verify the information against the original documentation.
 
-The backend will run at:
+### 4. Safety Guidance
 
-- http://127.0.0.1:8000
+Neri supports safety documentation as a dedicated document type.
 
-#### 7. Open the API Documentation
+Safety-related information is treated separately from ordinary maintenance information to reduce the risk of unsupported safety instructions.
 
-Open the following URL in your browser:
+### 5. No-Reliable-Answer Handling
 
-- http://127.0.0.1:8000/docs
+When relevant approved documentation cannot be found, Neri does not intentionally invent an answer.
 
-FastAPI provides an interactive interface where you can test the available API endpoints.
+Instead, it returns a message indicating that there is not enough approved information to provide a reliable answer.
 
-### Main Features
-#### Document Upload
+### 6. Troubleshooting History
 
-- Users can upload supported documents through the API. Uploaded documents are processed and added to the knowledge base.
+Previous troubleshooting sessions can be viewed through the History section.
 
-#### Document Ingestion
+Each session stores:
 
-- Documents are loaded and cleaned before being passed to the chunking stage.
+- Machine
+- Machine ID
+- Problem
+- Error code
+- Generated response
+- Feedback
+- Timestamp
 
-#### Chunking
+### 7. Feedback
 
-- Large documents are divided into smaller chunks so that relevant sections can be retrieved efficiently.
+Users can mark troubleshooting responses as:
 
-#### Embedding Generation
+- Helpful
+- Not helpful
 
-- Document chunks are converted into vector embeddings for semantic search.
+Optional feedback comments can also be recorded.
 
-#### Vector Retrieval
+### 8. Document Management
 
-- When a user asks a question, the system retrieves the most relevant document chunks from the knowledge base.
+Authorized users can upload approved documentation.
 
-#### Grounded Answer Generation
+Supported document types:
 
-- The system generates answers using the retrieved context rather than relying only on the model's general knowledge.
+- Manual
+- Maintenance Log
+- Safety
 
-#### Source Citations
+Supported file formats:
 
-Generated answers include citation markers such as:
+- PDF
+- TXT
 
-- [1]
-- [2]
+Document metadata includes:
 
-Each citation can be mapped to information such as the source document, chunk ID, section, and original retrieved text.
+- Machine
+- Version
+- Owner
+- Document type
+- Processing status
+- Number of indexed chunks
 
-#### Hallucination Guardrails
+### 9. Role-Based Access
 
-- The system checks the quality of retrieved context before generating an answer.
+Neri currently supports two application roles.
 
-When sufficient supporting context is not available, the system returns a safe fallback such as:
+#### Technician
 
-- I don't have enough reliable context to answer that question.
+Can:
 
-#### Backend API
+- Troubleshoot machines
+- View troubleshooting history
+- Submit feedback
 
-The RAG functionality is exposed through backend API endpoints so that a frontend or another application can communicate with the system.
+#### Supervisor
 
-#### Chat / Query Interface
+Can:
 
-Users can enter questions and receive grounded answers together with the sources used to generate the answer.
+- Troubleshoot machines
+- View troubleshooting history
+- Submit feedback
+- Upload approved documents
+- View document information
 
-#### Streaming Responses
+---
 
-The application supports progressively displaying generated responses instead of waiting for the complete answer.
+## Technology Stack
 
-#### Caching
+### Frontend
 
-Repeated identical queries can be served from cache to reduce unnecessary retrieval and generation work.
+- Streamlit
 
-#### Logging and Usage Monitoring
+### Backend
 
-The application records useful information for monitoring and debugging, including:
+- Python
+- FastAPI
+- Uvicorn
 
-- Questions
-- Answer previews
-- Retrieved sources
-- Cache hits
-- Request latency
-- Token usage
-- Estimated cost
-- Errors
-- Uses
+### AI
 
-Neri can be used as a document-based knowledge assistant for:
+- Google Gemini
+- OpenAI-compatible Gemini API
+- Gemini Embeddings
 
-- Internal company documents
-- Technical manuals
-- Project documentation
-- Policies and procedures
-- Educational materials
-- Research documents
-- Frequently asked questions
-- Organizational knowledge bases
+### RAG and Vector Search
 
-The system is particularly useful when answers need to be grounded in specific documents and verified through source citations.
+- ChromaDB
+- Vector embeddings
+- Similarity-based retrieval
+
+### Document Processing
+
+- PyPDF
+- BeautifulSoup
+- Python text processing
+
+### Database
+
+- SQLite
+
+SQLite is used for application data such as troubleshooting history, feedback, and document metadata.
+
+### Utilities
+
+- python-dotenv
+- tiktoken
+- requests
+
+---
+
+## System Architecture
+
+    +----------------------+
+    |     Streamlit UI     |
+    |      Neri Frontend   |
+    +----------+-----------+
+               |
+               v
+    +----------------------+
+    |      FastAPI API     |
+    +----------+-----------+
+               |
+               v
+    +----------------------+
+    |     RAG Pipeline     |
+    |                      |
+    | Query                |
+    | Retrieval            |
+    | Generation           |
+    +----+------------+----+
+         |            |
+         v            v
+    +-------------+  +-------------+
+    |  ChromaDB   |  |  Gemini LLM |
+    | Vector Store|  |  Generation |
+    +------+------+  +-------------+
+           |
+           v
+    +----------------------+
+    | Approved Documents   |
+    |                      |
+    | Manuals              |
+    | Maintenance Logs     |
+    | Safety Procedures    |
+    +----------------------+
+
+    +----------------+
+    |     SQLite     |
+    |                |
+    | History        |
+    | Feedback       |
+    | Documents      |
+    +----------------+
+
+---
+
+## RAG Pipeline
+
+Neri uses the following retrieval workflow.
+
+### 1. Document Upload
+
+An authorized user uploads a PDF or TXT document.
+
+The document can be classified as:
+
+- Manual
+- Maintenance Log
+- Safety
+
+Additional metadata can include:
+
+- Machine
+- Version
+- Owner
+
+### 2. Document Extraction
+
+Text is extracted from the document.
+
+For PDFs, page information is retained where available.
+
+### 3. Text Cleaning
+
+Extracted text is cleaned before indexing.
+
+### 4. Chunking
+
+Large documents are divided into smaller chunks so relevant sections can be retrieved independently.
+
+### 5. Embedding
+
+Each chunk is converted into a vector embedding using Gemini Embeddings.
+
+### 6. Vector Storage
+
+Embeddings and their metadata are stored in ChromaDB.
+
+### 7. Query Embedding
+
+When a technician submits a problem, the query is converted into an embedding.
+
+### 8. Retrieval
+
+ChromaDB retrieves the most relevant indexed chunks.
+
+Neri also applies machine-specific filtering so documentation assigned to another machine is not used for the troubleshooting request.
+
+### 9. Grounded Generation
+
+The retrieved documentation is passed to Gemini as context.
+
+The model is instructed to use the supplied documentation rather than inventing procedures.
+
+### 10. Source Mapping
+
+The retrieved chunks are converted into source references that are returned with the response.
+
+---
+
+## Safety and Hallucination Guardrails
+
+Neri is designed for a maintenance environment where incorrect instructions can create operational or safety risks.
+
+The system therefore follows several rules.
+
+### Approved Documentation
+
+The generated troubleshooting response is based on retrieved approved documentation.
+
+### No Invented Procedures
+
+Neri is instructed not to create maintenance or safety procedures that are not supported by the retrieved documentation.
+
+### Safety Evidence
+
+Safety-related information should be supported by safety documentation.
+
+### No Autonomous Machine Control
+
+Neri does not:
+
+- Control machines
+- Send machine commands
+- Perform repairs
+- Operate equipment
+- Monitor machines in real time
+
+### No Reliable Answer
+
+If sufficient documentation cannot be found, Neri can refuse to provide a troubleshooting answer instead of presenting unsupported information as fact.
+
+---
+
+## Project Structure
+
+    S86-Ai-application_with_RAG-Neri/
+    |
+    +-- api/
+    |   +-- main.py
+    |
+    +-- app/
+    |   +-- streamlit_app.py
+    |
+    +-- src/
+    |   +-- __init__.py
+    |   +-- config.py
+    |   +-- ingestion.py
+    |   +-- embeddings.py
+    |   +-- vector_store.py
+    |   +-- retrieval.py
+    |   +-- llm.py
+    |   +-- citations.py
+    |   +-- guardrails.py
+    |   +-- pipeline.py
+    |   +-- cache.py
+    |   +-- history.py
+    |
+    +-- data/
+    |   +-- manuals/
+    |   +-- maintenance_logs/
+    |   +-- safety/
+    |
+    +-- uploads/
+    |
+    +-- storage/
+    |   +-- chroma_db/
+    |
+    +-- .env
+    +-- .env.example
+    +-- .gitignore
+    +-- requirements.txt
+    +-- README.md
+    +-- run.py
+
+---
+
+## Installation
+
+### 1. Clone the Repository
+
+    git clone https://github.com/kalviumcommunity/S86-Ai-application_with_RAG-Neri.git
+
+Move into the project:
+
+    cd S86-Ai-application_with_RAG-Neri
+
+### 2. Create a Virtual Environment
+
+#### Windows
+
+    python -m venv .venv
+
+Activate it:
+
+    .venv\Scripts\activate
+
+#### macOS / Linux
+
+    python3 -m venv .venv
+
+Activate it:
+
+    source .venv/bin/activate
+
+### 3. Install Dependencies
+
+    pip install -r requirements.txt
+
+---
+
+## Environment Configuration
+
+Create a `.env` file in the project root.
+
+Example:
+
+    OPENAI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/
+    OPENAI_API_KEY=YOUR_API_KEY
+
+    CHAT_MODEL=gemini-3.1-flash-lite
+    EMBED_MODEL=gemini-embedding-001
+
+    VECTOR_DIR=storage/chroma_db
+    COLLECTION_NAME=rag_chunks
+
+    RAG_API_URL=http://127.0.0.1:8000
+
+    CACHE_TTL_SECONDS=900
+
+    MODEL_INPUT_COST_PER_1K=0.00015
+    MODEL_OUTPUT_COST_PER_1K=0.00060
+
+Never commit the actual API key.
+
+The `.env` file is excluded through `.gitignore`.
+
+---
+
+## Running Neri
+
+The complete application can be started with:
+
+    python run.py
+
+This starts the FastAPI backend and Streamlit frontend.
+
+### FastAPI
+
+    http://127.0.0.1:8000
+
+### Streamlit
+
+Streamlit displays the local application URL in the terminal and normally opens the application in the browser.
+
+---
+
+## API Endpoints
+
+### Health Check
+
+    GET /health
+
+Response:
+
+    {
+      "status": "healthy"
+    }
+
+### Troubleshooting
+
+    POST /query
+
+Example request:
+
+    {
+      "machine": "CNC Mill",
+      "machine_id": "CNC-001",
+      "problem": "The machine is overheating",
+      "error_code": "E102"
+    }
+
+### Troubleshooting History
+
+    GET /history
+
+Returns recent troubleshooting sessions.
+
+### History Detail
+
+    GET /history/{session_id}
+
+Returns the complete troubleshooting session.
+
+### Feedback
+
+    POST /history/{session_id}/feedback
+
+Example:
+
+    {
+      "feedback": "helpful",
+      "comment": "The troubleshooting steps were useful."
+    }
+
+### Document Upload
+
+    POST /documents/upload
+
+Supported formats:
+
+- PDF
+- TXT
+
+Supported metadata:
+
+- Document type
+- Machine
+- Version
+- Owner
+
+### Documents
+
+    GET /documents
+
+Returns indexed document metadata.
+
+---
+
+## Example Troubleshooting Flow
+
+A technician enters:
+
+    Machine:
+    CNC Mill
+
+    Machine ID:
+    CNC-001
+
+    Problem:
+    Machine is overheating
+
+    Error Code:
+    E102
+
+Neri then:
+
+    1. Creates the search query
+            |
+            v
+    2. Generates the query embedding
+            |
+            v
+    3. Searches ChromaDB
+            |
+            v
+    4. Retrieves relevant documentation
+            |
+            v
+    5. Filters documentation for the selected machine
+            |
+            v
+    6. Checks whether usable evidence exists
+            |
+            v
+    7. Sends retrieved context to Gemini
+            |
+            v
+    8. Generates structured troubleshooting guidance
+            |
+            v
+    9. Adds source references
+            |
+            v
+    10. Saves the session to history
+
+---
+
+## Response Structure
+
+A successful troubleshooting response can contain:
+
+    Possible Causes
+           |
+           v
+    Safety Warning
+           |
+           v
+    Troubleshooting Steps
+           |
+           v
+    Source References
+
+If sufficient evidence is not available:
+
+    No Reliable Answer
+           |
+           v
+    We couldn't find enough information in
+    approved documentation to provide a reliable answer.
+
+---
+
+## Current Scope
+
+Neri currently focuses on documentation-grounded troubleshooting.
+
+### Included
+
+- Machine troubleshooting
+- RAG-based document retrieval
+- Manual search
+- Maintenance log search
+- Safety documentation
+- Source references
+- Troubleshooting history
+- User feedback
+- Document upload
+- Document metadata
+- Role-based access
+- Response caching
+- FastAPI backend
+- Streamlit interface
+
+### Not Included
+
+Neri does not currently provide:
+
+- Machine control
+- Autonomous repair
+- Predictive maintenance
+- IoT monitoring
+- Real-time machine monitoring
+- Spare-parts ordering
+- Voice interface
+- Mobile application
+
+---
+
+## Future Scope
+
+Potential future improvements include:
+
+- More advanced retrieval and reranking
+- Better document version management
+- More detailed machine metadata
+- Improved evaluation datasets
+- Automated retrieval-quality evaluation
+- Authentication integrated with an organization's identity system
+- More granular permissions
+- Multilingual troubleshooting
+- OCR support for scanned manuals
+- Integration with maintenance management systems
+- Analytics for recurring machine problems
+
+---
+
+## Design Principles
+
+### Grounded
+
+Responses should be based on approved documentation.
+
+### Traceable
+
+Users should be able to identify the sources used for an answer.
+
+### Safe
+
+Safety-related guidance should not be generated without supporting evidence.
+
+### Human-in-the-loop
+
+Neri assists technicians rather than replacing their judgment.
+
+### Controlled
+
+Neri does not directly control machines or perform physical actions.
+
+---
+
+## Development
+
+The application is organized into separate layers.
+
+### Frontend
+
+The `app/` directory contains the Streamlit user interface.
+
+### API
+
+The `api/` directory contains FastAPI endpoints.
+
+### RAG Logic
+
+The `src/` directory contains:
+
+- Document ingestion
+- Embeddings
+- Vector storage
+- Retrieval
+- LLM generation
+- Citations
+- Guardrails
+- Pipeline
+- Caching
+- History management
+
+### Data
+
+The `data/` directory contains source documentation organized into:
+
+- Manuals
+- Maintenance logs
+- Safety documents
+
+### Storage
+
+The `storage/` directory contains local application databases and the ChromaDB vector store.
+
+---
+
+## Project Information
+
+**Project Name:** Neri
+
+**Type:** AI Application with Retrieval-Augmented Generation
+
+**Domain:** Industrial Maintenance
+
+**Primary Users:** Manufacturing Floor Technicians
+
+**Supporting Users:**
+
+- Maintenance Supervisors
+- Plant Engineers
+- Safety Officers
+
+---
+
+## License
+
+This project was developed as an academic/project application.

@@ -1,0 +1,308 @@
+Injection Molding Machine Maintenance History
+==================================================
+
+Machine ID: IMM-001
+Manufacturer: Engel
+Model: Victory 330
+Department: Molding
+Location: Plant C - Bay 3
+
+Maintenance Record 1
+------------------------------
+Date: 2025-12-26
+Work Order: WO-IMM-001-1001
+Inspection ID: INS-83147
+Technician: Angela Wright
+Problem: injection pressure low
+Error Code: INJ-PRESS
+Status: Escalated and resolved
+Resolution Time: 5 day(s)
+Maintenance Note: The technician recorded a injection pressure low condition and performed the documented inspection procedure.
+
+Maintenance Record 2
+------------------------------
+Date: 2026-01-15
+Work Order: WO-IMM-001-1002
+Inspection ID: INS-39581
+Technician: Lisa Gibbs
+Problem: injection pressure low
+Error Code: INJ-PRESS
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a injection pressure low condition and performed the documented inspection procedure.
+
+Maintenance Record 3
+------------------------------
+Date: 2026-06-30
+Work Order: WO-IMM-001-1003
+Inspection ID: INS-48974
+Technician: Jamie Kerr
+Problem: poor molding quality
+Error Code: MOLD-QUAL
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a poor molding quality condition and performed the documented inspection procedure.
+
+Maintenance Record 4
+------------------------------
+Date: 2026-03-22
+Work Order: WO-IMM-001-1004
+Inspection ID: INS-91399
+Technician: Wanda Torres
+Problem: poor molding quality
+Error Code: MOLD-201
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a poor molding quality condition and performed the documented inspection procedure.
+
+Maintenance Record 5
+------------------------------
+Date: 2025-12-07
+Work Order: WO-IMM-001-1005
+Inspection ID: INS-37235
+Technician: Tyler Garcia
+Problem: machine not starting
+Error Code: MACH-START
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a machine not starting condition and performed the documented inspection procedure.
+
+Maintenance Record 6
+------------------------------
+Date: 2026-02-21
+Work Order: WO-IMM-001-1006
+Inspection ID: INS-41439
+Technician: Deborah Miller
+Problem: injection pressure low
+Error Code: INJ-PRESS
+Status: Resolved
+Resolution Time: 2 day(s)
+Maintenance Note: The technician recorded a injection pressure low condition and performed the documented inspection procedure.
+
+Maintenance Record 7
+------------------------------
+Date: 2026-04-06
+Work Order: WO-IMM-001-1007
+Inspection ID: INS-69048
+Technician: Benjamin Smith
+Problem: unexpected shutdown
+Error Code: PWR-FAIL
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a unexpected shutdown condition and performed the documented inspection procedure.
+
+Maintenance Record 8
+------------------------------
+Date: 2026-07-15
+Work Order: WO-IMM-001-1008
+Inspection ID: INS-47762
+Technician: Julie Johnson
+Problem: material temperature high
+Error Code: MAT-TEMP
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a material temperature high condition and performed the documented inspection procedure.
+
+Maintenance Record 9
+------------------------------
+Date: 2025-11-06
+Work Order: WO-IMM-001-1009
+Inspection ID: INS-40595
+Technician: Michele Gibson
+Problem: unexpected shutdown
+Error Code: SYS-STOP
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a unexpected shutdown condition and performed the documented inspection procedure.
+
+Maintenance Record 10
+------------------------------
+Date: 2026-07-01
+Work Order: WO-IMM-001-1010
+Inspection ID: INS-96662
+Technician: Rachel Weber
+Problem: hydraulic pressure low
+Error Code: HYD-PRESS
+Status: Escalated and resolved
+Resolution Time: 5 day(s)
+Maintenance Note: The technician recorded a hydraulic pressure low condition and performed the documented inspection procedure.
+
+Maintenance Record 11
+------------------------------
+Date: 2026-06-14
+Work Order: WO-IMM-001-1011
+Inspection ID: INS-39466
+Technician: Christina Wilson
+Problem: injection pressure low
+Error Code: PRESS-401
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a injection pressure low condition and performed the documented inspection procedure.
+
+Maintenance Record 12
+------------------------------
+Date: 2025-10-20
+Work Order: WO-IMM-001-1012
+Inspection ID: INS-19359
+Technician: Susan Serrano
+Problem: unexpected shutdown
+Error Code: PWR-FAIL
+Status: Resolved
+Resolution Time: 2 day(s)
+Maintenance Note: The technician recorded a unexpected shutdown condition and performed the documented inspection procedure.
+
+Maintenance Record 13
+------------------------------
+Date: 2025-09-21
+Work Order: WO-IMM-001-1013
+Inspection ID: INS-84607
+Technician: Ricky Larson
+Problem: unexpected shutdown
+Error Code: PWR-FAIL
+Status: Escalated and resolved
+Resolution Time: 5 day(s)
+Maintenance Note: The technician recorded a unexpected shutdown condition and performed the documented inspection procedure.
+
+Maintenance Record 14
+------------------------------
+Date: 2025-11-08
+Work Order: WO-IMM-001-1014
+Inspection ID: INS-49857
+Technician: Jessica Harrison
+Problem: poor molding quality
+Error Code: MOLD-201
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a poor molding quality condition and performed the documented inspection procedure.
+
+Maintenance Record 15
+------------------------------
+Date: 2026-09-12
+Work Order: WO-IMM-001-1015
+Inspection ID: INS-74722
+Technician: Terri Mason
+Problem: hydraulic pressure low
+Error Code: PRESS-LOW
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a hydraulic pressure low condition and performed the documented inspection procedure.
+
+Maintenance Record 16
+------------------------------
+Date: 2026-06-09
+Work Order: WO-IMM-001-1016
+Inspection ID: INS-52247
+Technician: Kyle Preston
+Problem: poor molding quality
+Error Code: MOLD-QUAL
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a poor molding quality condition and performed the documented inspection procedure.
+
+Maintenance Record 17
+------------------------------
+Date: 2026-05-11
+Work Order: WO-IMM-001-1017
+Inspection ID: INS-98381
+Technician: Allison Perez
+Problem: hydraulic pressure low
+Error Code: PRESS-LOW
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a hydraulic pressure low condition and performed the documented inspection procedure.
+
+Maintenance Record 18
+------------------------------
+Date: 2026-02-27
+Work Order: WO-IMM-001-1018
+Inspection ID: INS-98117
+Technician: Laura Sampson
+Problem: unexpected shutdown
+Error Code: PWR-FAIL
+Status: Escalated and resolved
+Resolution Time: 5 day(s)
+Maintenance Note: The technician recorded a unexpected shutdown condition and performed the documented inspection procedure.
+
+Maintenance Record 19
+------------------------------
+Date: 2026-02-04
+Work Order: WO-IMM-001-1019
+Inspection ID: INS-32962
+Technician: Laura Hines
+Problem: material temperature high
+Error Code: MAT-TEMP
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a material temperature high condition and performed the documented inspection procedure.
+
+Maintenance Record 20
+------------------------------
+Date: 2026-07-03
+Work Order: WO-IMM-001-1020
+Inspection ID: INS-33788
+Technician: Matthew Moon
+Problem: material temperature high
+Error Code: TEMP-501
+Status: Resolved
+Resolution Time: 2 day(s)
+Maintenance Note: The technician recorded a material temperature high condition and performed the documented inspection procedure.
+
+Maintenance Record 21
+------------------------------
+Date: 2026-03-06
+Work Order: WO-IMM-001-1021
+Inspection ID: INS-71605
+Technician: Jessica Olsen DVM
+Problem: unexpected shutdown
+Error Code: PWR-FAIL
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a unexpected shutdown condition and performed the documented inspection procedure.
+
+Maintenance Record 22
+------------------------------
+Date: 2025-12-17
+Work Order: WO-IMM-001-1022
+Inspection ID: INS-31079
+Technician: Gary Santiago
+Problem: poor molding quality
+Error Code: MOLD-201
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a poor molding quality condition and performed the documented inspection procedure.
+
+Maintenance Record 23
+------------------------------
+Date: 2026-01-25
+Work Order: WO-IMM-001-1023
+Inspection ID: INS-62488
+Technician: Michael Roberts
+Problem: material temperature high
+Error Code: TEMP-501
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a material temperature high condition and performed the documented inspection procedure.
+
+Maintenance Record 24
+------------------------------
+Date: 2026-06-26
+Work Order: WO-IMM-001-1024
+Inspection ID: INS-51224
+Technician: Krista Gibson
+Problem: hydraulic pressure low
+Error Code: PRESS-LOW
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a hydraulic pressure low condition and performed the documented inspection procedure.
+
+Maintenance Record 25
+------------------------------
+Date: 2025-10-28
+Work Order: WO-IMM-001-1025
+Inspection ID: INS-77449
+Technician: Brian Barton
+Problem: machine not starting
+Error Code: MACH-START
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a machine not starting condition and performed the documented inspection procedure.

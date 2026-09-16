@@ -1,0 +1,77 @@
+CNC Mill Maintenance Manual
+==================================================
+
+Machine Information
+-------------------
+Machine: CNC Mill
+Machine ID: CNC-001
+Manufacturer: Haas
+Model: VF-2
+Department: Machining
+Location: Plant A - Bay 1
+
+General Troubleshooting Guidance
+--------------------------------
+Use this manual together with approved maintenance logs and safety procedures.
+Technicians must stop the machine before performing inspection or maintenance.
+Do not perform procedures that are not supported by approved documentation.
+
+Problem: overheating
+--------------------
+1. Stop the machine and allow it to cool before inspection.
+2. Check the coolant level and confirm coolant is circulating.
+3. Inspect the cooling system for blockage or restricted airflow.
+4. Check the maintenance log for previous overheating events.
+
+Problem: excessive vibration
+----------------------------
+1. Stop machining before inspecting the machine.
+2. Inspect the tool holder and cutting tool for visible damage.
+3. Check whether the maintenance log records previous vibration issues.
+4. Verify that the workholding setup is secure according to the machine procedure.
+
+Problem: coolant flow issue
+---------------------------
+1. Stop the machine before inspecting the coolant system.
+2. Check the coolant reservoir level.
+3. Inspect accessible coolant lines for blockage.
+4. Review previous maintenance records for coolant-system issues.
+
+Problem: spindle not starting
+-----------------------------
+1. Confirm the machine is in a safe stopped state.
+2. Check the operator panel for an active alarm.
+3. Review the maintenance record for previous spindle faults.
+4. Do not inspect internal electrical components while connected to power.
+
+Problem: unexpected shutdown
+----------------------------
+1. Record the displayed alarm or error code.
+2. Do not immediately restart the machine repeatedly.
+3. Review recent maintenance records for shutdown events.
+4. Follow the approved restart procedure in the machine manual.
+
+Problem: tool wear
+------------------
+1. Stop the machining operation before inspecting the tool.
+2. Inspect the cutting tool for visible wear or damage.
+3. Review recent maintenance records for tool-related issues.
+4. Replace tooling only according to the approved machine procedure.
+
+Problem: poor surface finish
+----------------------------
+1. Stop the operation if the surface quality continues to deteriorate.
+2. Inspect the cutting tool for wear.
+3. Check the maintenance history for previous surface-finish problems.
+4. Verify that the workholding setup is secure.
+
+Problem: abnormal noise
+-----------------------
+1. Stop the machine if the abnormal noise is unexpected or increasing.
+2. Record when the noise occurs during operation.
+3. Inspect accessible tooling and workholding components.
+4. Review maintenance records for similar noise reports.
+
+Escalation Guidance
+-------------------
+If the documented troubleshooting steps do not resolve the issue, stop further intervention and escalate the problem to the authorized maintenance supervisor.

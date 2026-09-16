@@ -1,0 +1,26 @@
+Surface Grinder Safety Procedures
+==================================================
+
+Machine Information
+-------------------
+Machine: Surface Grinder
+Machine ID: GRD-001
+Manufacturer: Okamoto
+Model: ACC-63
+Location: Plant B - Bay 5
+
+Approved Safety Procedures
+--------------------------
+1. Stop the grinder before inspecting the grinding wheel.
+2. Do not operate the machine with a damaged grinding wheel.
+3. Use approved eye and face protection.
+4. Use lockout and tagout before authorized maintenance.
+5. Follow emergency procedures if wheel damage, fire, smoke, or sparking occurs.
+
+Emergency Escalation
+--------------------
+For fire, smoke, electrical sparking, serious injury, uncontrolled machine movement, or another immediate hazard, stop operation when it is safe to do so and follow the organization's approved emergency procedure.
+
+Safety Note
+-----------
+Safety procedures in this document are machine-specific approved guidance. Do not substitute undocumented procedures.

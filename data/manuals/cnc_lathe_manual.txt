@@ -1,0 +1,63 @@
+CNC Lathe Maintenance Manual
+==================================================
+
+Machine Information
+-------------------
+Machine: CNC Lathe
+Machine ID: LAT-001
+Manufacturer: DMG Mori
+Model: NLX 2500
+Department: Machining
+Location: Plant A - Bay 2
+
+General Troubleshooting Guidance
+--------------------------------
+Use this manual together with approved maintenance logs and safety procedures.
+Technicians must stop the machine before performing inspection or maintenance.
+Do not perform procedures that are not supported by approved documentation.
+
+Problem: excessive vibration
+----------------------------
+1. Stop the machining operation before inspection.
+2. Inspect the chuck and workholding setup for visible problems.
+3. Check the cutting tool for wear or damage.
+4. Review previous maintenance records for vibration events.
+
+Problem: chuck problem
+----------------------
+1. Stop the spindle before inspecting the chuck.
+2. Check the chuck condition using the approved inspection procedure.
+3. Verify that the workpiece is securely held.
+4. Review maintenance history for previous chuck issues.
+
+Problem: spindle overheating
+----------------------------
+1. Stop the machine and allow the spindle to cool.
+2. Check the cooling system according to the manual.
+3. Review maintenance records for previous spindle temperature problems.
+4. Do not access internal components while energized.
+
+Problem: poor surface finish
+----------------------------
+1. Inspect the cutting tool for wear.
+2. Check workholding stability.
+3. Review recent maintenance records.
+4. Verify the tool alignment according to the approved procedure.
+
+Problem: tool alignment issue
+-----------------------------
+1. Stop machining before checking tool alignment.
+2. Inspect the tool holder and cutting tool.
+3. Verify alignment using the approved machine procedure.
+4. Review previous alignment-related maintenance records.
+
+Problem: unexpected shutdown
+----------------------------
+1. Record the displayed alarm or error code.
+2. Do not repeatedly restart the machine without checking the cause.
+3. Review recent maintenance records.
+4. Follow the approved restart procedure.
+
+Escalation Guidance
+-------------------
+If the documented troubleshooting steps do not resolve the issue, stop further intervention and escalate the problem to the authorized maintenance supervisor.
