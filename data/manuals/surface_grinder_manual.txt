@@ -1,0 +1,63 @@
+Surface Grinder Maintenance Manual
+==================================================
+
+Machine Information
+-------------------
+Machine: Surface Grinder
+Machine ID: GRD-001
+Manufacturer: Okamoto
+Model: ACC-63
+Department: Finishing
+Location: Plant B - Bay 5
+
+General Troubleshooting Guidance
+--------------------------------
+Use this manual together with approved maintenance logs and safety procedures.
+Technicians must stop the machine before performing inspection or maintenance.
+Do not perform procedures that are not supported by approved documentation.
+
+Problem: grinding wheel vibration
+---------------------------------
+1. Stop the grinder before inspection.
+2. Inspect the grinding wheel for visible damage.
+3. Check the wheel mounting condition according to the approved procedure.
+4. Review maintenance records for previous vibration issues.
+
+Problem: poor surface finish
+----------------------------
+1. Stop the operation if surface quality deteriorates.
+2. Inspect the grinding wheel condition.
+3. Review recent maintenance history.
+4. Verify coolant flow according to the machine procedure.
+
+Problem: wheel wear
+-------------------
+1. Stop the machine before inspecting the wheel.
+2. Inspect the wheel condition.
+3. Review maintenance records.
+4. Replace the wheel only according to the approved procedure.
+
+Problem: coolant flow issue
+---------------------------
+1. Stop grinding before inspecting the coolant system.
+2. Check coolant level.
+3. Inspect accessible coolant lines.
+4. Review previous maintenance records.
+
+Problem: motor overheating
+--------------------------
+1. Stop the grinder and allow the motor to cool.
+2. Check ventilation around the motor.
+3. Review maintenance history.
+4. Do not access internal electrical components while energized.
+
+Problem: unexpected shutdown
+----------------------------
+1. Record the alarm or error code.
+2. Keep the machine stopped.
+3. Review recent maintenance records.
+4. Follow the approved restart procedure.
+
+Escalation Guidance
+-------------------
+If the documented troubleshooting steps do not resolve the issue, stop further intervention and escalate the problem to the authorized maintenance supervisor.

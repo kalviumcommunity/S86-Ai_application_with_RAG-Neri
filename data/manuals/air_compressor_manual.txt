@@ -1,0 +1,63 @@
+Air Compressor Maintenance Manual
+==================================================
+
+Machine Information
+-------------------
+Machine: Air Compressor
+Machine ID: CMP-001
+Manufacturer: Atlas Copco
+Model: GA 30
+Department: Utilities
+Location: Plant D - Utility Room
+
+General Troubleshooting Guidance
+--------------------------------
+Use this manual together with approved maintenance logs and safety procedures.
+Technicians must stop the machine before performing inspection or maintenance.
+Do not perform procedures that are not supported by approved documentation.
+
+Problem: low air pressure
+-------------------------
+1. Check the pressure reading and record the observed value.
+2. Inspect accessible air lines for visible leakage.
+3. Review maintenance records for previous pressure problems.
+4. Check the compressor operating status according to the manual.
+
+Problem: high discharge temperature
+-----------------------------------
+1. Stop the compressor and allow it to cool.
+2. Check ventilation around the compressor.
+3. Review maintenance history for previous temperature problems.
+4. Do not access hot internal components while the compressor is operating.
+
+Problem: oil leak
+-----------------
+1. Stop the compressor before inspection.
+2. Identify the visible location of the leak without contacting hot or pressurized components.
+3. Review maintenance records for previous oil leaks.
+4. Do not open pressurized components unless authorized.
+
+Problem: abnormal noise
+-----------------------
+1. Stop the compressor if abnormal noise increases.
+2. Record when the noise occurs.
+3. Inspect accessible external components.
+4. Review maintenance records for similar noise reports.
+
+Problem: compressor not starting
+--------------------------------
+1. Check the control panel for alarms.
+2. Confirm the compressor is in the correct operating state.
+3. Review recent maintenance records.
+4. Follow the approved startup procedure.
+
+Problem: unexpected shutdown
+----------------------------
+1. Record the alarm or error code.
+2. Keep the compressor stopped.
+3. Review maintenance history.
+4. Follow the approved restart procedure.
+
+Escalation Guidance
+-------------------
+If the documented troubleshooting steps do not resolve the issue, stop further intervention and escalate the problem to the authorized maintenance supervisor.

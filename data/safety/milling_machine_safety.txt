@@ -1,0 +1,26 @@
+Milling Machine Safety Procedures
+==================================================
+
+Machine Information
+-------------------
+Machine: Milling Machine
+Machine ID: MIL-001
+Manufacturer: Bridgeport
+Model: Series 1
+Location: Plant B - Bay 3
+
+Approved Safety Procedures
+--------------------------
+1. Stop the spindle before inspecting tooling.
+2. Keep hands away from rotating components.
+3. Use lockout and tagout before authorized maintenance.
+4. Do not bypass machine guards or safety interlocks.
+5. Follow approved emergency procedures for smoke, fire, or electrical faults.
+
+Emergency Escalation
+--------------------
+For fire, smoke, electrical sparking, serious injury, uncontrolled machine movement, or another immediate hazard, stop operation when it is safe to do so and follow the organization's approved emergency procedure.
+
+Safety Note
+-----------
+Safety procedures in this document are machine-specific approved guidance. Do not substitute undocumented procedures.

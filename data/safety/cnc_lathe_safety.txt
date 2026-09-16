@@ -1,0 +1,26 @@
+CNC Lathe Safety Procedures
+==================================================
+
+Machine Information
+-------------------
+Machine: CNC Lathe
+Machine ID: LAT-001
+Manufacturer: DMG Mori
+Model: NLX 2500
+Location: Plant A - Bay 2
+
+Approved Safety Procedures
+--------------------------
+1. Stop the spindle before inspecting the chuck or workholding system.
+2. Keep hands away from rotating components.
+3. Use the approved lockout and tagout procedure before maintenance requiring access to hazardous components.
+4. Do not bypass machine safety interlocks.
+5. If electrical sparking, smoke, or fire occurs, follow the approved emergency procedure.
+
+Emergency Escalation
+--------------------
+For fire, smoke, electrical sparking, serious injury, uncontrolled machine movement, or another immediate hazard, stop operation when it is safe to do so and follow the organization's approved emergency procedure.
+
+Safety Note
+-----------
+Safety procedures in this document are machine-specific approved guidance. Do not substitute undocumented procedures.

@@ -1,0 +1,308 @@
+CNC Mill Maintenance History
+==================================================
+
+Machine ID: CNC-001
+Manufacturer: Haas
+Model: VF-2
+Department: Machining
+Location: Plant A - Bay 1
+
+Maintenance Record 1
+------------------------------
+Date: 2026-02-02
+Work Order: WO-CNC-001-1001
+Inspection ID: INS-39256
+Technician: Allison Hill
+Problem: excessive vibration
+Error Code: VIB-101
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a excessive vibration condition and performed the documented inspection procedure.
+
+Maintenance Record 2
+------------------------------
+Date: 2025-11-06
+Work Order: WO-CNC-001-1002
+Inspection ID: INS-81482
+Technician: Brian Yang
+Problem: spindle not starting
+Error Code: SPN-START
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a spindle not starting condition and performed the documented inspection procedure.
+
+Maintenance Record 3
+------------------------------
+Date: 2025-10-01
+Work Order: WO-CNC-001-1003
+Inspection ID: INS-38657
+Technician: Javier Johnson
+Problem: excessive vibration
+Error Code: VIB-205
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a excessive vibration condition and performed the documented inspection procedure.
+
+Maintenance Record 4
+------------------------------
+Date: 2026-01-12
+Work Order: WO-CNC-001-1004
+Inspection ID: INS-95181
+Technician: Lance Hoffman
+Problem: excessive vibration
+Error Code: VIB-101
+Status: Resolved
+Resolution Time: 2 day(s)
+Maintenance Note: The technician recorded a excessive vibration condition and performed the documented inspection procedure.
+
+Maintenance Record 5
+------------------------------
+Date: 2026-08-13
+Work Order: WO-CNC-001-1005
+Inspection ID: INS-46463
+Technician: Jennifer Cole
+Problem: overheating
+Error Code: TEMP-HIGH
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a overheating condition and performed the documented inspection procedure.
+
+Maintenance Record 6
+------------------------------
+Date: 2026-05-02
+Work Order: WO-CNC-001-1006
+Inspection ID: INS-65392
+Technician: Abigail Shaffer
+Problem: poor surface finish
+Error Code: SURF-QUAL
+Status: Resolved
+Resolution Time: 2 day(s)
+Maintenance Note: The technician recorded a poor surface finish condition and performed the documented inspection procedure.
+
+Maintenance Record 7
+------------------------------
+Date: 2025-12-05
+Work Order: WO-CNC-001-1007
+Inspection ID: INS-54118
+Technician: Christopher Bernard
+Problem: unexpected shutdown
+Error Code: SYS-STOP
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a unexpected shutdown condition and performed the documented inspection procedure.
+
+Maintenance Record 8
+------------------------------
+Date: 2026-02-04
+Work Order: WO-CNC-001-1008
+Inspection ID: INS-55082
+Technician: James Howard
+Problem: poor surface finish
+Error Code: FIN-102
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a poor surface finish condition and performed the documented inspection procedure.
+
+Maintenance Record 9
+------------------------------
+Date: 2025-11-06
+Work Order: WO-CNC-001-1009
+Inspection ID: INS-80284
+Technician: Renee Blair
+Problem: spindle not starting
+Error Code: SPN-401
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a spindle not starting condition and performed the documented inspection procedure.
+
+Maintenance Record 10
+------------------------------
+Date: 2026-03-17
+Work Order: WO-CNC-001-1010
+Inspection ID: INS-48427
+Technician: Thomas Miller
+Problem: poor surface finish
+Error Code: SURF-QUAL
+Status: Escalated and resolved
+Resolution Time: 5 day(s)
+Maintenance Note: The technician recorded a poor surface finish condition and performed the documented inspection procedure.
+
+Maintenance Record 11
+------------------------------
+Date: 2025-10-07
+Work Order: WO-CNC-001-1011
+Inspection ID: INS-85674
+Technician: Lisa Hensley
+Problem: tool wear
+Error Code: TOOL-207
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a tool wear condition and performed the documented inspection procedure.
+
+Maintenance Record 12
+------------------------------
+Date: 2026-03-27
+Work Order: WO-CNC-001-1012
+Inspection ID: INS-47930
+Technician: Benjamin Stanley
+Problem: abnormal noise
+Error Code: NOISE-101
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a abnormal noise condition and performed the documented inspection procedure.
+
+Maintenance Record 13
+------------------------------
+Date: 2026-07-07
+Work Order: WO-CNC-001-1013
+Inspection ID: INS-69429
+Technician: Dr. Sharon James
+Problem: unexpected shutdown
+Error Code: PWR-FAIL
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a unexpected shutdown condition and performed the documented inspection procedure.
+
+Maintenance Record 14
+------------------------------
+Date: 2026-08-19
+Work Order: WO-CNC-001-1014
+Inspection ID: INS-37460
+Technician: Holly Wood
+Problem: excessive vibration
+Error Code: VIB-101
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a excessive vibration condition and performed the documented inspection procedure.
+
+Maintenance Record 15
+------------------------------
+Date: 2026-01-12
+Work Order: WO-CNC-001-1015
+Inspection ID: INS-19358
+Technician: Mia Sutton
+Problem: unexpected shutdown
+Error Code: SYS-STOP
+Status: Escalated and resolved
+Resolution Time: 5 day(s)
+Maintenance Note: The technician recorded a unexpected shutdown condition and performed the documented inspection procedure.
+
+Maintenance Record 16
+------------------------------
+Date: 2026-02-04
+Work Order: WO-CNC-001-1016
+Inspection ID: INS-31417
+Technician: Carolyn Daniel
+Problem: excessive vibration
+Error Code: VIB-205
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a excessive vibration condition and performed the documented inspection procedure.
+
+Maintenance Record 17
+------------------------------
+Date: 2026-03-23
+Work Order: WO-CNC-001-1017
+Inspection ID: INS-83000
+Technician: Devin Schaefer
+Problem: tool wear
+Error Code: TOOL-WEAR
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a tool wear condition and performed the documented inspection procedure.
+
+Maintenance Record 18
+------------------------------
+Date: 2026-09-09
+Work Order: WO-CNC-001-1018
+Inspection ID: INS-17331
+Technician: Frederick Tate
+Problem: spindle not starting
+Error Code: SPN-401
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a spindle not starting condition and performed the documented inspection procedure.
+
+Maintenance Record 19
+------------------------------
+Date: 2026-06-15
+Work Order: WO-CNC-001-1019
+Inspection ID: INS-45093
+Technician: Andrew Stewart
+Problem: excessive vibration
+Error Code: VIB-101
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a excessive vibration condition and performed the documented inspection procedure.
+
+Maintenance Record 20
+------------------------------
+Date: 2026-05-09
+Work Order: WO-CNC-001-1020
+Inspection ID: INS-51245
+Technician: Thomas Bradley
+Problem: spindle not starting
+Error Code: SPN-START
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a spindle not starting condition and performed the documented inspection procedure.
+
+Maintenance Record 21
+------------------------------
+Date: 2026-08-31
+Work Order: WO-CNC-001-1021
+Inspection ID: INS-94259
+Technician: Jonathan Wilkerson
+Problem: unexpected shutdown
+Error Code: SYS-STOP
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a unexpected shutdown condition and performed the documented inspection procedure.
+
+Maintenance Record 22
+------------------------------
+Date: 2025-10-01
+Work Order: WO-CNC-001-1022
+Inspection ID: INS-83579
+Technician: Derek Wright
+Problem: overheating
+Error Code: TEMP-HIGH
+Status: Escalated and resolved
+Resolution Time: 5 day(s)
+Maintenance Note: The technician recorded a overheating condition and performed the documented inspection procedure.
+
+Maintenance Record 23
+------------------------------
+Date: 2026-01-30
+Work Order: WO-CNC-001-1023
+Inspection ID: INS-86484
+Technician: Nicole Patterson
+Problem: tool wear
+Error Code: TOOL-207
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a tool wear condition and performed the documented inspection procedure.
+
+Maintenance Record 24
+------------------------------
+Date: 2026-01-01
+Work Order: WO-CNC-001-1024
+Inspection ID: INS-76784
+Technician: Daniel Bright
+Problem: spindle not starting
+Error Code: SPN-401
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a spindle not starting condition and performed the documented inspection procedure.
+
+Maintenance Record 25
+------------------------------
+Date: 2026-08-10
+Work Order: WO-CNC-001-1025
+Inspection ID: INS-30969
+Technician: Peter Callahan Jr.
+Problem: abnormal noise
+Error Code: NOISE-202
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a abnormal noise condition and performed the documented inspection procedure.

@@ -1,0 +1,11 @@
+CNC Mill Maintenance Manual
+
+Section 4.2 - Cooling System
+
+If the machine overheats during operation, stop the machine and allow it to cool.
+
+Check the coolant level before restarting the machine.
+
+Inspect the cooling system for blockage or restricted airflow.
+
+Do not inspect internal components while the machine is connected to power.

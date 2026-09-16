@@ -1,0 +1,63 @@
+Robotic Welding Cell Maintenance Manual
+==================================================
+
+Machine Information
+-------------------
+Machine: Robotic Welding Cell
+Machine ID: ROB-001
+Manufacturer: ABB
+Model: IRB 2600
+Department: Welding
+Location: Plant C - Bay 5
+
+General Troubleshooting Guidance
+--------------------------------
+Use this manual together with approved maintenance logs and safety procedures.
+Technicians must stop the machine before performing inspection or maintenance.
+Do not perform procedures that are not supported by approved documentation.
+
+Problem: welding arc unstable
+-----------------------------
+1. Stop the welding operation before inspection.
+2. Inspect accessible welding consumables.
+3. Check the maintenance log for previous arc stability issues.
+4. Follow the approved welding-system inspection procedure.
+
+Problem: robot movement error
+-----------------------------
+1. Stop the robot before inspection.
+2. Record the controller alarm.
+3. Review recent maintenance records.
+4. Do not manually move the robot outside the approved procedure.
+
+Problem: wire feeding issue
+---------------------------
+1. Stop the welding operation.
+2. Inspect the accessible wire-feed path.
+3. Review maintenance records for previous wire-feed problems.
+4. Replace consumables according to the approved procedure.
+
+Problem: excessive vibration
+----------------------------
+1. Stop the robot before inspection.
+2. Inspect accessible tooling and fixtures.
+3. Review previous maintenance records.
+4. Do not enter the robot work envelope without authorization.
+
+Problem: controller alarm
+-------------------------
+1. Record the exact controller alarm.
+2. Keep the robot stopped.
+3. Review maintenance history for the alarm.
+4. Follow the approved controller recovery procedure.
+
+Problem: unexpected shutdown
+----------------------------
+1. Record the alarm or error code.
+2. Keep the welding cell stopped.
+3. Review recent maintenance records.
+4. Follow the approved restart procedure.
+
+Escalation Guidance
+-------------------
+If the documented troubleshooting steps do not resolve the issue, stop further intervention and escalate the problem to the authorized maintenance supervisor.

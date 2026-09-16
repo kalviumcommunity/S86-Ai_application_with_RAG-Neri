@@ -1,336 +1,239 @@
-"""
-Hallucination Guardrails & Refusal Handling
-
-Checks retrieval quality before allowing the LLM to generate an answer.
-"""
-
-from typing import Any
+import re
 
 
-# ---------------------------------------------------------
-# Configuration
-# ---------------------------------------------------------
+# ============================================================
+# Safety-Critical Terms
+# ============================================================
 
-# Minimum similarity score required for a chunk to be considered
-# sufficiently relevant.
-MIN_TOP_SCORE = 0.50
-
-# At least this many relevant chunks must exist.
-MIN_SUPPORTING_CHUNKS = 1
-
-
-# ---------------------------------------------------------
-# Helper functions
-# ---------------------------------------------------------
-
-def get_chunk_score(chunk: dict[str, Any]) -> float:
-    """
-    Extract the similarity/relevance score from a retrieved chunk.
-
-    Supports both:
-        chunk["similarity"]
-    and
-        chunk["score"]
-
-    Returns 0.0 if no valid score exists.
-    """
-
-    similarity = chunk.get("similarity")
-
-    if similarity is not None:
-        try:
-            return float(similarity)
-        except (TypeError, ValueError):
-            pass
-
-    score = chunk.get("score")
-
-    if score is not None:
-        try:
-            return float(score)
-        except (TypeError, ValueError):
-            pass
-
-    return 0.0
+SAFETY_PHRASES = {
+    "electrical spark",
+    "electric spark",
+    "electrical sparking",
+    "electric sparking",
+    "electric shock",
+    "electrical shock",
+    "exposed wiring",
+    "exposed wire",
+    "exposed electrical",
+    "smoke",
+    "fire",
+    "gas leak",
+    "chemical leak",
+    "chemical exposure",
+    "serious injury",
+    "injury",
+    "emergency",
+    "unsafe",
+    "danger",
+    "hazard",
+    "entrapment",
+    "uncontrolled movement",
+}
 
 
-def retrieval_is_strong(
-    chunks: list[dict[str, Any]],
-    min_score: float = MIN_TOP_SCORE,
-    min_supporting_chunks: int = MIN_SUPPORTING_CHUNKS,
+SAFETY_WORDS = {
+    "spark",
+    "sparking",
+    "smoke",
+    "fire",
+    "shock",
+    "injury",
+    "emergency",
+    "unsafe",
+    "danger",
+    "hazard",
+    "entrapment",
+}
+
+
+# ============================================================
+# Safety Detection
+# ============================================================
+
+def _contains_phrase(
+    text: str,
+    phrase: str,
 ) -> bool:
     """
-    Determine whether retrieved context is strong enough
-    to safely generate an answer.
-
-    Conditions:
-    1. Retrieval must return at least one chunk.
-    2. At least `min_supporting_chunks` chunks must meet
-       the relevance threshold.
+    Check whether a complete safety phrase exists
+    in the text.
     """
 
-    if not chunks:
+    pattern = (
+        r"\b"
+        + re.escape(phrase)
+        + r"\b"
+    )
+
+    return re.search(
+        pattern,
+        text,
+        flags=re.IGNORECASE,
+    ) is not None
+
+
+def is_safety_critical(
+    query: str,
+) -> bool:
+    """
+    Determine whether a troubleshooting request
+    contains a safety-critical condition.
+
+    Normal operational problems such as:
+        - low pressure
+        - pressure fluctuation
+        - overheating
+        - slow operation
+
+    are NOT automatically treated as safety-critical.
+
+    Explicit hazards such as:
+        - electrical spark
+        - smoke
+        - fire
+        - electric shock
+        - exposed wiring
+        - injury
+        - emergency
+
+    are treated as safety-critical.
+    """
+
+    if not query or not query.strip():
         return False
 
-    strong_chunks = [
-        chunk
-        for chunk in chunks
-        if get_chunk_score(chunk) >= min_score
-    ]
+    query_lower = query.lower()
 
-    return len(strong_chunks) >= min_supporting_chunks
+    # Check multi-word safety phrases first.
+    for phrase in SAFETY_PHRASES:
+
+        if _contains_phrase(
+            query_lower,
+            phrase,
+        ):
+            return True
+
+    # Check individual safety words.
+    for word in SAFETY_WORDS:
+
+        if _contains_phrase(
+            query_lower,
+            word,
+        ):
+            return True
+
+    # Hydraulic leaks can create a safety hazard.
+    if (
+        _contains_phrase(
+            query_lower,
+            "hydraulic leak",
+        )
+        or _contains_phrase(
+            query_lower,
+            "pressurized leak",
+        )
+    ):
+        return True
+
+    return False
 
 
-def get_strong_chunks(
-    chunks: list[dict[str, Any]],
-    min_score: float = MIN_TOP_SCORE,
-) -> list[dict[str, Any]]:
+# ============================================================
+# Evidence Checks
+# ============================================================
+
+def has_safety_evidence(
+    retrieved_chunks: list[dict],
+) -> bool:
     """
-    Return only chunks that meet the relevance threshold.
-    """
-
-    return [
-        chunk
-        for chunk in chunks
-        if get_chunk_score(chunk) >= min_score
-    ]
-
-
-def retrieval_diagnostics(
-    chunks: list[dict[str, Any]],
-    min_score: float = MIN_TOP_SCORE,
-) -> dict[str, Any]:
-    """
-    Return useful information for debugging and evaluation.
-    """
-
-    scores = [get_chunk_score(chunk) for chunk in chunks]
-
-    strong_chunks = get_strong_chunks(
-        chunks,
-        min_score=min_score,
-    )
-
-    return {
-        "retrieved_count": len(chunks),
-        "scores": scores,
-        "top_score": max(scores) if scores else 0.0,
-        "strong_chunk_count": len(strong_chunks),
-        "threshold": min_score,
-        "passed": len(strong_chunks) >= MIN_SUPPORTING_CHUNKS,
-    }
-
-
-# ---------------------------------------------------------
-# Safe refusal
-# ---------------------------------------------------------
-
-def refusal_response(
-    reason: str = "weak_context",
-) -> dict[str, Any]:
-    """
-    Return a safe response when retrieval is insufficient.
+    Check whether retrieved evidence contains
+    an approved safety document.
     """
 
-    if reason == "no_context":
-        message = (
-            "I don't have enough information in the provided "
-            "context to answer that reliably."
+    for chunk in retrieved_chunks:
+
+        metadata = chunk.get(
+            "metadata",
+            {},
         )
 
-    else:
-        message = (
-            "I don't have enough reliable context to answer "
-            "that question."
+        document_type = metadata.get(
+            "document_type",
+            "",
         )
 
-    return {
-        "answer": message,
-        "sources": [],
-        "status": "refused",
-        "reason": reason,
-    }
+        if document_type == "safety":
+            return True
+
+    return False
 
 
-# ---------------------------------------------------------
-# Guardrail
-# ---------------------------------------------------------
-
-def check_retrieval(
-    chunks: list[dict[str, Any]],
-    min_score: float = MIN_TOP_SCORE,
-    min_supporting_chunks: int = MIN_SUPPORTING_CHUNKS,
-) -> dict[str, Any]:
+def has_reliable_evidence(
+    retrieved_chunks: list[dict],
+) -> bool:
     """
-    Perform the complete retrieval-quality check.
+    Check whether usable documentation
+    was retrieved.
     """
 
-    if not chunks:
-        return {
-            "allowed": False,
-            "reason": "no_context",
-            "message": (
-                "No supporting context was retrieved."
-            ),
-            "diagnostics": retrieval_diagnostics(
-                chunks,
-                min_score,
-            ),
-        }
+    if not retrieved_chunks:
+        return False
 
-    strong_chunks = get_strong_chunks(
-        chunks,
-        min_score=min_score,
-    )
+    for chunk in retrieved_chunks:
 
-    if len(strong_chunks) < min_supporting_chunks:
-        return {
-            "allowed": False,
-            "reason": "weak_context",
-            "message": (
-                "Retrieved context did not meet the "
-                "minimum relevance threshold."
-            ),
-            "diagnostics": retrieval_diagnostics(
-                chunks,
-                min_score,
-            ),
-        }
+        text = chunk.get(
+            "text",
+            "",
+        ).strip()
+
+        if text:
+            return True
+
+    return False
+
+
+# ============================================================
+# No-Answer Responses
+# ============================================================
+
+def build_no_answer_response() -> dict:
+    """
+    Build the standard response when Neri
+    cannot find enough approved documentation.
+    """
 
     return {
-        "allowed": True,
-        "reason": "strong_context",
-        "message": "Retrieved context is strong enough.",
-        "diagnostics": retrieval_diagnostics(
-            chunks,
-            min_score,
+        "reliable": False,
+        "message": (
+            "We couldn't find enough information in "
+            "approved documentation to provide a reliable answer."
         ),
+        "possible_causes": [],
+        "safety_warning": None,
+        "troubleshooting_steps": [],
+        "sources": [],
     }
 
 
-# ---------------------------------------------------------
-# Guarded answer
-# ---------------------------------------------------------
-
-def guarded_answer(
-    question: str,
-    retrieve_function,
-    generate_function,
-    candidate_k: int = 10,
-    final_k: int = 3,
-    min_score: float = MIN_TOP_SCORE,
-) -> dict[str, Any]:
+def build_safety_evidence_response() -> dict:
     """
-    Complete guarded RAG flow.
-
-    1. Retrieve chunks.
-    2. Check retrieval quality.
-    3. Refuse if context is weak.
-    4. Generate only when context is strong.
+    Build a response when a request is safety-critical
+    but approved safety documentation is unavailable.
     """
-
-    chunks = retrieve_function(
-        question,
-        candidate_k,
-    )
-
-    check = check_retrieval(
-        chunks,
-        min_score=min_score,
-    )
-
-    if not check["allowed"]:
-        refusal = refusal_response(
-            reason=check["reason"],
-        )
-
-        return {
-            "question": question,
-            **refusal,
-            "retrieved_chunks": chunks,
-            "diagnostics": check["diagnostics"],
-        }
-
-    strong_chunks = get_strong_chunks(
-        chunks,
-        min_score=min_score,
-    )
-
-    strong_chunks = strong_chunks[:final_k]
-
-    result = generate_function(
-        question,
-        strong_chunks,
-    )
 
     return {
-        **result,
-        "status": "answered",
-        "reason": "strong_context",
-        "retrieved_chunks": strong_chunks,
-        "diagnostics": check["diagnostics"],
+        "reliable": False,
+        "message": (
+            "This request may involve a safety-critical "
+            "condition, but no approved safety documentation "
+            "was found. Neri cannot provide safety instructions "
+            "without supporting safety documentation."
+        ),
+        "possible_causes": [],
+        "safety_warning": (
+            "Follow the organization's approved emergency "
+            "and safety procedures before continuing."
+        ),
+        "troubleshooting_steps": [],
+        "sources": [],
     }
-
-
-# ---------------------------------------------------------
-# Testing
-# ---------------------------------------------------------
-
-if __name__ == "__main__":
-
-    print("=" * 60)
-    print("HALLUCINATION GUARDRAIL TEST")
-    print("=" * 60)
-
-    # Fake chunks for unit testing
-    good_chunks = [
-        {
-            "id": "vibration_manual.txt:0",
-            "similarity": 0.64,
-            "text": (
-                "If abnormal vibration is detected, "
-                "stop the machine and begin the "
-                "approved inspection procedure."
-            ),
-            "metadata": {
-                "source": "vibration_manual.txt",
-                "chunk_index": 0,
-                "section": "Document body",
-            },
-        }
-    ]
-
-    weak_chunks = [
-        {
-            "id": "unrelated.txt:0",
-            "similarity": 0.20,
-            "text": "This document contains unrelated information.",
-            "metadata": {
-                "source": "unrelated.txt",
-                "chunk_index": 0,
-                "section": "Document body",
-            },
-        }
-    ]
-
-    empty_chunks = []
-
-    print("\n[1] Strong retrieval")
-    print("-" * 40)
-    print(check_retrieval(good_chunks))
-
-    print("\n[2] Weak retrieval")
-    print("-" * 40)
-    print(check_retrieval(weak_chunks))
-
-    print("\n[3] Empty retrieval")
-    print("-" * 40)
-    print(check_retrieval(empty_chunks))
-
-    print("\n[4] Refusal response")
-    print("-" * 40)
-    print(refusal_response("weak_context"))
-
-    print("\n" + "=" * 60)
-    print("Guardrail test complete!")
-    print("=" * 60)

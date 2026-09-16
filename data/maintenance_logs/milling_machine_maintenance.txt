@@ -1,0 +1,308 @@
+Milling Machine Maintenance History
+==================================================
+
+Machine ID: MIL-001
+Manufacturer: Bridgeport
+Model: Series 1
+Department: Machining
+Location: Plant B - Bay 3
+
+Maintenance Record 1
+------------------------------
+Date: 2026-06-21
+Work Order: WO-MIL-001-1001
+Inspection ID: INS-53279
+Technician: Jeffrey Rush
+Problem: unexpected shutdown
+Error Code: SYS-STOP
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a unexpected shutdown condition and performed the documented inspection procedure.
+
+Maintenance Record 2
+------------------------------
+Date: 2026-04-23
+Work Order: WO-MIL-001-1002
+Inspection ID: INS-49363
+Technician: Mary Martinez
+Problem: tool wear
+Error Code: TOOL-WEAR
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a tool wear condition and performed the documented inspection procedure.
+
+Maintenance Record 3
+------------------------------
+Date: 2026-03-20
+Work Order: WO-MIL-001-1003
+Inspection ID: INS-48752
+Technician: Mary Nguyen
+Problem: spindle vibration
+Error Code: VIB-301
+Status: Escalated and resolved
+Resolution Time: 5 day(s)
+Maintenance Note: The technician recorded a spindle vibration condition and performed the documented inspection procedure.
+
+Maintenance Record 4
+------------------------------
+Date: 2025-12-31
+Work Order: WO-MIL-001-1004
+Inspection ID: INS-59695
+Technician: Cheryl Ortega
+Problem: spindle vibration
+Error Code: VIB-301
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a spindle vibration condition and performed the documented inspection procedure.
+
+Maintenance Record 5
+------------------------------
+Date: 2026-03-15
+Work Order: WO-MIL-001-1005
+Inspection ID: INS-49446
+Technician: Stephanie Gilbert
+Problem: poor surface finish
+Error Code: SURF-QUAL
+Status: Escalated and resolved
+Resolution Time: 5 day(s)
+Maintenance Note: The technician recorded a poor surface finish condition and performed the documented inspection procedure.
+
+Maintenance Record 6
+------------------------------
+Date: 2026-07-29
+Work Order: WO-MIL-001-1006
+Inspection ID: INS-37549
+Technician: Roy Torres
+Problem: coolant issue
+Error Code: COOL-205
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a coolant issue condition and performed the documented inspection procedure.
+
+Maintenance Record 7
+------------------------------
+Date: 2025-12-07
+Work Order: WO-MIL-001-1007
+Inspection ID: INS-70946
+Technician: Kevin Pena
+Problem: poor surface finish
+Error Code: SURF-QUAL
+Status: Escalated and resolved
+Resolution Time: 5 day(s)
+Maintenance Note: The technician recorded a poor surface finish condition and performed the documented inspection procedure.
+
+Maintenance Record 8
+------------------------------
+Date: 2025-09-27
+Work Order: WO-MIL-001-1008
+Inspection ID: INS-32241
+Technician: Michael Dixon
+Problem: poor surface finish
+Error Code: FIN-102
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a poor surface finish condition and performed the documented inspection procedure.
+
+Maintenance Record 9
+------------------------------
+Date: 2026-04-13
+Work Order: WO-MIL-001-1009
+Inspection ID: INS-91167
+Technician: Diane Beck
+Problem: unexpected shutdown
+Error Code: PWR-FAIL
+Status: Escalated and resolved
+Resolution Time: 5 day(s)
+Maintenance Note: The technician recorded a unexpected shutdown condition and performed the documented inspection procedure.
+
+Maintenance Record 10
+------------------------------
+Date: 2026-01-29
+Work Order: WO-MIL-001-1010
+Inspection ID: INS-98184
+Technician: Robert Potter
+Problem: unexpected shutdown
+Error Code: SYS-STOP
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a unexpected shutdown condition and performed the documented inspection procedure.
+
+Maintenance Record 11
+------------------------------
+Date: 2026-03-29
+Work Order: WO-MIL-001-1011
+Inspection ID: INS-16057
+Technician: Robert Hernandez
+Problem: unexpected shutdown
+Error Code: SYS-STOP
+Status: Escalated and resolved
+Resolution Time: 5 day(s)
+Maintenance Note: The technician recorded a unexpected shutdown condition and performed the documented inspection procedure.
+
+Maintenance Record 12
+------------------------------
+Date: 2026-01-06
+Work Order: WO-MIL-001-1012
+Inspection ID: INS-19545
+Technician: John Atkinson
+Problem: spindle vibration
+Error Code: VIB-301
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a spindle vibration condition and performed the documented inspection procedure.
+
+Maintenance Record 13
+------------------------------
+Date: 2026-02-18
+Work Order: WO-MIL-001-1013
+Inspection ID: INS-60328
+Technician: Stephen Johnston
+Problem: spindle overheating
+Error Code: TEMP-301
+Status: Escalated and resolved
+Resolution Time: 5 day(s)
+Maintenance Note: The technician recorded a spindle overheating condition and performed the documented inspection procedure.
+
+Maintenance Record 14
+------------------------------
+Date: 2025-09-27
+Work Order: WO-MIL-001-1014
+Inspection ID: INS-23970
+Technician: David Douglas Jr.
+Problem: poor surface finish
+Error Code: SURF-QUAL
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a poor surface finish condition and performed the documented inspection procedure.
+
+Maintenance Record 15
+------------------------------
+Date: 2026-03-02
+Work Order: WO-MIL-001-1015
+Inspection ID: INS-77889
+Technician: Colleen Brock
+Problem: poor surface finish
+Error Code: FIN-102
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a poor surface finish condition and performed the documented inspection procedure.
+
+Maintenance Record 16
+------------------------------
+Date: 2026-03-13
+Work Order: WO-MIL-001-1016
+Inspection ID: INS-25906
+Technician: Justin Lowery
+Problem: spindle vibration
+Error Code: VIB-301
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a spindle vibration condition and performed the documented inspection procedure.
+
+Maintenance Record 17
+------------------------------
+Date: 2026-08-28
+Work Order: WO-MIL-001-1017
+Inspection ID: INS-83259
+Technician: Robert Contreras
+Problem: coolant issue
+Error Code: COOL-205
+Status: Escalated and resolved
+Resolution Time: 5 day(s)
+Maintenance Note: The technician recorded a coolant issue condition and performed the documented inspection procedure.
+
+Maintenance Record 18
+------------------------------
+Date: 2025-09-29
+Work Order: WO-MIL-001-1018
+Inspection ID: INS-90301
+Technician: Tiffany Vance
+Problem: coolant issue
+Error Code: COOL-205
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a coolant issue condition and performed the documented inspection procedure.
+
+Maintenance Record 19
+------------------------------
+Date: 2026-07-09
+Work Order: WO-MIL-001-1019
+Inspection ID: INS-81810
+Technician: Stephanie Simmons
+Problem: tool wear
+Error Code: TOOL-WEAR
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a tool wear condition and performed the documented inspection procedure.
+
+Maintenance Record 20
+------------------------------
+Date: 2026-07-17
+Work Order: WO-MIL-001-1020
+Inspection ID: INS-68991
+Technician: Christopher Hensley
+Problem: spindle vibration
+Error Code: SPN-VIB
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a spindle vibration condition and performed the documented inspection procedure.
+
+Maintenance Record 21
+------------------------------
+Date: 2026-04-26
+Work Order: WO-MIL-001-1021
+Inspection ID: INS-78327
+Technician: David Walsh
+Problem: tool wear
+Error Code: TOOL-207
+Status: Resolved
+Resolution Time: 2 day(s)
+Maintenance Note: The technician recorded a tool wear condition and performed the documented inspection procedure.
+
+Maintenance Record 22
+------------------------------
+Date: 2026-03-31
+Work Order: WO-MIL-001-1022
+Inspection ID: INS-40735
+Technician: Mr. Jeremiah Reeves
+Problem: coolant issue
+Error Code: COOL-101
+Status: Resolved
+Resolution Time: 2 day(s)
+Maintenance Note: The technician recorded a coolant issue condition and performed the documented inspection procedure.
+
+Maintenance Record 23
+------------------------------
+Date: 2025-10-07
+Work Order: WO-MIL-001-1023
+Inspection ID: INS-28136
+Technician: Francisco Fernandez
+Problem: poor surface finish
+Error Code: FIN-102
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a poor surface finish condition and performed the documented inspection procedure.
+
+Maintenance Record 24
+------------------------------
+Date: 2026-06-08
+Work Order: WO-MIL-001-1024
+Inspection ID: INS-38043
+Technician: James Hernandez
+Problem: spindle overheating
+Error Code: SPN-TEMP
+Status: Escalated and resolved
+Resolution Time: 5 day(s)
+Maintenance Note: The technician recorded a spindle overheating condition and performed the documented inspection procedure.
+
+Maintenance Record 25
+------------------------------
+Date: 2026-03-20
+Work Order: WO-MIL-001-1025
+Inspection ID: INS-64496
+Technician: Jason Daniels
+Problem: coolant issue
+Error Code: COOL-101
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a coolant issue condition and performed the documented inspection procedure.

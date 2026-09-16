@@ -1,0 +1,26 @@
+Robotic Welding Cell Safety Procedures
+==================================================
+
+Machine Information
+-------------------
+Machine: Robotic Welding Cell
+Machine ID: ROB-001
+Manufacturer: ABB
+Model: IRB 2600
+Location: Plant C - Bay 5
+
+Approved Safety Procedures
+--------------------------
+1. Do not enter the robot work envelope while the robot is enabled.
+2. Use the approved lockout and tagout procedure before authorized maintenance.
+3. Follow welding fume and eye-protection requirements.
+4. Do not bypass robot safety interlocks.
+5. Follow emergency procedures for electrical faults, fire, or uncontrolled robot movement.
+
+Emergency Escalation
+--------------------
+For fire, smoke, electrical sparking, serious injury, uncontrolled machine movement, or another immediate hazard, stop operation when it is safe to do so and follow the organization's approved emergency procedure.
+
+Safety Note
+-----------
+Safety procedures in this document are machine-specific approved guidance. Do not substitute undocumented procedures.

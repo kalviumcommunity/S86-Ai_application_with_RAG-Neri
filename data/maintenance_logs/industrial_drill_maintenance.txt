@@ -1,0 +1,308 @@
+Industrial Drill Maintenance History
+==================================================
+
+Machine ID: DRL-001
+Manufacturer: Bosch Rexroth
+Model: ID-500
+Department: Fabrication
+Location: Plant B - Bay 1
+
+Maintenance Record 1
+------------------------------
+Date: 2025-10-14
+Work Order: WO-DRL-001-1001
+Inspection ID: INS-44600
+Technician: Christina Walters
+Problem: abnormal noise
+Error Code: NOISE-101
+Status: Resolved
+Resolution Time: 2 day(s)
+Maintenance Note: The technician recorded a abnormal noise condition and performed the documented inspection procedure.
+
+Maintenance Record 2
+------------------------------
+Date: 2025-10-20
+Work Order: WO-DRL-001-1002
+Inspection ID: INS-16658
+Technician: Danielle Odonnell
+Problem: drill bit slipping
+Error Code: DRILL-101
+Status: Resolved
+Resolution Time: 2 day(s)
+Maintenance Note: The technician recorded a drill bit slipping condition and performed the documented inspection procedure.
+
+Maintenance Record 3
+------------------------------
+Date: 2026-04-09
+Work Order: WO-DRL-001-1003
+Inspection ID: INS-10464
+Technician: Jeff Hill
+Problem: drill bit slipping
+Error Code: DRILL-101
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a drill bit slipping condition and performed the documented inspection procedure.
+
+Maintenance Record 4
+------------------------------
+Date: 2026-07-08
+Work Order: WO-DRL-001-1004
+Inspection ID: INS-31178
+Technician: Carlos Whitney
+Problem: abnormal noise
+Error Code: NOISE-101
+Status: Resolved
+Resolution Time: 2 day(s)
+Maintenance Note: The technician recorded a abnormal noise condition and performed the documented inspection procedure.
+
+Maintenance Record 5
+------------------------------
+Date: 2026-04-17
+Work Order: WO-DRL-001-1005
+Inspection ID: INS-11267
+Technician: Kristen Patterson
+Problem: drill bit slipping
+Error Code: DRILL-101
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a drill bit slipping condition and performed the documented inspection procedure.
+
+Maintenance Record 6
+------------------------------
+Date: 2026-01-26
+Work Order: WO-DRL-001-1006
+Inspection ID: INS-29536
+Technician: Tony Vazquez
+Problem: abnormal noise
+Error Code: NOISE-202
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a abnormal noise condition and performed the documented inspection procedure.
+
+Maintenance Record 7
+------------------------------
+Date: 2026-01-15
+Work Order: WO-DRL-001-1007
+Inspection ID: INS-29410
+Technician: Sandra Aguilar
+Problem: unexpected shutdown
+Error Code: PWR-FAIL
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a unexpected shutdown condition and performed the documented inspection procedure.
+
+Maintenance Record 8
+------------------------------
+Date: 2026-08-24
+Work Order: WO-DRL-001-1008
+Inspection ID: INS-15229
+Technician: Andrew Diaz
+Problem: poor drilling accuracy
+Error Code: DRILL-ACC
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a poor drilling accuracy condition and performed the documented inspection procedure.
+
+Maintenance Record 9
+------------------------------
+Date: 2026-02-23
+Work Order: WO-DRL-001-1009
+Inspection ID: INS-23473
+Technician: Christine Wright
+Problem: motor overheating
+Error Code: TEMP-401
+Status: Escalated and resolved
+Resolution Time: 5 day(s)
+Maintenance Note: The technician recorded a motor overheating condition and performed the documented inspection procedure.
+
+Maintenance Record 10
+------------------------------
+Date: 2026-05-07
+Work Order: WO-DRL-001-1010
+Inspection ID: INS-91351
+Technician: Justin Baxter
+Problem: drill bit slipping
+Error Code: DRILL-101
+Status: Resolved
+Resolution Time: 2 day(s)
+Maintenance Note: The technician recorded a drill bit slipping condition and performed the documented inspection procedure.
+
+Maintenance Record 11
+------------------------------
+Date: 2025-10-22
+Work Order: WO-DRL-001-1011
+Inspection ID: INS-31299
+Technician: Tammy Young
+Problem: abnormal noise
+Error Code: NOISE-101
+Status: Resolved
+Resolution Time: 2 day(s)
+Maintenance Note: The technician recorded a abnormal noise condition and performed the documented inspection procedure.
+
+Maintenance Record 12
+------------------------------
+Date: 2025-11-21
+Work Order: WO-DRL-001-1012
+Inspection ID: INS-13248
+Technician: Rita Keith
+Problem: excessive vibration
+Error Code: VIB-205
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a excessive vibration condition and performed the documented inspection procedure.
+
+Maintenance Record 13
+------------------------------
+Date: 2026-03-23
+Work Order: WO-DRL-001-1013
+Inspection ID: INS-63964
+Technician: Tim Patton
+Problem: drill bit slipping
+Error Code: DRILL-101
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a drill bit slipping condition and performed the documented inspection procedure.
+
+Maintenance Record 14
+------------------------------
+Date: 2026-06-20
+Work Order: WO-DRL-001-1014
+Inspection ID: INS-44970
+Technician: Sharon Cochran
+Problem: excessive vibration
+Error Code: VIB-205
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a excessive vibration condition and performed the documented inspection procedure.
+
+Maintenance Record 15
+------------------------------
+Date: 2026-08-22
+Work Order: WO-DRL-001-1015
+Inspection ID: INS-15075
+Technician: Michael Reyes
+Problem: motor overheating
+Error Code: MOTOR-TEMP
+Status: Escalated and resolved
+Resolution Time: 5 day(s)
+Maintenance Note: The technician recorded a motor overheating condition and performed the documented inspection procedure.
+
+Maintenance Record 16
+------------------------------
+Date: 2026-08-20
+Work Order: WO-DRL-001-1016
+Inspection ID: INS-70332
+Technician: Courtney Velasquez
+Problem: abnormal noise
+Error Code: NOISE-202
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a abnormal noise condition and performed the documented inspection procedure.
+
+Maintenance Record 17
+------------------------------
+Date: 2025-11-13
+Work Order: WO-DRL-001-1017
+Inspection ID: INS-39219
+Technician: Robert Savage
+Problem: excessive vibration
+Error Code: VIB-205
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a excessive vibration condition and performed the documented inspection procedure.
+
+Maintenance Record 18
+------------------------------
+Date: 2026-02-01
+Work Order: WO-DRL-001-1018
+Inspection ID: INS-19099
+Technician: Corey Murphy
+Problem: unexpected shutdown
+Error Code: SYS-STOP
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a unexpected shutdown condition and performed the documented inspection procedure.
+
+Maintenance Record 19
+------------------------------
+Date: 2026-03-09
+Work Order: WO-DRL-001-1019
+Inspection ID: INS-62386
+Technician: Diana May
+Problem: abnormal noise
+Error Code: NOISE-101
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a abnormal noise condition and performed the documented inspection procedure.
+
+Maintenance Record 20
+------------------------------
+Date: 2026-05-31
+Work Order: WO-DRL-001-1020
+Inspection ID: INS-13617
+Technician: Sarah Rivera
+Problem: unexpected shutdown
+Error Code: PWR-FAIL
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a unexpected shutdown condition and performed the documented inspection procedure.
+
+Maintenance Record 21
+------------------------------
+Date: 2025-11-01
+Work Order: WO-DRL-001-1021
+Inspection ID: INS-44795
+Technician: Wesley White
+Problem: motor overheating
+Error Code: MOTOR-TEMP
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a motor overheating condition and performed the documented inspection procedure.
+
+Maintenance Record 22
+------------------------------
+Date: 2025-10-07
+Work Order: WO-DRL-001-1022
+Inspection ID: INS-51114
+Technician: Kyle Reed
+Problem: poor drilling accuracy
+Error Code: ALIGN-205
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a poor drilling accuracy condition and performed the documented inspection procedure.
+
+Maintenance Record 23
+------------------------------
+Date: 2026-08-07
+Work Order: WO-DRL-001-1023
+Inspection ID: INS-85574
+Technician: William Wilson
+Problem: motor overheating
+Error Code: MOTOR-TEMP
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a motor overheating condition and performed the documented inspection procedure.
+
+Maintenance Record 24
+------------------------------
+Date: 2026-06-24
+Work Order: WO-DRL-001-1024
+Inspection ID: INS-78146
+Technician: Andrew Graham
+Problem: excessive vibration
+Error Code: VIB-205
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a excessive vibration condition and performed the documented inspection procedure.
+
+Maintenance Record 25
+------------------------------
+Date: 2025-11-11
+Work Order: WO-DRL-001-1025
+Inspection ID: INS-97900
+Technician: Kimberly Ball
+Problem: poor drilling accuracy
+Error Code: DRILL-ACC
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a poor drilling accuracy condition and performed the documented inspection procedure.

@@ -1,0 +1,308 @@
+Conveyor System Maintenance History
+==================================================
+
+Machine ID: CON-001
+Manufacturer: Dorner
+Model: 2200 Series
+Department: Material Handling
+Location: Plant C - Bay 1
+
+Maintenance Record 1
+------------------------------
+Date: 2026-06-08
+Work Order: WO-CON-001-1001
+Inspection ID: INS-30052
+Technician: Madison Poole
+Problem: belt misalignment
+Error Code: CON-205
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a belt misalignment condition and performed the documented inspection procedure.
+
+Maintenance Record 2
+------------------------------
+Date: 2026-02-02
+Work Order: WO-CON-001-1002
+Inspection ID: INS-45400
+Technician: Nicholas Sheppard
+Problem: unexpected shutdown
+Error Code: SYS-STOP
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a unexpected shutdown condition and performed the documented inspection procedure.
+
+Maintenance Record 3
+------------------------------
+Date: 2026-01-13
+Work Order: WO-CON-001-1003
+Inspection ID: INS-70931
+Technician: Tamara Hampton
+Problem: belt slipping
+Error Code: CON-101
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a belt slipping condition and performed the documented inspection procedure.
+
+Maintenance Record 4
+------------------------------
+Date: 2026-06-18
+Work Order: WO-CON-001-1004
+Inspection ID: INS-42177
+Technician: Nicholas Adams
+Problem: motor overheating
+Error Code: TEMP-401
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a motor overheating condition and performed the documented inspection procedure.
+
+Maintenance Record 5
+------------------------------
+Date: 2026-01-11
+Work Order: WO-CON-001-1005
+Inspection ID: INS-41963
+Technician: Angelica Keith
+Problem: belt misalignment
+Error Code: BELT-ALIGN
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a belt misalignment condition and performed the documented inspection procedure.
+
+Maintenance Record 6
+------------------------------
+Date: 2026-09-11
+Work Order: WO-CON-001-1006
+Inspection ID: INS-54092
+Technician: Laura Barnett
+Problem: unexpected shutdown
+Error Code: SYS-STOP
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a unexpected shutdown condition and performed the documented inspection procedure.
+
+Maintenance Record 7
+------------------------------
+Date: 2026-04-11
+Work Order: WO-CON-001-1007
+Inspection ID: INS-37802
+Technician: Samuel White
+Problem: belt slipping
+Error Code: CON-101
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a belt slipping condition and performed the documented inspection procedure.
+
+Maintenance Record 8
+------------------------------
+Date: 2026-04-15
+Work Order: WO-CON-001-1008
+Inspection ID: INS-88139
+Technician: David Ramirez
+Problem: conveyor not starting
+Error Code: MOTOR-START
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a conveyor not starting condition and performed the documented inspection procedure.
+
+Maintenance Record 9
+------------------------------
+Date: 2026-04-02
+Work Order: WO-CON-001-1009
+Inspection ID: INS-35042
+Technician: Desiree Smith
+Problem: belt misalignment
+Error Code: CON-205
+Status: Escalated and resolved
+Resolution Time: 5 day(s)
+Maintenance Note: The technician recorded a belt misalignment condition and performed the documented inspection procedure.
+
+Maintenance Record 10
+------------------------------
+Date: 2026-07-06
+Work Order: WO-CON-001-1010
+Inspection ID: INS-41499
+Technician: Nathan Freeman
+Problem: conveyor not starting
+Error Code: CON-START
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a conveyor not starting condition and performed the documented inspection procedure.
+
+Maintenance Record 11
+------------------------------
+Date: 2026-03-14
+Work Order: WO-CON-001-1011
+Inspection ID: INS-12260
+Technician: Maria Henry
+Problem: abnormal noise
+Error Code: NOISE-101
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a abnormal noise condition and performed the documented inspection procedure.
+
+Maintenance Record 12
+------------------------------
+Date: 2026-06-17
+Work Order: WO-CON-001-1012
+Inspection ID: INS-50135
+Technician: Daniel Holt
+Problem: abnormal noise
+Error Code: NOISE-202
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a abnormal noise condition and performed the documented inspection procedure.
+
+Maintenance Record 13
+------------------------------
+Date: 2026-05-22
+Work Order: WO-CON-001-1013
+Inspection ID: INS-55056
+Technician: Jackie Tran
+Problem: unexpected shutdown
+Error Code: SYS-STOP
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a unexpected shutdown condition and performed the documented inspection procedure.
+
+Maintenance Record 14
+------------------------------
+Date: 2026-05-21
+Work Order: WO-CON-001-1014
+Inspection ID: INS-69473
+Technician: Patrick Rivera
+Problem: motor overheating
+Error Code: TEMP-401
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a motor overheating condition and performed the documented inspection procedure.
+
+Maintenance Record 15
+------------------------------
+Date: 2026-08-23
+Work Order: WO-CON-001-1015
+Inspection ID: INS-35242
+Technician: David Martinez
+Problem: abnormal noise
+Error Code: NOISE-202
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a abnormal noise condition and performed the documented inspection procedure.
+
+Maintenance Record 16
+------------------------------
+Date: 2026-05-12
+Work Order: WO-CON-001-1016
+Inspection ID: INS-34267
+Technician: Patrick Tapia
+Problem: abnormal noise
+Error Code: NOISE-101
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a abnormal noise condition and performed the documented inspection procedure.
+
+Maintenance Record 17
+------------------------------
+Date: 2026-04-04
+Work Order: WO-CON-001-1017
+Inspection ID: INS-87278
+Technician: Parker Hill
+Problem: conveyor not starting
+Error Code: CON-START
+Status: Resolved
+Resolution Time: 2 day(s)
+Maintenance Note: The technician recorded a conveyor not starting condition and performed the documented inspection procedure.
+
+Maintenance Record 18
+------------------------------
+Date: 2025-10-27
+Work Order: WO-CON-001-1018
+Inspection ID: INS-23176
+Technician: Kelly Campbell
+Problem: conveyor not starting
+Error Code: CON-START
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a conveyor not starting condition and performed the documented inspection procedure.
+
+Maintenance Record 19
+------------------------------
+Date: 2026-05-09
+Work Order: WO-CON-001-1019
+Inspection ID: INS-49618
+Technician: Elizabeth Ward
+Problem: abnormal noise
+Error Code: NOISE-101
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a abnormal noise condition and performed the documented inspection procedure.
+
+Maintenance Record 20
+------------------------------
+Date: 2026-03-28
+Work Order: WO-CON-001-1020
+Inspection ID: INS-17146
+Technician: Joseph Hill
+Problem: belt slipping
+Error Code: CON-101
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a belt slipping condition and performed the documented inspection procedure.
+
+Maintenance Record 21
+------------------------------
+Date: 2026-03-01
+Work Order: WO-CON-001-1021
+Inspection ID: INS-74340
+Technician: Melissa Martinez
+Problem: belt misalignment
+Error Code: CON-205
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a belt misalignment condition and performed the documented inspection procedure.
+
+Maintenance Record 22
+------------------------------
+Date: 2026-04-18
+Work Order: WO-CON-001-1022
+Inspection ID: INS-72746
+Technician: Adam Mitchell
+Problem: abnormal noise
+Error Code: NOISE-202
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a abnormal noise condition and performed the documented inspection procedure.
+
+Maintenance Record 23
+------------------------------
+Date: 2025-09-24
+Work Order: WO-CON-001-1023
+Inspection ID: INS-72616
+Technician: Cody Williams
+Problem: belt slipping
+Error Code: CON-101
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a belt slipping condition and performed the documented inspection procedure.
+
+Maintenance Record 24
+------------------------------
+Date: 2026-03-13
+Work Order: WO-CON-001-1024
+Inspection ID: INS-85631
+Technician: Austin Vasquez
+Problem: conveyor not starting
+Error Code: CON-START
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a conveyor not starting condition and performed the documented inspection procedure.
+
+Maintenance Record 25
+------------------------------
+Date: 2026-08-14
+Work Order: WO-CON-001-1025
+Inspection ID: INS-83772
+Technician: Amy Hernandez
+Problem: unexpected shutdown
+Error Code: SYS-STOP
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a unexpected shutdown condition and performed the documented inspection procedure.

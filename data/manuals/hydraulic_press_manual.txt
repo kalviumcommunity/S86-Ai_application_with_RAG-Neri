@@ -1,0 +1,63 @@
+Hydraulic Press Maintenance Manual
+==================================================
+
+Machine Information
+-------------------
+Machine: Hydraulic Press
+Machine ID: PRS-001
+Manufacturer: Schuler
+Model: HP-160
+Department: Forming
+Location: Plant A - Bay 4
+
+General Troubleshooting Guidance
+--------------------------------
+Use this manual together with approved maintenance logs and safety procedures.
+Technicians must stop the machine before performing inspection or maintenance.
+Do not perform procedures that are not supported by approved documentation.
+
+Problem: low pressure
+---------------------
+1. Stop the press before performing inspection.
+2. Check the hydraulic fluid level.
+3. Inspect accessible hydraulic connections for visible leakage.
+4. Review maintenance history for previous pressure problems.
+
+Problem: pressure fluctuation
+-----------------------------
+1. Stop operation if pressure becomes unstable.
+2. Check hydraulic fluid level according to the manual.
+3. Review the maintenance log for previous pressure fluctuations.
+4. Inspect accessible hydraulic lines for visible problems.
+
+Problem: hydraulic leak
+-----------------------
+1. Stop the machine before inspecting the hydraulic system.
+2. Identify the visible location of the leak without contacting hydraulic fluid.
+3. Review maintenance records for previous hydraulic leaks.
+4. Do not open pressurized hydraulic components unless authorized.
+
+Problem: slow operation
+-----------------------
+1. Stop the press if movement is significantly slower than normal.
+2. Check hydraulic fluid level.
+3. Review maintenance records for previous slow-operation events.
+4. Inspect accessible hydraulic lines for visible leakage.
+
+Problem: unexpected shutdown
+----------------------------
+1. Record the machine alarm or error code.
+2. Keep the press in a safe stopped condition.
+3. Review recent maintenance records.
+4. Follow the approved restart procedure.
+
+Problem: overheating
+--------------------
+1. Stop the press and allow the system to cool.
+2. Check hydraulic fluid level.
+3. Inspect accessible cooling components.
+4. Review maintenance history for previous overheating events.
+
+Escalation Guidance
+-------------------
+If the documented troubleshooting steps do not resolve the issue, stop further intervention and escalate the problem to the authorized maintenance supervisor.

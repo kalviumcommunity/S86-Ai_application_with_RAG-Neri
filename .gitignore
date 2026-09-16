@@ -1,42 +1,32 @@
-# Python virtual environment
-.venv/
-
-# Environment variables / secrets
+# Environment variables
 .env
 
-# Python cache
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
+*.pyo
 
-# Local data
-data/*
-
-# Keep the data directory structure
-data/*
-!data/.gitkeep
-!data/machine_manual.txt
-!data/maintenance_log.txt
-!data/safety_procedure.md
-# Local data
-data/*
-!data/.gitkeep
-!data/*.txt
-!data/*.md
-!data/*.pdf
-!data/*.html
-!data/*.htm
-
-# Node dependencies
-node_modules/
+# Virtual environment
+.venv/
+venv/
+env/
 
 # IDE
 .vscode/
 .idea/
 
-# OS files
+# OS
 .DS_Store
 Thumbs.db
 
-!uploads/test_stream.py
+# Logs
+*.log
+logs/
 
-outputs/chroma_db/
+# Generated data
+storage/
+uploads/
+
+# Python tools
+.pytest_cache/
+.mypy_cache/

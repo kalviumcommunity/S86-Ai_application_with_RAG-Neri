@@ -1,0 +1,63 @@
+Milling Machine Maintenance Manual
+==================================================
+
+Machine Information
+-------------------
+Machine: Milling Machine
+Machine ID: MIL-001
+Manufacturer: Bridgeport
+Model: Series 1
+Department: Machining
+Location: Plant B - Bay 3
+
+General Troubleshooting Guidance
+--------------------------------
+Use this manual together with approved maintenance logs and safety procedures.
+Technicians must stop the machine before performing inspection or maintenance.
+Do not perform procedures that are not supported by approved documentation.
+
+Problem: spindle vibration
+--------------------------
+1. Stop the spindle before inspection.
+2. Inspect the tool holder and cutting tool.
+3. Check the workholding setup.
+4. Review maintenance records for previous vibration events.
+
+Problem: poor surface finish
+----------------------------
+1. Inspect the cutting tool for wear.
+2. Check workholding stability.
+3. Review maintenance history for similar problems.
+4. Verify tooling according to the approved procedure.
+
+Problem: tool wear
+------------------
+1. Stop the operation before inspecting the tool.
+2. Inspect the cutting tool for visible wear.
+3. Review recent maintenance records.
+4. Replace tooling according to the approved procedure.
+
+Problem: spindle overheating
+----------------------------
+1. Stop the spindle and allow it to cool.
+2. Check the cooling system.
+3. Review maintenance records.
+4. Do not access internal components while energized.
+
+Problem: coolant issue
+----------------------
+1. Stop machining before inspecting the coolant system.
+2. Check coolant level.
+3. Inspect accessible coolant lines.
+4. Review previous coolant-related maintenance records.
+
+Problem: unexpected shutdown
+----------------------------
+1. Record the machine alarm.
+2. Do not repeatedly restart the machine.
+3. Review maintenance history.
+4. Follow the approved restart procedure.
+
+Escalation Guidance
+-------------------
+If the documented troubleshooting steps do not resolve the issue, stop further intervention and escalate the problem to the authorized maintenance supervisor.

@@ -1,0 +1,26 @@
+Conveyor System Safety Procedures
+==================================================
+
+Machine Information
+-------------------
+Machine: Conveyor System
+Machine ID: CON-001
+Manufacturer: Dorner
+Model: 2200 Series
+Location: Plant C - Bay 1
+
+Approved Safety Procedures
+--------------------------
+1. Never reach into a moving conveyor.
+2. Stop the conveyor before inspecting belts or rollers.
+3. Use lockout and tagout before entering guarded maintenance areas.
+4. Do not bypass emergency stops or safety guards.
+5. Follow emergency procedures for electrical faults, fire, or entrapment hazards.
+
+Emergency Escalation
+--------------------
+For fire, smoke, electrical sparking, serious injury, uncontrolled machine movement, or another immediate hazard, stop operation when it is safe to do so and follow the organization's approved emergency procedure.
+
+Safety Note
+-----------
+Safety procedures in this document are machine-specific approved guidance. Do not substitute undocumented procedures.

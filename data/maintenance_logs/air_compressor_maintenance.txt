@@ -1,0 +1,308 @@
+Air Compressor Maintenance History
+==================================================
+
+Machine ID: CMP-001
+Manufacturer: Atlas Copco
+Model: GA 30
+Department: Utilities
+Location: Plant D - Utility Room
+
+Maintenance Record 1
+------------------------------
+Date: 2026-06-09
+Work Order: WO-CMP-001-1001
+Inspection ID: INS-92727
+Technician: Amanda Jones
+Problem: compressor not starting
+Error Code: COMP-START
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a compressor not starting condition and performed the documented inspection procedure.
+
+Maintenance Record 2
+------------------------------
+Date: 2026-02-14
+Work Order: WO-CMP-001-1002
+Inspection ID: INS-21846
+Technician: Donna Perez
+Problem: abnormal noise
+Error Code: NOISE-202
+Status: Escalated and resolved
+Resolution Time: 5 day(s)
+Maintenance Note: The technician recorded a abnormal noise condition and performed the documented inspection procedure.
+
+Maintenance Record 3
+------------------------------
+Date: 2026-02-18
+Work Order: WO-CMP-001-1003
+Inspection ID: INS-23173
+Technician: Brett Schultz
+Problem: compressor not starting
+Error Code: START-501
+Status: Resolved
+Resolution Time: 2 day(s)
+Maintenance Note: The technician recorded a compressor not starting condition and performed the documented inspection procedure.
+
+Maintenance Record 4
+------------------------------
+Date: 2026-07-24
+Work Order: WO-CMP-001-1004
+Inspection ID: INS-16028
+Technician: Michael Berger
+Problem: compressor not starting
+Error Code: COMP-START
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a compressor not starting condition and performed the documented inspection procedure.
+
+Maintenance Record 5
+------------------------------
+Date: 2026-08-01
+Work Order: WO-CMP-001-1005
+Inspection ID: INS-66450
+Technician: Anthony Howard
+Problem: low air pressure
+Error Code: AIR-LOW
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a low air pressure condition and performed the documented inspection procedure.
+
+Maintenance Record 6
+------------------------------
+Date: 2025-12-04
+Work Order: WO-CMP-001-1006
+Inspection ID: INS-33600
+Technician: Joseph Knight
+Problem: oil leak
+Error Code: OIL-LEAK
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a oil leak condition and performed the documented inspection procedure.
+
+Maintenance Record 7
+------------------------------
+Date: 2025-12-04
+Work Order: WO-CMP-001-1007
+Inspection ID: INS-91226
+Technician: Bob Pitts
+Problem: high discharge temperature
+Error Code: AIR-TEMP
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a high discharge temperature condition and performed the documented inspection procedure.
+
+Maintenance Record 8
+------------------------------
+Date: 2026-09-02
+Work Order: WO-CMP-001-1008
+Inspection ID: INS-40433
+Technician: Kathleen Aguilar
+Problem: abnormal noise
+Error Code: NOISE-202
+Status: Resolved
+Resolution Time: 2 day(s)
+Maintenance Note: The technician recorded a abnormal noise condition and performed the documented inspection procedure.
+
+Maintenance Record 9
+------------------------------
+Date: 2025-10-01
+Work Order: WO-CMP-001-1009
+Inspection ID: INS-11231
+Technician: David Scott
+Problem: abnormal noise
+Error Code: NOISE-202
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a abnormal noise condition and performed the documented inspection procedure.
+
+Maintenance Record 10
+------------------------------
+Date: 2026-09-09
+Work Order: WO-CMP-001-1010
+Inspection ID: INS-81643
+Technician: Julie Roberts
+Problem: oil leak
+Error Code: COMP-301
+Status: Escalated and resolved
+Resolution Time: 5 day(s)
+Maintenance Note: The technician recorded a oil leak condition and performed the documented inspection procedure.
+
+Maintenance Record 11
+------------------------------
+Date: 2026-09-01
+Work Order: WO-CMP-001-1011
+Inspection ID: INS-87014
+Technician: Jeremy Reed
+Problem: abnormal noise
+Error Code: NOISE-101
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a abnormal noise condition and performed the documented inspection procedure.
+
+Maintenance Record 12
+------------------------------
+Date: 2026-04-20
+Work Order: WO-CMP-001-1012
+Inspection ID: INS-69878
+Technician: Victor Vaughn
+Problem: oil leak
+Error Code: OIL-LEAK
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a oil leak condition and performed the documented inspection procedure.
+
+Maintenance Record 13
+------------------------------
+Date: 2026-08-12
+Work Order: WO-CMP-001-1013
+Inspection ID: INS-73335
+Technician: Christina Cruz
+Problem: compressor not starting
+Error Code: COMP-START
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a compressor not starting condition and performed the documented inspection procedure.
+
+Maintenance Record 14
+------------------------------
+Date: 2025-10-21
+Work Order: WO-CMP-001-1014
+Inspection ID: INS-48780
+Technician: James Howard
+Problem: oil leak
+Error Code: OIL-LEAK
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a oil leak condition and performed the documented inspection procedure.
+
+Maintenance Record 15
+------------------------------
+Date: 2026-07-16
+Work Order: WO-CMP-001-1015
+Inspection ID: INS-45976
+Technician: Elizabeth Spence DDS
+Problem: high discharge temperature
+Error Code: TEMP-601
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a high discharge temperature condition and performed the documented inspection procedure.
+
+Maintenance Record 16
+------------------------------
+Date: 2026-04-27
+Work Order: WO-CMP-001-1016
+Inspection ID: INS-16428
+Technician: Sean Osborne
+Problem: compressor not starting
+Error Code: START-501
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a compressor not starting condition and performed the documented inspection procedure.
+
+Maintenance Record 17
+------------------------------
+Date: 2026-09-08
+Work Order: WO-CMP-001-1017
+Inspection ID: INS-47512
+Technician: Natasha Wall
+Problem: abnormal noise
+Error Code: NOISE-202
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a abnormal noise condition and performed the documented inspection procedure.
+
+Maintenance Record 18
+------------------------------
+Date: 2026-04-27
+Work Order: WO-CMP-001-1018
+Inspection ID: INS-38705
+Technician: Crystal Pham
+Problem: oil leak
+Error Code: COMP-301
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a oil leak condition and performed the documented inspection procedure.
+
+Maintenance Record 19
+------------------------------
+Date: 2026-04-24
+Work Order: WO-CMP-001-1019
+Inspection ID: INS-96400
+Technician: Lisa Byrd
+Problem: compressor not starting
+Error Code: COMP-START
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a compressor not starting condition and performed the documented inspection procedure.
+
+Maintenance Record 20
+------------------------------
+Date: 2025-09-28
+Work Order: WO-CMP-001-1020
+Inspection ID: INS-92242
+Technician: Breanna Davis
+Problem: oil leak
+Error Code: COMP-301
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a oil leak condition and performed the documented inspection procedure.
+
+Maintenance Record 21
+------------------------------
+Date: 2026-08-25
+Work Order: WO-CMP-001-1021
+Inspection ID: INS-85965
+Technician: Ellen Alexander
+Problem: high discharge temperature
+Error Code: AIR-TEMP
+Status: Escalated and resolved
+Resolution Time: 5 day(s)
+Maintenance Note: The technician recorded a high discharge temperature condition and performed the documented inspection procedure.
+
+Maintenance Record 22
+------------------------------
+Date: 2025-12-13
+Work Order: WO-CMP-001-1022
+Inspection ID: INS-52823
+Technician: Carlos Browning
+Problem: oil leak
+Error Code: OIL-LEAK
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a oil leak condition and performed the documented inspection procedure.
+
+Maintenance Record 23
+------------------------------
+Date: 2026-02-04
+Work Order: WO-CMP-001-1023
+Inspection ID: INS-80701
+Technician: Casey Anderson
+Problem: compressor not starting
+Error Code: START-501
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a compressor not starting condition and performed the documented inspection procedure.
+
+Maintenance Record 24
+------------------------------
+Date: 2026-08-06
+Work Order: WO-CMP-001-1024
+Inspection ID: INS-45720
+Technician: Holly Shaw
+Problem: compressor not starting
+Error Code: START-501
+Status: Escalated and resolved
+Resolution Time: 5 day(s)
+Maintenance Note: The technician recorded a compressor not starting condition and performed the documented inspection procedure.
+
+Maintenance Record 25
+------------------------------
+Date: 2026-05-13
+Work Order: WO-CMP-001-1025
+Inspection ID: INS-73156
+Technician: Dawn Summers
+Problem: abnormal noise
+Error Code: NOISE-101
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a abnormal noise condition and performed the documented inspection procedure.

@@ -1,0 +1,26 @@
+CNC Mill Safety Procedures
+==================================================
+
+Machine Information
+-------------------
+Machine: CNC Mill
+Machine ID: CNC-001
+Manufacturer: Haas
+Model: VF-2
+Location: Plant A - Bay 1
+
+Approved Safety Procedures
+--------------------------
+1. Stop the CNC mill before performing maintenance or inspection.
+2. Do not inspect internal electrical components while the machine is connected to power.
+3. Follow the organization's lockout and tagout procedure before accessing hazardous internal components.
+4. Keep the machine area clear of unauthorized personnel during maintenance.
+5. If smoke, fire, sparking, or electrical damage is observed, follow the approved emergency procedure.
+
+Emergency Escalation
+--------------------
+For fire, smoke, electrical sparking, serious injury, uncontrolled machine movement, or another immediate hazard, stop operation when it is safe to do so and follow the organization's approved emergency procedure.
+
+Safety Note
+-----------
+Safety procedures in this document are machine-specific approved guidance. Do not substitute undocumented procedures.

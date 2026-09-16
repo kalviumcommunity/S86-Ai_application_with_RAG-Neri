@@ -1,0 +1,26 @@
+Injection Molding Machine Safety Procedures
+==================================================
+
+Machine Information
+-------------------
+Machine: Injection Molding Machine
+Machine ID: IMM-001
+Manufacturer: Engel
+Model: Victory 330
+Location: Plant C - Bay 3
+
+Approved Safety Procedures
+--------------------------
+1. Keep clear of the mold closing area.
+2. Use lockout and tagout before maintenance inside hazardous areas.
+3. Do not touch hot surfaces or molten material.
+4. Never bypass machine safety interlocks.
+5. Follow emergency procedures for hydraulic leaks, fire, smoke, or electrical faults.
+
+Emergency Escalation
+--------------------
+For fire, smoke, electrical sparking, serious injury, uncontrolled machine movement, or another immediate hazard, stop operation when it is safe to do so and follow the organization's approved emergency procedure.
+
+Safety Note
+-----------
+Safety procedures in this document are machine-specific approved guidance. Do not substitute undocumented procedures.

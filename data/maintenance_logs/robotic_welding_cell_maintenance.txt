@@ -1,0 +1,308 @@
+Robotic Welding Cell Maintenance History
+==================================================
+
+Machine ID: ROB-001
+Manufacturer: ABB
+Model: IRB 2600
+Department: Welding
+Location: Plant C - Bay 5
+
+Maintenance Record 1
+------------------------------
+Date: 2026-05-23
+Work Order: WO-ROB-001-1001
+Inspection ID: INS-70552
+Technician: April Booth
+Problem: unexpected shutdown
+Error Code: PWR-FAIL
+Status: Resolved
+Resolution Time: 2 day(s)
+Maintenance Note: The technician recorded a unexpected shutdown condition and performed the documented inspection procedure.
+
+Maintenance Record 2
+------------------------------
+Date: 2026-08-11
+Work Order: WO-ROB-001-1002
+Inspection ID: INS-75338
+Technician: Cody Cox
+Problem: robot movement error
+Error Code: MOTION-101
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a robot movement error condition and performed the documented inspection procedure.
+
+Maintenance Record 3
+------------------------------
+Date: 2025-09-23
+Work Order: WO-ROB-001-1003
+Inspection ID: INS-81987
+Technician: Olivia Harris
+Problem: excessive vibration
+Error Code: VIB-205
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a excessive vibration condition and performed the documented inspection procedure.
+
+Maintenance Record 4
+------------------------------
+Date: 2026-04-10
+Work Order: WO-ROB-001-1004
+Inspection ID: INS-73532
+Technician: Dwayne Gilmore
+Problem: wire feeding issue
+Error Code: WIRE-101
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a wire feeding issue condition and performed the documented inspection procedure.
+
+Maintenance Record 5
+------------------------------
+Date: 2026-08-20
+Work Order: WO-ROB-001-1005
+Inspection ID: INS-41365
+Technician: William Lynch
+Problem: robot movement error
+Error Code: MOTION-101
+Status: Resolved
+Resolution Time: 2 day(s)
+Maintenance Note: The technician recorded a robot movement error condition and performed the documented inspection procedure.
+
+Maintenance Record 6
+------------------------------
+Date: 2026-06-25
+Work Order: WO-ROB-001-1006
+Inspection ID: INS-63476
+Technician: Emily Smith
+Problem: wire feeding issue
+Error Code: FEED-205
+Status: Resolved
+Resolution Time: 2 day(s)
+Maintenance Note: The technician recorded a wire feeding issue condition and performed the documented inspection procedure.
+
+Maintenance Record 7
+------------------------------
+Date: 2026-06-23
+Work Order: WO-ROB-001-1007
+Inspection ID: INS-70482
+Technician: Willie Durham
+Problem: wire feeding issue
+Error Code: FEED-205
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a wire feeding issue condition and performed the documented inspection procedure.
+
+Maintenance Record 8
+------------------------------
+Date: 2026-01-31
+Work Order: WO-ROB-001-1008
+Inspection ID: INS-48254
+Technician: Maria Moore
+Problem: wire feeding issue
+Error Code: FEED-205
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a wire feeding issue condition and performed the documented inspection procedure.
+
+Maintenance Record 9
+------------------------------
+Date: 2025-11-15
+Work Order: WO-ROB-001-1009
+Inspection ID: INS-71894
+Technician: Denise Davenport
+Problem: wire feeding issue
+Error Code: WIRE-101
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a wire feeding issue condition and performed the documented inspection procedure.
+
+Maintenance Record 10
+------------------------------
+Date: 2025-11-15
+Work Order: WO-ROB-001-1010
+Inspection ID: INS-88561
+Technician: Juan Reyes
+Problem: robot movement error
+Error Code: MOTION-101
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a robot movement error condition and performed the documented inspection procedure.
+
+Maintenance Record 11
+------------------------------
+Date: 2025-12-22
+Work Order: WO-ROB-001-1011
+Inspection ID: INS-46208
+Technician: Sherry Shields
+Problem: controller alarm
+Error Code: CTRL-401
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a controller alarm condition and performed the documented inspection procedure.
+
+Maintenance Record 12
+------------------------------
+Date: 2026-02-03
+Work Order: WO-ROB-001-1012
+Inspection ID: INS-76550
+Technician: Sarah Morgan
+Problem: unexpected shutdown
+Error Code: PWR-FAIL
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a unexpected shutdown condition and performed the documented inspection procedure.
+
+Maintenance Record 13
+------------------------------
+Date: 2025-11-05
+Work Order: WO-ROB-001-1013
+Inspection ID: INS-86931
+Technician: Aaron Barber
+Problem: controller alarm
+Error Code: ROBOT-ALARM
+Status: Escalated and resolved
+Resolution Time: 5 day(s)
+Maintenance Note: The technician recorded a controller alarm condition and performed the documented inspection procedure.
+
+Maintenance Record 14
+------------------------------
+Date: 2026-01-09
+Work Order: WO-ROB-001-1014
+Inspection ID: INS-68529
+Technician: Mary Grimes
+Problem: robot movement error
+Error Code: MOTION-101
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a robot movement error condition and performed the documented inspection procedure.
+
+Maintenance Record 15
+------------------------------
+Date: 2025-09-22
+Work Order: WO-ROB-001-1015
+Inspection ID: INS-81228
+Technician: Haley Arnold
+Problem: robot movement error
+Error Code: MOTION-101
+Status: Escalated and resolved
+Resolution Time: 3 day(s)
+Maintenance Note: The technician recorded a robot movement error condition and performed the documented inspection procedure.
+
+Maintenance Record 16
+------------------------------
+Date: 2026-02-02
+Work Order: WO-ROB-001-1016
+Inspection ID: INS-41300
+Technician: Timothy Kane
+Problem: controller alarm
+Error Code: CTRL-401
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a controller alarm condition and performed the documented inspection procedure.
+
+Maintenance Record 17
+------------------------------
+Date: 2026-09-07
+Work Order: WO-ROB-001-1017
+Inspection ID: INS-15720
+Technician: Cynthia Rowe
+Problem: welding arc unstable
+Error Code: WELD-205
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a welding arc unstable condition and performed the documented inspection procedure.
+
+Maintenance Record 18
+------------------------------
+Date: 2025-11-06
+Work Order: WO-ROB-001-1018
+Inspection ID: INS-59968
+Technician: John Mcintyre
+Problem: unexpected shutdown
+Error Code: PWR-FAIL
+Status: Escalated and resolved
+Resolution Time: 5 day(s)
+Maintenance Note: The technician recorded a unexpected shutdown condition and performed the documented inspection procedure.
+
+Maintenance Record 19
+------------------------------
+Date: 2026-05-13
+Work Order: WO-ROB-001-1019
+Inspection ID: INS-29936
+Technician: Matthew Hoover
+Problem: welding arc unstable
+Error Code: WELD-205
+Status: Resolved
+Resolution Time: 1 day(s)
+Maintenance Note: The technician recorded a welding arc unstable condition and performed the documented inspection procedure.
+
+Maintenance Record 20
+------------------------------
+Date: 2025-12-18
+Work Order: WO-ROB-001-1020
+Inspection ID: INS-23154
+Technician: Andrew Shaw MD
+Problem: excessive vibration
+Error Code: VIB-205
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a excessive vibration condition and performed the documented inspection procedure.
+
+Maintenance Record 21
+------------------------------
+Date: 2025-11-12
+Work Order: WO-ROB-001-1021
+Inspection ID: INS-69890
+Technician: Jessica Fox
+Problem: wire feeding issue
+Error Code: FEED-205
+Status: Escalated and resolved
+Resolution Time: 5 day(s)
+Maintenance Note: The technician recorded a wire feeding issue condition and performed the documented inspection procedure.
+
+Maintenance Record 22
+------------------------------
+Date: 2026-05-24
+Work Order: WO-ROB-001-1022
+Inspection ID: INS-30232
+Technician: Charles Pitts
+Problem: welding arc unstable
+Error Code: WELD-205
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a welding arc unstable condition and performed the documented inspection procedure.
+
+Maintenance Record 23
+------------------------------
+Date: 2025-12-01
+Work Order: WO-ROB-001-1023
+Inspection ID: INS-91691
+Technician: Richard Baker
+Problem: controller alarm
+Error Code: CTRL-401
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a controller alarm condition and performed the documented inspection procedure.
+
+Maintenance Record 24
+------------------------------
+Date: 2025-10-28
+Work Order: WO-ROB-001-1024
+Inspection ID: INS-98389
+Technician: Marie Christian
+Problem: controller alarm
+Error Code: ROBOT-ALARM
+Status: Resolved during inspection
+Resolution Time: 0 day(s)
+Maintenance Note: The technician recorded a controller alarm condition and performed the documented inspection procedure.
+
+Maintenance Record 25
+------------------------------
+Date: 2026-07-22
+Work Order: WO-ROB-001-1025
+Inspection ID: INS-73956
+Technician: Jamie Stewart
+Problem: welding arc unstable
+Error Code: WELD-205
+Status: Resolved
+Resolution Time: 2 day(s)
+Maintenance Note: The technician recorded a welding arc unstable condition and performed the documented inspection procedure.

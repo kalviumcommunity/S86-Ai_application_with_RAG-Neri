@@ -1,0 +1,63 @@
+Injection Molding Machine Maintenance Manual
+==================================================
+
+Machine Information
+-------------------
+Machine: Injection Molding Machine
+Machine ID: IMM-001
+Manufacturer: Engel
+Model: Victory 330
+Department: Molding
+Location: Plant C - Bay 3
+
+General Troubleshooting Guidance
+--------------------------------
+Use this manual together with approved maintenance logs and safety procedures.
+Technicians must stop the machine before performing inspection or maintenance.
+Do not perform procedures that are not supported by approved documentation.
+
+Problem: injection pressure low
+-------------------------------
+1. Stop the machine if pressure remains outside the approved range.
+2. Check hydraulic fluid level according to the manual.
+3. Review maintenance records for previous pressure problems.
+4. Inspect accessible hydraulic components for visible leakage.
+
+Problem: material temperature high
+----------------------------------
+1. Stop production if material temperature exceeds the approved range.
+2. Check the temperature display and cooling system.
+3. Review maintenance records for previous temperature issues.
+4. Do not access hot internal components without authorization.
+
+Problem: hydraulic pressure low
+-------------------------------
+1. Stop the machine before inspection.
+2. Check hydraulic fluid level.
+3. Inspect accessible hydraulic connections for visible leakage.
+4. Review maintenance history.
+
+Problem: poor molding quality
+-----------------------------
+1. Stop production if product quality continues to deteriorate.
+2. Record the observed quality problem.
+3. Review maintenance history for previous molding issues.
+4. Check approved machine parameters.
+
+Problem: machine not starting
+-----------------------------
+1. Check the operator panel for alarms.
+2. Confirm the machine is in the correct operating state.
+3. Review recent maintenance records.
+4. Follow the approved startup procedure.
+
+Problem: unexpected shutdown
+----------------------------
+1. Record the displayed alarm or error code.
+2. Keep the machine stopped.
+3. Review recent maintenance history.
+4. Follow the approved restart procedure.
+
+Escalation Guidance
+-------------------
+If the documented troubleshooting steps do not resolve the issue, stop further intervention and escalate the problem to the authorized maintenance supervisor.
